@@ -1,3 +1,6 @@
 profiles/*
 !profiles/.gitkeep
+!profiles/vm-initial-desktop-task/
+!profiles/vm-initial-desktop-task/**
 *.tar.gz
+*.shell-extension.zip

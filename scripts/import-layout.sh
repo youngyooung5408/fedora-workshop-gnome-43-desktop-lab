@@ -25,8 +25,24 @@ if [ -d "$PROFILE_DIR/extensions" ]; then
   cp -a "$PROFILE_DIR/extensions/." "$HOME/.local/share/gnome-shell/extensions/"
 fi
 
-while read -r cmd subcmd schema key value; do
-  [ "$cmd $subcmd" = "gsettings set" ] || continue
+while IFS= read -r line; do
+  case "$line" in
+    "gsettings set "*) ;;
+    *) continue ;;
+  esac
+
+  if ! eval "set -- $line"; then
+    echo "Skipped unreadable setting line: $line"
+    continue
+  fi
+
+  [ $# -ge 5 ] || continue
+  [ "$1 $2" = "gsettings set" ] || continue
+
+  schema="$3"
+  key="$4"
+  shift 4
+  value="$*"
 
   # Keep the VM independent from host-only apps. Missing apps can still be
   # installed later without blocking the desktop layout and extensions.

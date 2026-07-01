@@ -30,6 +30,7 @@ So this project moves settings between host and VM for you.
 - `scripts/export-current-layout.sh` — export the current machine/VM layout to a chosen folder
 - `scripts/apply-to-host.sh` — apply a chosen dump back onto the host
 - `profiles/host-current/` — current exported host snapshot
+- `profiles/vm-initial-desktop-task/` — tracked tuned profile for the first desktop customization task
 - `notes.md` — keep/reject/maybe notes while testing in the VM
 
 ## Codex Workflow
@@ -88,6 +89,16 @@ When done:
 ```bash
 ./scripts/export-current-layout.sh profiles/vm-tuned
 ```
+
+### Apply the initial tuned profile in the VM
+```bash
+cd ~/gnome-layout-sync-lab
+./scripts/import-layout.sh profiles/vm-initial-desktop-task
+```
+
+This tuned profile enables the Bluetooth battery panel indicator and sets
+window controls to the upper-right order `close`, `maximize/restore`,
+`minimize`.
 
 ### Back on the host
 After copying `profiles/vm-tuned/` back to the host:

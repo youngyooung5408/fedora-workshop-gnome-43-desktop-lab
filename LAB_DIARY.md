@@ -19,6 +19,39 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-01 18:52 JST - Initial desktop task tuned profile
+
+- Version label: initial-desktop-task-tuned-profile.
+- Task summary: create the first tuned VM profile for the initial desktop setup notes.
+- Changed files:
+  - `.gitignore`
+  - `README.md`
+  - `TASK.md`
+  - `LAB_DIARY.md`
+  - `notes.md`
+  - `scripts/export-host-layout.sh`
+  - `scripts/import-layout.sh`
+  - `profiles/vm-initial-desktop-task/`
+- Desktop settings or profiles changed:
+  - Added tracked tuned profile `profiles/vm-initial-desktop-task`.
+  - Set `org.gnome.desktop.wm.preferences button-layout` to `:close,maximize,minimize`.
+  - Added and enabled `bluetooth-battery@young` in the tuned profile.
+- Features included:
+  - Window buttons are configured for upper-right close, maximize/restore, minimize order.
+  - Bluetooth battery panel indicator extension queries BlueZ for connected devices exposing `org.bluez.Battery1`.
+  - Indicator shows the lowest connected Bluetooth battery percentage in the top panel and lists devices in its menu.
+- Verification:
+  - Confirmed tuned profile references the requested `button-layout`.
+  - Confirmed tuned profile enabled extensions include `bluetooth-battery@young` while preserving existing extensions.
+  - Confirmed extension files exist in the tuned profile.
+  - `gnome-extensions pack --force profiles/vm-initial-desktop-task/extensions/bluetooth-battery@young` completed successfully.
+  - `bash -n scripts/import-layout.sh` completed successfully.
+  - `bash -n scripts/export-host-layout.sh` completed successfully.
+  - `bash -n profiles/vm-initial-desktop-task/gsettings-export.sh` completed successfully after fixing exported value quoting.
+- Known limits:
+  - The Codex sandbox cannot commit live GNOME dconf writes, so this version provides an importable tuned profile instead of changing the active desktop session directly.
+  - Bluetooth device detection could not be tested from the sandbox because DBus access to BlueZ is restricted.
+
 ### 2026-07-01 18:42 JST - Workflow files and Git version process
 
 - Version label: workflow-files-and-git-version-process.

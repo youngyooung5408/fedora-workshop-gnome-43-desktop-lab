@@ -29,7 +29,7 @@ printf '#!/usr/bin/env bash\nset -euo pipefail\n\n' > "$OUT_DIR/gsettings-export
 for schema in "${schemas[@]}"; do
   while IFS= read -r key; do
     value=$(gsettings get "$schema" "$key")
-    printf 'gsettings set %q %q %s\n' "$schema" "$key" "$value" >> "$OUT_DIR/gsettings-export.sh"
+    printf 'gsettings set %q %q %q\n' "$schema" "$key" "$value" >> "$OUT_DIR/gsettings-export.sh"
   done < <(gsettings list-keys "$schema")
 done
 

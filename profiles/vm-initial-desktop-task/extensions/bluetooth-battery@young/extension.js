@@ -14,7 +14,36 @@ const OBJECT_MANAGER_PATH = '/';
 const OBJECT_MANAGER_IFACE = 'org.freedesktop.DBus.ObjectManager';
 const DEVICE_IFACE = 'org.bluez.Device1';
 const BATTERY_IFACE = 'org.bluez.Battery1';
+const UPOWER_BUS_NAME = 'org.freedesktop.UPower';
+const UPOWER_PATH = '/org/freedesktop/UPower';
+const UPOWER_IFACE = 'org.freedesktop.UPower';
+const DBUS_PROPERTIES_IFACE = 'org.freedesktop.DBus.Properties';
+const UPOWER_DEVICE_IFACE = 'org.freedesktop.UPower.Device';
 const REFRESH_INTERVAL_SECONDS = 60;
+
+const UPOWER_EXTERNAL_DEVICE_TYPES = new Set([
+    5,  // mouse
+    6,  // keyboard
+    12, // gaming input
+    14, // touchpad
+    17, // headset
+    18, // speakers
+    19, // headphones
+    22, // remote control
+    28, // generic Bluetooth device
+]);
+
+const UPOWER_DEVICE_TYPE_NAMES = new Map([
+    [5, 'Mouse'],
+    [6, 'Keyboard'],
+    [12, 'Gaming input'],
+    [14, 'Touchpad'],
+    [17, 'Headset'],
+    [18, 'Speakers'],
+    [19, 'Headphones'],
+    [22, 'Remote control'],
+    [28, 'Bluetooth device'],
+]);
 
 const BluetoothBatteryIndicator = GObject.registerClass(
 class BluetoothBatteryIndicator extends PanelMenu.Button {
@@ -80,29 +109,138 @@ class BluetoothBatteryIndicator extends PanelMenu.Button {
         this._refreshInFlight = true;
         this._refreshItem.label.text = manual ? 'Refreshing...' : 'Refresh now';
 
-        Gio.DBus.system.call(
-            BLUEZ_BUS_NAME,
-            OBJECT_MANAGER_PATH,
-            OBJECT_MANAGER_IFACE,
-            'GetManagedObjects',
-            null,
-            new GLib.VariantType('(a{oa{sa{sv}}})'),
-            Gio.DBusCallFlags.NONE,
-            -1,
-            null,
-            (connection, result) => {
-                try {
-                    const variant = connection.call_finish(result);
-                    const [objects] = variant.deep_unpack();
-                    this._applyDevices(this._extractBatteryDevices(objects));
-                } catch (error) {
-                    this._setError(error.message);
-                } finally {
-                    this._refreshInFlight = false;
-                    this._refreshItem.label.text = 'Refresh now';
+        const state = {
+            pending: 2,
+            devices: [],
+            errors: [],
+        };
+
+        const complete = (devices, errorMessage) => {
+            state.devices.push(...devices);
+            if (errorMessage)
+                state.errors.push(errorMessage);
+
+            state.pending -= 1;
+            if (state.pending > 0)
+                return;
+
+            try {
+                const allDevices = this._dedupeDevices(state.devices);
+                if (allDevices.length > 0 || state.errors.length < 2) {
+                    this._applyDevices(allDevices);
+                    if (allDevices.length === 0 && state.errors.length > 0)
+                        this._messageItem.label.text = state.errors.join('; ');
+                } else {
+                    this._setError(state.errors.join('; '));
                 }
+            } finally {
+                this._refreshInFlight = false;
+                this._refreshItem.label.text = 'Refresh now';
             }
-        );
+        };
+
+        this._queryBluez(complete);
+        this._queryUpower(complete);
+    }
+
+    _queryBluez(callback) {
+        try {
+            Gio.DBus.system.call(
+                BLUEZ_BUS_NAME,
+                OBJECT_MANAGER_PATH,
+                OBJECT_MANAGER_IFACE,
+                'GetManagedObjects',
+                null,
+                new GLib.VariantType('(a{oa{sa{sv}}})'),
+                Gio.DBusCallFlags.NONE,
+                -1,
+                null,
+                (connection, result) => {
+                    try {
+                        const variant = connection.call_finish(result);
+                        const [objects] = variant.deep_unpack();
+                        callback(this._extractBatteryDevices(objects), null);
+                    } catch (error) {
+                        callback([], `BlueZ: ${error.message}`);
+                    }
+                }
+            );
+        } catch (error) {
+            callback([], `BlueZ: ${error.message}`);
+        }
+    }
+
+    _queryUpower(callback) {
+        try {
+            Gio.DBus.system.call(
+                UPOWER_BUS_NAME,
+                UPOWER_PATH,
+                UPOWER_IFACE,
+                'EnumerateDevices',
+                null,
+                new GLib.VariantType('(ao)'),
+                Gio.DBusCallFlags.NONE,
+                -1,
+                null,
+                (connection, result) => {
+                    let paths;
+
+                    try {
+                        const variant = connection.call_finish(result);
+                        [paths] = variant.deep_unpack();
+                    } catch (error) {
+                        callback([], `UPower: ${error.message}`);
+                        return;
+                    }
+
+                    if (paths.length === 0) {
+                        callback([], null);
+                        return;
+                    }
+
+                    const devices = [];
+                    const errors = [];
+                    let pending = paths.length;
+
+                    const finish = () => {
+                        pending -= 1;
+                        if (pending > 0)
+                            return;
+
+                        callback(devices, errors.length > 0 ? `UPower: ${errors[0]}` : null);
+                    };
+
+                    for (const path of paths) {
+                        Gio.DBus.system.call(
+                            UPOWER_BUS_NAME,
+                            path,
+                            DBUS_PROPERTIES_IFACE,
+                            'GetAll',
+                            new GLib.Variant('(s)', [UPOWER_DEVICE_IFACE]),
+                            new GLib.VariantType('(a{sv})'),
+                            Gio.DBusCallFlags.NONE,
+                            -1,
+                            null,
+                            (propertiesConnection, propertiesResult) => {
+                                try {
+                                    const propertiesVariant = propertiesConnection.call_finish(propertiesResult);
+                                    const [properties] = propertiesVariant.deep_unpack();
+                                    const device = this._extractUpowerDevice(path, properties);
+                                    if (device)
+                                        devices.push(device);
+                                } catch (error) {
+                                    errors.push(error.message);
+                                } finally {
+                                    finish();
+                                }
+                            }
+                        );
+                    }
+                }
+            );
+        } catch (error) {
+            callback([], `UPower: ${error.message}`);
+        }
     }
 
     _extractBatteryDevices(objects) {
@@ -125,12 +263,82 @@ class BluetoothBatteryIndicator extends PanelMenu.Button {
             devices.push({
                 path,
                 name: this._deviceName(device, path),
-                percentage,
+                percentage: Math.round(percentage),
+                source: 'BlueZ',
             });
         }
 
-        devices.sort((a, b) => a.name.localeCompare(b.name));
         return devices;
+    }
+
+    _extractUpowerDevice(path, properties) {
+        const percentage = Number(this._unpack(properties.Percentage));
+        const type = Number(this._unpack(properties.Type) ?? -1);
+        const isPresent = this._unpack(properties.IsPresent);
+
+        if (isPresent === false || Number.isNaN(percentage))
+            return null;
+
+        if (!this._isExternalPowerDevice(properties, type))
+            return null;
+
+        return {
+            path,
+            name: this._upowerDeviceName(properties, path, type),
+            percentage: Math.round(Math.max(0, Math.min(100, percentage))),
+            source: 'UPower',
+        };
+    }
+
+    _isExternalPowerDevice(properties, type) {
+        if (UPOWER_EXTERNAL_DEVICE_TYPES.has(type))
+            return true;
+
+        const text = [
+            properties.NativePath,
+            properties.Model,
+            properties.Vendor,
+            properties.Serial,
+        ]
+            .map(value => String(this._unpack(value) ?? '').toLowerCase())
+            .join(' ');
+
+        return text.includes('bluetooth') ||
+            text.includes('bluez') ||
+            text.includes('hidpp') ||
+            text.includes('unifying');
+    }
+
+    _upowerDeviceName(properties, path, type) {
+        const model = String(this._unpack(properties.Model) ?? '').trim();
+        const vendor = String(this._unpack(properties.Vendor) ?? '').trim();
+        const fallback = UPOWER_DEVICE_TYPE_NAMES.get(type) ||
+            this._lastPathPart(path) ||
+            'Device';
+
+        if (vendor && model && !model.toLowerCase().includes(vendor.toLowerCase()))
+            return `${vendor} ${model}`;
+
+        return model || vendor || fallback;
+    }
+
+    _dedupeDevices(devices) {
+        const seen = new Set();
+        const unique = [];
+
+        for (const device of devices) {
+            const key = `${device.name.toLowerCase()}:${Math.round(device.percentage)}`;
+            if (seen.has(key))
+                continue;
+
+            seen.add(key);
+            unique.push(device);
+        }
+
+        unique.sort((a, b) =>
+            a.name.localeCompare(b.name) || a.source.localeCompare(b.source));
+
+        return unique;
     }
 
     _deviceName(device, path) {
@@ -138,7 +346,7 @@ class BluetoothBatteryIndicator extends PanelMenu.Button {
         const name = this._unpack(device.Name);
         const address = this._unpack(device.Address);
 
-        return alias || name || address || path.split('/').at(-1) || 'Bluetooth device';
+        return alias || name || address || this._lastPathPart(path) || 'Bluetooth device';
     }
 
     _unpack(value) {
@@ -148,6 +356,11 @@ class BluetoothBatteryIndicator extends PanelMenu.Button {
         return value;
     }
 
+    _lastPathPart(path) {
+        const parts = path.split('/').filter(part => part.length > 0);
+        return parts.length > 0 ? parts[parts.length - 1] : null;
+    }
+
     _applyDevices(devices) {
         this._devicesSection.removeAll();
         this._messageItem.label.text = '';
@@ -155,8 +368,8 @@ class BluetoothBatteryIndicator extends PanelMenu.Button {
         if (devices.length === 0) {
             this._icon.icon_name = 'battery-missing-symbolic';
             this._valueLabel.text = '--';
-            this._summaryItem.label.text = 'No connected Bluetooth battery devices';
-            this._devicesSection.addMenuItem(new PopupMenu.PopupMenuItem('No connected battery-reporting devices', {reactive: false}));
+            this._summaryItem.label.text = 'No connected device battery data';
+            this._devicesSection.addMenuItem(new PopupMenu.PopupMenuItem('No BlueZ or UPower battery devices', {reactive: false}));
             this._updatedItem.label.text = `Updated: ${this._timeText()}`;
             return;
         }
@@ -168,11 +381,12 @@ class BluetoothBatteryIndicator extends PanelMenu.Button {
         this._valueLabel.text = `${lowest.percentage}%`;
         this._summaryItem.label.text = devices.length === 1
             ? `${lowest.name}: ${lowest.percentage}%`
-            : `Bluetooth battery: ${lowest.percentage}% lowest`;
+            : `Device battery: ${lowest.percentage}% lowest`;
 
         for (const device of devices) {
+            const source = device.source ? ` (${device.source})` : '';
             const item = new PopupMenu.PopupMenuItem(
-                `${device.name}: ${device.percentage}%`,
+                `${device.name}: ${device.percentage}%${source}`,
                 {reactive: false}
             );
             this._devicesSection.addMenuItem(item);
@@ -195,8 +409,8 @@ class BluetoothBatteryIndicator extends PanelMenu.Button {
         this._devicesSection.removeAll();
         this._icon.icon_name = 'battery-missing-symbolic';
         this._valueLabel.text = 'ERR';
-        this._summaryItem.label.text = 'Bluetooth battery unavailable';
-        this._devicesSection.addMenuItem(new PopupMenu.PopupMenuItem('Unable to read BlueZ battery data', {reactive: false}));
+        this._summaryItem.label.text = 'Device battery unavailable';
+        this._devicesSection.addMenuItem(new PopupMenu.PopupMenuItem('Unable to read BlueZ or UPower battery data', {reactive: false}));
         this._updatedItem.label.text = `Updated: ${this._timeText()}`;
         this._messageItem.label.text = message;
     }

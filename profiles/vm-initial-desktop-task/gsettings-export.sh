@@ -60,7 +60,7 @@ gsettings set org.gnome.desktop.wm.preferences action-right-click-titlebar \'men
 gsettings set org.gnome.desktop.wm.preferences audible-bell true
 gsettings set org.gnome.desktop.wm.preferences auto-raise false
 gsettings set org.gnome.desktop.wm.preferences auto-raise-delay 500
-gsettings set org.gnome.desktop.wm.preferences button-layout \':close\,maximize\,minimize\'
+gsettings set org.gnome.desktop.wm.preferences button-layout \'close\,maximize\,minimize:\'
 gsettings set org.gnome.desktop.wm.preferences disable-workarounds false
 gsettings set org.gnome.desktop.wm.preferences focus-mode \'click\'
 gsettings set org.gnome.desktop.wm.preferences focus-new-windows \'smart\'

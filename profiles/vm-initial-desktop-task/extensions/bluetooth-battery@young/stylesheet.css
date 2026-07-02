@@ -1,3 +1,4 @@
 .bluetooth-battery-value {
   font-weight: 700;
+  min-width: 28px;
 }

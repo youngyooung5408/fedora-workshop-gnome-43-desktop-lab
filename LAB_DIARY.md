@@ -19,6 +19,46 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-02 18:12 JST - v 1.1.3 desktop minor fixes
+
+- Version label: v1.1.3-desktop-minor-fixes.
+- Task summary: continue the version 1.1 minor fixes for the tuned VM desktop profile.
+- Changed files:
+  - `TASK.md`
+  - `LAB_DIARY.md`
+  - `profiles/vm-initial-desktop-task/README.txt`
+  - `profiles/vm-initial-desktop-task/dconf-org-gnome.ini`
+  - `profiles/vm-initial-desktop-task/gsettings-export.sh`
+  - `profiles/vm-initial-desktop-task/extensions/bluetooth-battery@young/extension.js`
+  - `profiles/vm-initial-desktop-task/extensions/bluetooth-battery@young/stylesheet.css`
+  - `profiles/vm-initial-desktop-task/extensions/codex-usage@young/extension.js`
+- Desktop settings or profiles changed:
+  - Updated the tracked tuned profile `profiles/vm-initial-desktop-task`.
+  - Set `org.gnome.desktop.wm.preferences button-layout` to `close,maximize,minimize:` for top-left window buttons.
+  - Imported `profiles/vm-initial-desktop-task` into this VM desktop session with `./scripts/import-layout.sh`.
+  - Installed a clickable version launcher under `/home/sdafsaasd/versions/v1/v1.1/v1.1.3/`.
+- Features included:
+  - `bluetooth-battery@young` now reads external device battery levels from Fedora/UPower as well as BlueZ.
+  - UPower device types for mouse, keyboard, gaming input, touchpad, headset, speakers, headphones, remote control, and generic Bluetooth devices are included.
+  - The Codex usage icon keeps the outer 5-hour remaining ring.
+  - The weekly usage reservoir now fills the inner `C` glyph itself instead of filling only the circle behind it.
+  - Added `apply-v1.1.3.sh` and `Apply v1.1.3.desktop` so the VM can be switched to this version from `~/versions`.
+- Verification:
+  - `./scripts/import-layout.sh profiles/vm-initial-desktop-task` completed successfully.
+  - `./scripts/install-version-launcher.sh v1.1.3 profiles/vm-initial-desktop-task` completed successfully.
+  - `/home/sdafsaasd/versions/v1/v1.1/v1.1.3/apply-v1.1.3.sh < /dev/null` completed successfully.
+  - `gsettings get org.gnome.desktop.wm.preferences button-layout` returned `'close,maximize,minimize:'`.
+  - `gnome-extensions info bluetooth-battery@young` reported enabled and active.
+  - `gnome-extensions info codex-usage@young` reported enabled and active.
+  - `gnome-extensions pack --force --out-dir /tmp profiles/vm-initial-desktop-task/extensions/bluetooth-battery@young` completed successfully.
+  - `gnome-extensions pack --force --out-dir /tmp profiles/vm-initial-desktop-task/extensions/codex-usage@young` completed successfully.
+  - `./scripts/check-workflow.sh` completed successfully before commit with only the expected dirty worktree warning.
+  - `gjs -m` for both updated extension files parsed far enough to reach the expected GNOME Shell resource import limit outside GNOME Shell.
+- Known limits:
+  - `/home/sdafsaasd/task/v 1.1/v 1.1.3.md` was empty at the start of this work, so it was filled from the remaining concrete `v 1.1.2` minor-fix notes before implementation.
+  - Bluetooth or external device battery display still depends on Fedora exposing the device through UPower or BlueZ.
+  - GNOME Shell may need a logout and login before already-running panel extension instances show the updated drawing code.
+
 ### 2026-07-02 16:49 JST - v 1.1.2 Codex usage icon
 
 - Version label: v1.1.2-codex-usage-icon.

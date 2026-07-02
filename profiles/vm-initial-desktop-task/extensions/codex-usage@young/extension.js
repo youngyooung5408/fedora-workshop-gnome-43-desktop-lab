@@ -243,34 +243,39 @@ class CodexUsageIndicator extends PanelMenu.Button {
             cr.arc(centerX, centerY, innerRadius, 0, TAU);
             cr.fill();
 
-            cr.save();
-            cr.arc(centerX, centerY, innerRadius, 0, TAU);
-            cr.clip();
-            this._setSource(cr, weeklyColor, this._iconStale ? 0.70 : 0.95);
-            const fillHeight = innerRadius * 2 * (weekly / 100);
-            cr.rectangle(
-                centerX - innerRadius,
-                centerY + innerRadius - fillHeight,
-                innerRadius * 2,
-                fillHeight
-            );
-            cr.fill();
-            cr.restore();
-
             this._setSource(cr, ICON_COLORS.track, 0.58);
             cr.setLineWidth(1.0);
             cr.arc(centerX, centerY, innerRadius, 0, TAU);
             cr.stroke();
 
             cr.selectFontFace('Sans', Cairo.FontSlant.NORMAL, Cairo.FontWeight.BOLD);
-            cr.setFontSize(Math.max(10, size * 0.55));
-            const extents = cr.textExtents('C');
-            this._setSource(cr, ICON_COLORS.text, this._iconStale ? 0.78 : 0.95);
-            cr.moveTo(
-                centerX - (extents.width / 2) - extents.xBearing,
-                centerY - (extents.height / 2) - extents.yBearing
-            );
-            cr.showText('C');
+            cr.setFontSize(Math.max(11, size * 0.60));
+            const letter = 'C';
+            const extents = cr.textExtents(letter);
+            const textX = centerX - (extents.width / 2) - extents.xBearing;
+            const textY = centerY - (extents.height / 2) - extents.yBearing;
+            const glyphTop = textY + extents.yBearing;
+            const glyphHeight = Math.max(1, extents.height);
+
+            this._setSource(cr, ICON_COLORS.track, this._iconStale ? 0.52 : 0.68);
+            cr.moveTo(textX, textY);
+            cr.showText(letter);
+
+            if (this._weeklyPercent !== null && weekly > 0) {
+                const fillHeight = glyphHeight * (weekly / 100);
+                cr.save();
+                cr.rectangle(
+                    0,
+                    glyphTop + glyphHeight - fillHeight,
+                    width,
+                    fillHeight
+                );
+                cr.clip();
+                this._setSource(cr, weeklyColor, this._iconStale ? 0.72 : 0.98);
+                cr.moveTo(textX, textY);
+                cr.showText(letter);
+                cr.restore();
+            }
         } finally {
             cr.$dispose();
         }

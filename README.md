@@ -29,6 +29,7 @@ So this project moves settings between host and VM for you.
 - `scripts/import-layout.sh` — load a dumped layout onto the current machine/VM
 - `scripts/export-current-layout.sh` — export the current machine/VM layout to a chosen folder
 - `scripts/apply-to-host.sh` — apply a chosen dump back onto the host
+- `scripts/check-workflow.sh` — verify workflow documents, scripts, tracked profiles, and extension bundles
 - `profiles/host-current/` — current exported host snapshot
 - `profiles/vm-initial-desktop-task/` — tracked tuned profile for the first desktop customization task
 - `notes.md` — keep/reject/maybe notes while testing in the VM
@@ -39,7 +40,10 @@ This workflow is meant to survive across Codex conversations.
 
 1. User updates `TASK.md` with the desired desktop changes, feature ideas, constraints, and anything that must not change.
 2. Codex reads `TASK.md`, inspects the current VM/lab state, and makes the requested desktop layout or lab file changes.
-3. Codex verifies the result as far as possible inside the VM.
+3. Codex runs the acceptance checks listed in `TASK.md` and the workflow verifier:
+   ```bash
+   ./scripts/check-workflow.sh
+   ```
 4. Codex updates `LAB_DIARY.md` with the new version entry:
    - version label
    - task summary

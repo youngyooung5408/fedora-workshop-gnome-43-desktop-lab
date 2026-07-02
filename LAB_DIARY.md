@@ -19,6 +19,23 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-02 16:41 JST - Workflow verifier
+
+- Version label: workflow-verifier.
+- Task summary: check and harden the repeatable Codex lab workflow for future desktop customization fixes.
+- Changed files:
+  - `README.md`
+  - `LAB_DIARY.md`
+  - `scripts/check-workflow.sh`
+- Features included:
+  - Added a workflow verifier command for required workflow documents, script syntax, tracked profile structure, supported `gsettings` keys, extension metadata compatibility, and extension bundle packing.
+  - Documented `./scripts/check-workflow.sh` as the standard verification gate before each lab version diary update and commit.
+- Verification:
+  - `./scripts/check-workflow.sh` completed successfully.
+  - The only warning was the expected dirty worktree warning before this version was committed.
+- Known limits:
+  - The verifier checks committed lab files and tracked profiles; ignored ad hoc exports under `profiles/` remain disposable snapshots and should be regenerated when stale.
+
 ### 2026-07-01 18:52 JST - Initial desktop task tuned profile
 
 - Version label: initial-desktop-task-tuned-profile.

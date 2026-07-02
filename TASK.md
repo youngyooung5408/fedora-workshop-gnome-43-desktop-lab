@@ -5,13 +5,18 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Current request
 
-- Create the first tuned VM desktop profile from the initial desktop setup notes in `/home/sdafsaasd/task.md`.
+- Version `v 1.1.2`: improve the `codex-usage@young` top-panel icon.
+- Add a clickable VM version launcher for `v1.1.2` under `/home/sdafsaasd/versions/v1/v1.1/v1.1.2/`.
+- Source task file: `/home/sdafsaasd/task/v 1.1/v 1.1.2.md`.
+- Note: the source task file currently contains only an empty Markdown heading, so this version implements the remaining concrete Codex usage icon request from `/home/sdafsaasd/task/v 1.1/v 1.1.1.md`.
 
 ## Desired features
 
-- Add a GNOME top-panel indicator for Bluetooth device battery status.
-- Track connected Bluetooth devices that expose a battery percentage, especially a Logitech G703 mouse and a Keychron keyboard.
-- Put GNOME window controls at the upper right in this order: close, maximize/restore, minimize.
+- Keep the existing Codex usage percentage text in the GNOME top panel.
+- Replace the plain `C` label with a drawn usage icon.
+- Show the 5-hour usage window as an outer circular remaining-usage ring.
+- Show the weekly usage window as the inner `C` reservoir fill.
+- Create an executable script and clickable GNOME launcher that import the `v1.1.2` profile snapshot.
 
 ## Constraints
 
@@ -19,22 +24,27 @@ Codex should read this file at the start of each desktop customization task.
 - Avoid destructive changes unless explicitly requested.
 - Use Git for every completed lab version.
 - Update `LAB_DIARY.md` for every committed version.
-- The Codex sandbox cannot write live GNOME dconf settings directly, so create a tuned profile that can be imported from a normal desktop session.
+- Keep this as an importable tuned profile change; do not write live GNOME dconf settings directly.
 
 ## Must not change
 
 - Do not alter unrelated GNOME app favorites or app grid layout.
 - Do not remove existing GNOME extensions from the profile.
+- Do not remove the existing Bluetooth battery indicator or window button layout changes.
 
 ## Acceptance checks
 
-- Tuned profile includes `org.gnome.desktop.wm.preferences button-layout` set to `:close,maximize,minimize`.
-- Tuned profile enables `bluetooth-battery@young`.
-- Tuned profile contains the `bluetooth-battery@young` extension files.
-- Extension bundle packs successfully with `gnome-extensions pack --force`.
-- Tuned profile `gsettings-export.sh` is valid Bash syntax.
+- `codex-usage@young` uses a drawn panel icon instead of the previous plain `C` label.
+- The icon drawing code uses the 5-hour remaining percent for the outer ring.
+- The icon drawing code uses the weekly remaining percent for the inner `C` reservoir fill.
+- Importing `profiles/vm-initial-desktop-task` with `./scripts/import-layout.sh` completes.
+- `/home/sdafsaasd/versions/v1/v1.1/v1.1.2/apply-v1.1.2.sh` exists and is executable.
+- `/home/sdafsaasd/versions/v1/v1.1/v1.1.2/Apply v1.1.2.desktop` exists and is executable.
+- The `v1.1.2` version launcher stores a `profile/` snapshot with `gsettings-export.sh`.
+- `codex-usage@young` extension bundle packs successfully with `gnome-extensions pack --force`.
+- `./scripts/check-workflow.sh` completes successfully.
 
 ## Notes for host apply
 
 - Import `profiles/vm-initial-desktop-task` with `./scripts/import-layout.sh profiles/vm-initial-desktop-task`.
-- Log out and back in after import if GNOME Shell does not immediately load the new extension or window button order.
+- Log out and back in after import if GNOME Shell does not immediately reload the updated top-panel extension.

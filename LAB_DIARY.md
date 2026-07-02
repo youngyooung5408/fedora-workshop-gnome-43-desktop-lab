@@ -19,6 +19,40 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-02 16:49 JST - v 1.1.2 Codex usage icon
+
+- Version label: v1.1.2-codex-usage-icon.
+- Task summary: improve the Codex usage panel icon for the next version 1.1 minor fix.
+- Changed files:
+  - `README.md`
+  - `TASK.md`
+  - `LAB_DIARY.md`
+  - `notes.md`
+  - `profiles/vm-initial-desktop-task/README.txt`
+  - `profiles/vm-initial-desktop-task/extensions/codex-usage@young/extension.js`
+  - `profiles/vm-initial-desktop-task/extensions/codex-usage@young/stylesheet.css`
+  - `scripts/install-version-launcher.sh`
+- Desktop settings or profiles changed:
+  - Updated the tracked tuned profile `profiles/vm-initial-desktop-task`.
+  - Imported `profiles/vm-initial-desktop-task` into this VM desktop session with `./scripts/import-layout.sh`.
+  - Installed a clickable version launcher under `/home/sdafsaasd/versions/v1/v1.1/v1.1.2/`.
+- Features included:
+  - Replaced the plain `C` label in `codex-usage@young` with a drawn panel icon.
+  - The outer icon ring represents 5-hour remaining usage.
+  - The inner `C` reservoir fill represents weekly remaining usage.
+  - Kept the adjacent remaining-percent text and existing menu details.
+  - Added `apply-v1.1.2.sh` and `Apply v1.1.2.desktop` so the VM can be switched to this version from `~/versions`.
+- Verification:
+  - `./scripts/import-layout.sh profiles/vm-initial-desktop-task` completed successfully.
+  - `./scripts/install-version-launcher.sh v1.1.2 profiles/vm-initial-desktop-task` completed successfully.
+  - `/home/sdafsaasd/versions/v1/v1.1/v1.1.2/apply-v1.1.2.sh < /dev/null` completed successfully.
+  - `gnome-extensions pack --force --out-dir /tmp profiles/vm-initial-desktop-task/extensions/codex-usage@young` completed successfully.
+  - `./scripts/check-workflow.sh` completed successfully before commit with only the expected dirty worktree warning.
+  - `gjs -m profiles/vm-initial-desktop-task/extensions/codex-usage@young/extension.js` parsed far enough to reach the expected GNOME Shell resource import limit outside GNOME Shell.
+- Known limits:
+  - `/home/sdafsaasd/task/v 1.1/v 1.1.2.md` currently contains only an empty Markdown heading, so this version uses the remaining concrete Codex icon request from `v 1.1.1.md`.
+  - The icon could not be visually inspected inside a live GNOME Shell session from the sandbox; it should be checked after importing the profile and logging back in.
+
 ### 2026-07-02 16:41 JST - Workflow verifier
 
 - Version label: workflow-verifier.

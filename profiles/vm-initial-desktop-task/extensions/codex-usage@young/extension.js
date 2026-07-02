@@ -1,3 +1,4 @@
+import Cairo from 'cairo';
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
@@ -10,6 +11,18 @@ import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
 const REFRESH_INTERVAL_SECONDS = 300;
+const ICON_SIZE = 24;
+const TAU = Math.PI * 2;
+
+const ICON_COLORS = {
+    high: [0.20, 0.83, 0.60],
+    medium: [0.96, 0.62, 0.04],
+    low: [0.94, 0.27, 0.27],
+    stale: [0.61, 0.64, 0.69],
+    track: [0.45, 0.49, 0.56],
+    background: [0.06, 0.08, 0.11],
+    text: [0.98, 0.99, 1.00],
+};
 
 const CodexUsageIndicator = GObject.registerClass(
 class CodexUsageIndicator extends PanelMenu.Button {
@@ -21,24 +34,29 @@ class CodexUsageIndicator extends PanelMenu.Button {
         this._timeoutId = null;
         this._refreshInFlight = false;
         this._lastStatus = null;
+        this._fiveHourPercent = null;
+        this._weeklyPercent = null;
+        this._iconStale = true;
 
         const box = new St.BoxLayout({
             style_class: 'panel-status-menu-box',
             y_align: Clutter.ActorAlign.CENTER,
         });
 
-        this._iconLabel = new St.Label({
-            text: 'C',
+        this._usageIcon = new St.DrawingArea({
             y_align: Clutter.ActorAlign.CENTER,
-            style: 'font-weight: 700; margin-right: 6px;',
+            style_class: 'codex-usage-icon',
         });
+        this._usageIcon.set_size(ICON_SIZE, ICON_SIZE);
+        this._usageIcon.connect('repaint', area => this._drawUsageIcon(area));
+
         this._valueLabel = new St.Label({
             text: '--',
             y_align: Clutter.ActorAlign.CENTER,
-            style: 'font-weight: 700;',
+            style_class: 'codex-usage-value',
         });
 
-        box.add_child(this._iconLabel);
+        box.add_child(this._usageIcon);
         box.add_child(this._valueLabel);
         this.add_child(box);
 
@@ -141,6 +159,7 @@ class CodexUsageIndicator extends PanelMenu.Button {
             : 'State: live';
         this._messageItem.label.text = `Plan: ${status.plan_type ?? '--'}`;
 
+        this._setIconPercents(fiveHour, weekly, stale);
         this._applySeverityStyle(status.severity, stale);
     }
 
@@ -155,11 +174,11 @@ class CodexUsageIndicator extends PanelMenu.Button {
                 color = '#ef4444';
         }
 
-        this._iconLabel.style = `font-weight: 700; margin-right: 6px; color: ${color};`;
         this._valueLabel.style = `font-weight: 700; color: ${color};`;
     }
 
     _setError(message) {
+        this._setIconPercents(null, null, true);
         this._valueLabel.text = 'ERR';
         this._summaryItem.label.text = 'Codex usage unavailable';
         this._fiveHourItem.label.text = '5h left: --';
@@ -172,6 +191,103 @@ class CodexUsageIndicator extends PanelMenu.Button {
         this._staleItem.label.text = 'State: error';
         this._messageItem.label.text = message;
         this._applySeverityStyle('low', true);
+    }
+
+    _setIconPercents(fiveHourPercent, weeklyPercent, stale) {
+        this._fiveHourPercent = this._clampPercent(fiveHourPercent);
+        this._weeklyPercent = this._clampPercent(weeklyPercent);
+        this._iconStale = stale;
+        this._usageIcon.queue_repaint();
+    }
+
+    _clampPercent(value) {
+        if (value === null || value === undefined || Number.isNaN(Number(value)))
+            return null;
+
+        return Math.max(0, Math.min(100, Number(value)));
+    }
+
+    _drawUsageIcon(area) {
+        const [width, height] = area.get_surface_size();
+        const cr = area.get_context();
+
+        try {
+            const size = Math.max(1, Math.min(width, height));
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const fiveHour = this._fiveHourPercent ?? 0;
+            const weekly = this._weeklyPercent ?? 0;
+            const fiveHourColor = this._colorForPercent(fiveHour);
+            const weeklyColor = this._colorForPercent(weekly);
+            const outerRadius = Math.max(2, (size / 2) - 2);
+            const innerRadius = Math.max(2, outerRadius - 5);
+
+            cr.setLineWidth(2.4);
+            this._setSource(cr, ICON_COLORS.track, 0.42);
+            cr.arc(centerX, centerY, outerRadius, 0, TAU);
+            cr.stroke();
+
+            if (this._fiveHourPercent !== null) {
+                this._setSource(cr, fiveHourColor, this._iconStale ? 0.70 : 1.0);
+                cr.arc(
+                    centerX,
+                    centerY,
+                    outerRadius,
+                    -Math.PI / 2,
+                    (-Math.PI / 2) + (TAU * (fiveHour / 100))
+                );
+                cr.stroke();
+            }
+
+            this._setSource(cr, ICON_COLORS.background, 0.90);
+            cr.arc(centerX, centerY, innerRadius, 0, TAU);
+            cr.fill();
+
+            cr.save();
+            cr.arc(centerX, centerY, innerRadius, 0, TAU);
+            cr.clip();
+            this._setSource(cr, weeklyColor, this._iconStale ? 0.70 : 0.95);
+            const fillHeight = innerRadius * 2 * (weekly / 100);
+            cr.rectangle(
+                centerX - innerRadius,
+                centerY + innerRadius - fillHeight,
+                innerRadius * 2,
+                fillHeight
+            );
+            cr.fill();
+            cr.restore();
+
+            this._setSource(cr, ICON_COLORS.track, 0.58);
+            cr.setLineWidth(1.0);
+            cr.arc(centerX, centerY, innerRadius, 0, TAU);
+            cr.stroke();
+
+            cr.selectFontFace('Sans', Cairo.FontSlant.NORMAL, Cairo.FontWeight.BOLD);
+            cr.setFontSize(Math.max(10, size * 0.55));
+            const extents = cr.textExtents('C');
+            this._setSource(cr, ICON_COLORS.text, this._iconStale ? 0.78 : 0.95);
+            cr.moveTo(
+                centerX - (extents.width / 2) - extents.xBearing,
+                centerY - (extents.height / 2) - extents.yBearing
+            );
+            cr.showText('C');
+        } finally {
+            cr.$dispose();
+        }
+    }
+
+    _colorForPercent(percent) {
+        if (this._iconStale)
+            return ICON_COLORS.stale;
+        if (percent <= 20)
+            return ICON_COLORS.low;
+        if (percent <= 50)
+            return ICON_COLORS.medium;
+        return ICON_COLORS.high;
+    }
+
+    _setSource(cr, color, alpha) {
+        cr.setSourceRGBA(color[0], color[1], color[2], alpha);
     }
 
     destroy() {

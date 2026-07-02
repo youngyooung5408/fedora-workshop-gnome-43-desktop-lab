@@ -50,14 +50,7 @@ class CodexUsageIndicator extends PanelMenu.Button {
         this._usageIcon.set_size(ICON_SIZE, ICON_SIZE);
         this._usageIcon.connect('repaint', area => this._drawUsageIcon(area));
 
-        this._valueLabel = new St.Label({
-            text: '--',
-            y_align: Clutter.ActorAlign.CENTER,
-            style_class: 'codex-usage-value',
-        });
-
         box.add_child(this._usageIcon);
-        box.add_child(this._valueLabel);
         this.add_child(box);
 
         this._summaryItem = new PopupMenu.PopupMenuItem('Loading…', {reactive: false});
@@ -143,7 +136,6 @@ class CodexUsageIndicator extends PanelMenu.Button {
         const minimum = Math.min(fiveHour, weekly);
         const stale = Boolean(status.stale);
 
-        this._valueLabel.text = stale ? `${minimum}%?` : `${minimum}%`;
         this._summaryItem.label.text = stale
             ? `Codex remaining ${minimum}% (stale)`
             : `Codex remaining ${minimum}%`;
@@ -160,26 +152,10 @@ class CodexUsageIndicator extends PanelMenu.Button {
         this._messageItem.label.text = `Plan: ${status.plan_type ?? '--'}`;
 
         this._setIconPercents(fiveHour, weekly, stale);
-        this._applySeverityStyle(status.severity, stale);
-    }
-
-    _applySeverityStyle(severity, stale) {
-        let color = '#9ca3af';
-        if (!stale) {
-            if (severity === 'high')
-                color = '#34d399';
-            else if (severity === 'medium')
-                color = '#f59e0b';
-            else if (severity === 'low')
-                color = '#ef4444';
-        }
-
-        this._valueLabel.style = `font-weight: 700; color: ${color};`;
     }
 
     _setError(message) {
         this._setIconPercents(null, null, true);
-        this._valueLabel.text = 'ERR';
         this._summaryItem.label.text = 'Codex usage unavailable';
         this._fiveHourItem.label.text = '5h left: --';
         this._weeklyItem.label.text = 'Week left: --';
@@ -190,7 +166,6 @@ class CodexUsageIndicator extends PanelMenu.Button {
         this._updatedItem.label.text = 'Updated: --';
         this._staleItem.label.text = 'State: error';
         this._messageItem.label.text = message;
-        this._applySeverityStyle('low', true);
     }
 
     _setIconPercents(fiveHourPercent, weeklyPercent, stale) {

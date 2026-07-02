@@ -19,6 +19,46 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-02 18:31 JST - v 1.1.4 usage icon cleanup
+
+- Version label: v1.1.4-usage-icon-cleanup.
+- Task summary: finish the version 1.1 minor fixes by accepting the current Bluetooth and window-button behavior, then remove the numeric Codex usage percentage text from the top panel.
+- Changed files:
+  - `TASK.md`
+  - `LAB_DIARY.md`
+  - `notes.md`
+  - `profiles/vm-initial-desktop-task/README.txt`
+  - `profiles/vm-initial-desktop-task/extensions/codex-usage@young/extension.js`
+  - `profiles/vm-initial-desktop-task/extensions/codex-usage@young/stylesheet.css`
+- Desktop settings or profiles changed:
+  - Updated the tracked tuned profile `profiles/vm-initial-desktop-task`.
+  - Kept `org.gnome.desktop.wm.preferences button-layout` as `close,maximize,minimize:` for top-left window buttons.
+  - Kept `bluetooth-battery@young` enabled with the current BlueZ and UPower battery support.
+  - Imported `profiles/vm-initial-desktop-task` into this VM desktop session with `./scripts/import-layout.sh`.
+  - Installed a clickable version launcher under `/home/sdafsaasd/versions/v1/v1.1/v1.1.4/`.
+- Features included:
+  - Removed the adjacent numeric percentage label from the `codex-usage@young` top-panel indicator.
+  - Kept the Codex usage icon as the only top-panel actor for the indicator.
+  - Kept the outer 5-hour remaining ring and weekly inner `C` reservoir.
+  - Kept detailed 5-hour, weekly, reset, credits, source, and stale-state values in the indicator menu.
+  - Added `apply-v1.1.4.sh` and `Apply v1.1.4.desktop` so the VM can be switched to this version from `~/versions`.
+- Verification:
+  - `./scripts/import-layout.sh profiles/vm-initial-desktop-task` completed successfully.
+  - `./scripts/install-version-launcher.sh v1.1.4 profiles/vm-initial-desktop-task` completed successfully.
+  - `/home/sdafsaasd/versions/v1/v1.1/v1.1.4/apply-v1.1.4.sh < /dev/null` completed successfully.
+  - `gsettings get org.gnome.desktop.wm.preferences button-layout` returned `'close,maximize,minimize:'`.
+  - `gnome-extensions info bluetooth-battery@young` reported enabled and active.
+  - `gnome-extensions info codex-usage@young` reported enabled and active.
+  - `gnome-extensions pack --force --out-dir /tmp profiles/vm-initial-desktop-task/extensions/bluetooth-battery@young` completed successfully.
+  - `gnome-extensions pack --force --out-dir /tmp profiles/vm-initial-desktop-task/extensions/codex-usage@young` completed successfully.
+  - `./scripts/check-workflow.sh` completed successfully before commit with only the expected dirty worktree warning.
+  - `gjs -m` for both extension files reached the expected GNOME Shell resource import limit outside GNOME Shell.
+  - `rg` found no `_valueLabel`, `codex-usage-value`, or value-label child references in the tracked profile or `v1.1.4` launcher snapshot.
+- Known limits:
+  - The completed source task note was found at `/home/sdafsaasd/task/v 1.2/v 1.1.4.md`; `/home/sdafsaasd/task/v 1.1/v 1.1.4.md` was empty.
+  - Bluetooth or external device battery display still depends on Fedora exposing the device through UPower or BlueZ.
+  - GNOME Shell may need a logout and login before already-running panel extension instances show the updated top-panel indicator.
+
 ### 2026-07-02 18:12 JST - v 1.1.3 desktop minor fixes
 
 - Version label: v1.1.3-desktop-minor-fixes.

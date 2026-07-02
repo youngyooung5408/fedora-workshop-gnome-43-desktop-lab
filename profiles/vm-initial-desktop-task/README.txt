@@ -3,7 +3,9 @@ This folder is a GNOME layout snapshot exported from the source machine.
 Profile changes in this tuned lab version:
 - Window controls are placed on the left as close, maximize/restore, minimize.
 - The bluetooth-battery@young panel extension is included and enabled, with BlueZ and UPower battery sources.
-- The codex-usage@young panel extension uses an outer 5-hour usage ring and fills the inner C glyph with weekly remaining usage.
+- The codex-usage@young panel extension uses only an icon in the top panel.
+- The Codex usage icon uses an outer 5-hour usage ring and fills the inner C glyph with weekly remaining usage.
+- Detailed Codex percentages remain available from the indicator menu.
 
 Files:
 - gsettings-export.sh : replayable GNOME settings commands

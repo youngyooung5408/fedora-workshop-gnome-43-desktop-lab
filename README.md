@@ -29,8 +29,8 @@ So this project moves settings between host and VM for you.
 - `scripts/import-layout.sh` — load a dumped layout onto the current machine/VM
 - `scripts/export-current-layout.sh` — export the current machine/VM layout to a chosen folder
 - `scripts/apply-to-host.sh` — apply a chosen dump back onto the host
-- `scripts/check-workflow.sh` — verify workflow documents, scripts, tracked profiles, and extension bundles
-- `scripts/install-version-launcher.sh` — create clickable `~/versions/vA/vA.B/vA.B.C/` launchers
+- `scripts/check-workflow.sh` — verify workflow documents, scripts, tracked profiles, project-local versions, and extension bundles
+- `scripts/install-version-launcher.sh` — create clickable `versions/vA/vA.B/vA.B.C/` launchers
 - `profiles/host-current/` — current exported host snapshot
 - `profiles/vm-initial-desktop-task/` — tracked tuned profile for the first desktop customization task
 - `notes.md` — keep/reject/maybe notes while testing in the VM
@@ -45,7 +45,7 @@ This workflow is meant to survive across Codex conversations.
    ```bash
    ./scripts/import-layout.sh profiles/vm-initial-desktop-task
    ```
-4. Codex installs or updates the clickable version launcher:
+4. Codex installs or updates the project-local clickable version launcher:
    ```bash
    ./scripts/install-version-launcher.sh v1.1.2 profiles/vm-initial-desktop-task
    ```
@@ -61,7 +61,7 @@ This workflow is meant to survive across Codex conversations.
    - verification result
    - known limits or follow-up items
 7. Codex commits the changed lab files to Git.
-8. Codex reports the version label, commit hash, changed files, import result, launcher path, and verification result back to the user.
+8. Codex reports the version label, commit hash, changed files, import result, project-local launcher path, and verification result back to the user.
 
 A lab version is one Git commit on `main`.
 The Git history is the exact record; `LAB_DIARY.md` is the readable summary for checking from this VM or from the host.
@@ -74,20 +74,21 @@ Use Git for exact file history and `LAB_DIARY.md` for a readable summary of tota
 
 The `profiles/` exports are ignored by default except for `profiles/.gitkeep`, because exported desktop profiles can be machine-specific snapshots.
 Record important profile exports in `LAB_DIARY.md` when they matter.
+Curated version launcher snapshots under `versions/` are tracked so each saved VM lab version travels with the repo.
 
 ## Version Launchers
 
-Clickable VM layout version launchers live outside the Git repo under `~/versions`.
+Clickable VM layout version launchers live inside this Git repo under `versions/`.
 The hierarchy is:
 
 ```text
-~/versions/vA/vA.B/vA.B.C/
+versions/vA/vA.B/vA.B.C/
 ```
 
 For example, version `v1.1.2` is installed at:
 
 ```text
-/home/sdafsaasd/versions/v1/v1.1/v1.1.2/
+/home/sdafsaasd/Downloads/gnome-layout-sync-lab/versions/v1/v1.1/v1.1.2/
 ```
 
 Each version folder contains:

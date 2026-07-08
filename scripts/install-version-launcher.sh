@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 VERSION="${1:-v1.1.2}"
 PROFILE_ARG="${2:-profiles/vm-initial-desktop-task}"
-VERSIONS_ROOT="${VERSIONS_ROOT:-$HOME/versions}"
+VERSIONS_ROOT="${VERSIONS_ROOT:-$ROOT/versions}"
 
 if [[ "$VERSION" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
   MAJOR="v${BASH_REMATCH[1]}"
@@ -49,8 +49,14 @@ cat > "$APPLY_SCRIPT" <<EOF
 #!/usr/bin/env bash
 set -euo pipefail
 
-LAB_ROOT="$ROOT"
-PROFILE_DIR="$SNAPSHOT_DIR"
+SCRIPT_DIR="\$(cd "\$(dirname "\$0")" && pwd)"
+DEFAULT_LAB_ROOT="\$(cd "\$SCRIPT_DIR/../../../.." && pwd)"
+if [ -x "\$DEFAULT_LAB_ROOT/scripts/import-layout.sh" ]; then
+  LAB_ROOT="\$DEFAULT_LAB_ROOT"
+else
+  LAB_ROOT="$ROOT"
+fi
+PROFILE_DIR="\$SCRIPT_DIR/profile"
 VERSION="$PATCH"
 
 echo "Applying GNOME layout lab version \$VERSION"

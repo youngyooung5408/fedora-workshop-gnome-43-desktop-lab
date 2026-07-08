@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Apply GNOME Lab v1.1.4
+Comment=Import GNOME layout lab version v1.1.4
+Exec=ptyxis -- /home/sdafsaasd/Downloads/gnome-layout-sync-lab/versions/v1/v1.1/v1.1.4/apply-v1.1.4.sh
+Icon=preferences-desktop-theme
+Terminal=false
+Categories=Utility;

@@ -202,6 +202,61 @@ PY
   fi
 }
 
+validate_version_launcher() {
+  local version_dir="$1"
+  local version
+  local apply_script
+  local desktop_file
+  local profile_dir
+
+  version="$(basename "$version_dir")"
+  apply_script="$version_dir/apply-$version.sh"
+  desktop_file="$version_dir/Apply $version.desktop"
+  profile_dir="$version_dir/profile"
+
+  require_file "$apply_script"
+  require_file "$desktop_file"
+  require_file "$profile_dir/gsettings-export.sh"
+
+  if [ -f "$apply_script" ]; then
+    if [ -x "$apply_script" ]; then
+      pass "$apply_script is executable"
+    else
+      fail "$apply_script is not executable"
+    fi
+
+    if bash -n "$apply_script"; then
+      pass "$apply_script has valid Bash syntax"
+    else
+      fail "$apply_script has invalid Bash syntax"
+    fi
+  fi
+
+  if [ -f "$desktop_file" ]; then
+    if [ -x "$desktop_file" ]; then
+      pass "$desktop_file is executable"
+    else
+      fail "$desktop_file is not executable"
+    fi
+
+    if command -v desktop-file-validate >/dev/null 2>&1; then
+      if desktop-file-validate "$desktop_file"; then
+        pass "$desktop_file is valid"
+      else
+        fail "$desktop_file is invalid"
+      fi
+    else
+      warn "desktop-file-validate is not installed; skipped $desktop_file"
+    fi
+  fi
+
+  if rg -q '(/home/sdafsaasd/versions|\$HOME/versions|~/versions)' "$version_dir"; then
+    fail "$version_dir references the old home-level versions path"
+  else
+    pass "$version_dir uses project-local version paths"
+  fi
+}
+
 printf 'Checking GNOME layout sync lab workflow...\n'
 
 git_available=0
@@ -287,6 +342,22 @@ for profile in "${profile_dirs[@]}"; do
   else
     warn "$profile has no extensions directory"
   fi
+done
+
+if [ -d versions ]; then
+  mapfile -t version_dirs < <(find versions -mindepth 3 -maxdepth 3 -type d -name 'v*.*.*' | sort)
+else
+  version_dirs=()
+fi
+
+if [ "${#version_dirs[@]}" -eq 0 ]; then
+  fail "no project-local version launcher directories found"
+else
+  pass "found ${#version_dirs[@]} project-local version launcher directories"
+fi
+
+for version_dir in "${version_dirs[@]}"; do
+  validate_version_launcher "$version_dir"
 done
 
 if [ "$git_available" -eq 1 ]; then

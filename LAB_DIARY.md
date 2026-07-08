@@ -19,6 +19,32 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-08 15:03 CST - Project-local workflow folders
+
+- Version label: project-local-workflow-folders.
+- Task summary: update the VM lab workflow after `AGENTS.md`, `task/`, and `versions/` were moved into the project folder.
+- Changed files:
+  - `AGENTS.md`
+  - `README.md`
+  - `TASK.md`
+  - `LAB_DIARY.md`
+  - `scripts/check-workflow.sh`
+  - `scripts/install-version-launcher.sh`
+  - `task/`
+  - `versions/`
+- Desktop settings or profiles changed:
+  - No live GNOME settings were changed.
+  - Existing saved launcher snapshots under `versions/v1/v1.1/` were kept with their own `profile/` directories.
+- Features included:
+  - `scripts/install-version-launcher.sh` now defaults to the repo-local `versions/` directory.
+  - Existing `v1.1.2`, `v1.1.3`, and `v1.1.4` apply scripts resolve their snapshot profile from their own launcher folder.
+  - Existing `.desktop` launchers now point at the project-local launcher scripts.
+  - `scripts/check-workflow.sh` now validates project-local version launchers and fails if they reference the old `/home/sdafsaasd/versions` path.
+- Verification:
+  - `./scripts/check-workflow.sh` completed successfully with only the expected dirty worktree warning before commit.
+- Known limits:
+  - The `.desktop` launcher `Exec=` paths are absolute to the current project location; regenerate launchers with `./scripts/install-version-launcher.sh` if the repo is moved again and double-click launching is needed from the new path.
+
 ### 2026-07-02 18:31 JST - v 1.1.4 usage icon cleanup
 
 - Version label: v1.1.4-usage-icon-cleanup.

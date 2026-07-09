@@ -19,6 +19,61 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-09 16:45 CST - v 1.2.4 interactive dock and reliable data pass
+
+- Version label: v1.2.4-interactive-dock-and-reliable-data-pass.
+- Task summary: finish the version 1.2.4 task note by simplifying the clock, making the left dock more Mac-like and interactive, turning app clusters into usable folder flyouts, repairing market data with a working API source, improving market texture, and making the rest screen use GNOME Shell idle detection when available.
+- Changed files:
+  - `TASK.md`
+  - `LAB_DIARY.md`
+  - `aesthetic preference.md`
+  - `scripts/check-workflow.sh`
+  - `task/v 1.2/v 1.2.4.md`
+  - `profiles/vm-initial-desktop-task/README.txt`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/extension.js`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/metadata.json`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/stylesheet.css`
+  - `versions/v1/v1.2/v1.2.4/`
+- Desktop settings or profiles changed:
+  - Updated the tracked tuned profile `profiles/vm-initial-desktop-task`.
+  - Kept the v1.2.3 GNOME behavior: solid black desktop background, empty GNOME favorite-apps, 30-minute idle trigger, disabled idle dimming, disabled selected break reminders, and inactive sleep set to `nothing`.
+  - Imported `profiles/vm-initial-desktop-task` into this VM desktop session.
+  - Installed the project-local `v1.2.4` launcher snapshot from the tuned profile.
+  - Applied the saved `v1.2.4` launcher snapshot with `versions/v1/v1.2/v1.2.4/apply-v1.2.4.sh < /dev/null`.
+- Features included:
+  - Added durable aesthetic preferences for very simple clocks, Mac-like dock interaction, folder-style app clusters, textured API-backed data panels, and reliable idle detection.
+  - Increased the wall clock from 132px to 198px, removed the minute tick scale, and changed the date label to month and year only.
+  - Added dock hover magnification and smoother expanded dock behavior.
+  - Added folder flyouts for the writing, coding, web, system, and apps clusters so app groups are interactive instead of only labeled sections.
+  - Added application ID fallbacks for common GNOME/Fedora app names so dock launch actions have a better chance to work across VM images.
+  - Switched market data from the unavailable Stooq CSV endpoint to the Yahoo chart JSON endpoint and showed the API provider in the panel.
+  - Refined dock, folder, and market styling with restrained translucent gradients, stronger texture, cleaner borders, and calmer spacing.
+  - Changed the rest screen to use GNOME Shell's core idle monitor when available, while keeping the event/timer fallback path.
+  - Updated workflow verifier checks for the v1.2.4 task, aesthetic preferences, simplified clock, dock folders, Yahoo market API, Shell idle monitor use, and v1.2.4 launcher snapshot.
+- Verification:
+  - `bash -n scripts/check-workflow.sh` completed successfully.
+  - `git diff --check` completed successfully.
+  - `gnome-extensions pack --force --out-dir /tmp profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young` completed successfully.
+  - The Yahoo chart API test returned values for SPY, QQQ, NVDA, and AAPL.
+  - `./scripts/import-layout.sh profiles/vm-initial-desktop-task` completed successfully.
+  - `./scripts/install-version-launcher.sh v1.2.4 profiles/vm-initial-desktop-task` completed successfully.
+  - `versions/v1/v1.2/v1.2.4/apply-v1.2.4.sh < /dev/null` completed successfully.
+  - `gnome-extensions disable desktop-lab-v12@young && gnome-extensions enable desktop-lab-v12@young` completed successfully, and `gnome-extensions info desktop-lab-v12@young` reported `State: ACTIVE`.
+  - The installed metadata file at `~/.local/share/gnome-shell/extensions/desktop-lab-v12@young/metadata.json` contains the v1.2.4 description.
+  - `journalctl --user -b` showed no `desktop-lab-v12` JavaScript errors after the extension was toggled.
+  - `./scripts/check-workflow.sh` completed successfully with only the expected dirty worktree warning before commit.
+  - `gsettings get org.gnome.desktop.background picture-options` returned `'none'`.
+  - `gsettings get org.gnome.desktop.background primary-color` and `secondary-color` returned `'#000000'`.
+  - `gsettings get org.gnome.shell favorite-apps` returned `@as []`.
+  - `gsettings get org.gnome.desktop.session idle-delay` returned `uint32 1800`.
+  - `gsettings get org.gnome.settings-daemon.plugins.power idle-dim` returned `false`.
+- Known limits:
+  - Actual drag-and-drop creation of GNOME overview app-grid folders is not changed in this version because the overview app grid uses private GNOME Shell internals that are not stable extension APIs. This version fixes the app-cluster workflow by adding dock folder flyouts instead.
+  - The rest screen was verified by code path, extension reload, settings, and absence of Shell errors; this run did not wait unattended for 30 minutes in real time.
+  - Market values depend on the public Yahoo chart endpoint and fall back to `--` with an API-offline status if the endpoint is unavailable.
+  - `gnome-extensions info desktop-lab-v12@young` still showed cached old description text after reload, but the installed metadata file, tracked profile, and `v1.2.4` launcher snapshot all contain the v1.2.4 description.
+  - Log out and back in if GNOME Shell does not fully refresh the updated extension UI after applying the profile.
+
 ### 2026-07-09 16:26 CST - Aesthetic preference maintenance workflow
 
 - Version label: aesthetic-preference-maintenance-workflow.

@@ -12,6 +12,14 @@ When a task introduces a durable key desktop, UI, or interaction feature, add a 
 
 Keep durable preference notes focused on reusable direction. Do not add temporary implementation details that only matter to one task.
 
+## Durable Desktop Preferences
+
+- Desktop clocks should stay very simple: no minute tick scale, no dense markings, and date text limited to month and year unless a task asks for more detail.
+- Left-side docks should feel interactive in a Mac-like way, with smooth hover magnification, clear app grouping, and folder-style access to app clusters.
+- App clusters should behave like useful folders or flyouts, not only static labels.
+- Data panels, including market panels, should remain visible, API-backed when possible, and visually textured with restrained translucent surfaces.
+- Long-idle rest screens should use reliable system idle detection when GNOME Shell exposes it, with a timer fallback only when needed.
+
 # Apple Design Guidelines
 
 ## Philosophy

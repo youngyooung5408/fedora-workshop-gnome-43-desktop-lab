@@ -1,5 +1,11 @@
 # Workspace Workflow Notes
 
+## Aesthetic Direction
+
+- Read `aesthetic preference.md` before making desktop, UI, layout, or visual feature changes.
+- Treat `aesthetic preference.md` as the default visual source of truth unless a newer user instruction overrides it.
+- Keep future feature work aligned with the Apple-like aesthetic described there: calm, spacious, restrained, functional, and polished.
+
 ## Versioning
 
 - Read `task/version.md` before changing release or task version metadata.

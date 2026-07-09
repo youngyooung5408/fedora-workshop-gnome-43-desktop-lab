@@ -5,20 +5,25 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Current request
 
-- Workflow maintenance: make the moved `AGENTS.md`, `task/`, and `versions/` folders project-local.
-- Keep clickable VM version launchers under `versions/vA/vA.B/vA.B.C/` inside this repo.
-- Update the launcher installer, workflow verifier, and docs so they no longer depend on the old home-level versions directory.
-- Keep the existing `v1.1.2`, `v1.1.3`, and `v1.1.4` launcher snapshots importable from their project-local folders.
+- Version `v1.2.1`: start the next desktop lab profile from `task/v 1.2/v 1.2.1.md`.
+- Improve text-editing defaults for Markdown-heavy work.
+- Start a black desktop/background lab with glanceable data, including a clock and a market watchlist.
+- Add a left-side quick-launch dock with writing, coding, web, and system app clusters.
+- Hide battery percentage and make battery-icon hiding best-effort through the lab extension when GNOME Shell exposes a stable actor.
+- Add idle protection that keeps work running while dimming/blanking safely and showing a slow moving desktop marker.
 
 ## Desired features
 
 - Keep GNOME window controls on the top-left as close, maximize/restore, minimize.
 - Keep the Bluetooth battery panel indicator enabled with the current BlueZ and UPower support.
-- Remove the numeric Codex usage percentage text from the GNOME top panel.
-- Keep the 5-hour usage window as the outer circular remaining-usage ring.
-- Make the weekly usage window fill the inner `C` glyph itself as the reservoir.
-- Keep detailed Codex usage percentages available in the indicator menu.
-- Create an executable script and clickable GNOME launcher that import the `v1.1.4` profile snapshot.
+- Keep the Codex usage icon-only panel indicator and detailed menu from v1.1.4.
+- Set the desktop background to solid black as the base lab background.
+- Configure GNOME Text Editor for fast autosave, session restore, line numbers, wrapping, and Markdown-note work.
+- Provide a one-click Markdown note action that creates a timestamped `.md` file and opens it in Text Editor.
+- Add a left dock with app clusters for writing, coding, web, and system tools.
+- Add a small desktop data panel with a clock and watchlist shortcuts.
+- Use GNOME idle, dimming, and break-reminder settings to protect the screen without suspending background work on AC power.
+- Create an executable script and clickable GNOME launcher that import the `v1.2.1` profile snapshot.
 - Make the project-local `versions/` archive the source of truth for saved launchers.
 
 ## Constraints
@@ -44,14 +49,23 @@ Codex should read this file at the start of each desktop customization task.
 - The Codex usage menu still shows detailed 5-hour and weekly percentages.
 - The icon drawing code uses the 5-hour remaining percent for the outer ring.
 - The icon drawing code uses the weekly remaining percent to fill the `C` glyph.
+- The tuned profile sets `org.gnome.desktop.background picture-options` to `none`.
+- The tuned profile sets both desktop background colors to `#000000`.
+- The tuned profile enables `desktop-lab-v12@young`.
+- `desktop-lab-v12@young` creates a left dock with a Markdown note action and app clusters.
+- `desktop-lab-v12@young` creates a clock/watchlist data panel and a slow moving idle marker.
+- GNOME Text Editor autosave, session restore, line numbers, and wrapping are configured in the tuned profile.
+- GNOME break reminders and idle delay are configured, while AC inactive sleep remains `nothing`.
+- Battery percentage is disabled and the lab extension includes guarded battery-icon hiding.
 - Importing `profiles/vm-initial-desktop-task` with `./scripts/import-layout.sh` completes.
-- `versions/v1/v1.1/v1.1.4/apply-v1.1.4.sh` exists and is executable.
-- `versions/v1/v1.1/v1.1.4/Apply v1.1.4.desktop` exists and is executable.
-- The `v1.1.4` version launcher stores a `profile/` snapshot with `gsettings-export.sh`.
+- `versions/v1/v1.2/v1.2.1/apply-v1.2.1.sh` exists and is executable.
+- `versions/v1/v1.2/v1.2.1/Apply v1.2.1.desktop` exists and is executable.
+- The `v1.2.1` version launcher stores a `profile/` snapshot with `gsettings-export.sh`.
 - `scripts/install-version-launcher.sh` defaults to the repo-local `versions/` directory.
 - Existing project-local launchers do not reference the old home-level versions directory.
 - `bluetooth-battery@young` extension bundle packs successfully with `gnome-extensions pack --force`.
 - `codex-usage@young` extension bundle packs successfully with `gnome-extensions pack --force`.
+- `desktop-lab-v12@young` extension bundle packs successfully with `gnome-extensions pack --force`.
 - `./scripts/check-workflow.sh` completes successfully.
 
 ## Notes for host apply

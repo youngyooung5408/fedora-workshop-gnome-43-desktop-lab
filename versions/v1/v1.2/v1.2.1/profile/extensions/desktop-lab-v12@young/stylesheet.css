@@ -1,0 +1,89 @@
+.desktop-lab-v12-dock {
+  background-color: rgba(5, 8, 12, 0.82);
+  border: 1px solid rgba(148, 163, 184, 0.34);
+  border-radius: 18px;
+  padding: 8px 6px;
+  spacing: 6px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.42);
+}
+
+.desktop-lab-v12-group-label {
+  color: #94a3b8;
+  font-size: 8pt;
+  font-weight: 700;
+  text-align: center;
+}
+
+.desktop-lab-v12-app-button {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background-color: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  color: #e5e7eb;
+}
+
+.desktop-lab-v12-app-button:hover,
+.desktop-lab-v12-app-button:focus {
+  background-color: rgba(14, 165, 233, 0.24);
+  border-color: rgba(56, 189, 248, 0.78);
+}
+
+.desktop-lab-v12-note-button {
+  background-color: rgba(20, 184, 166, 0.28);
+  border-color: rgba(45, 212, 191, 0.78);
+}
+
+.desktop-lab-v12-separator {
+  height: 1px;
+  margin: 2px 8px;
+  background-color: rgba(148, 163, 184, 0.24);
+}
+
+.desktop-lab-v12-panel {
+  background-color: rgba(5, 8, 12, 0.76);
+  border: 1px solid rgba(148, 163, 184, 0.30);
+  border-radius: 16px;
+  padding: 14px;
+  spacing: 10px;
+  color: #e5e7eb;
+}
+
+.desktop-lab-v12-clock {
+  color: #f8fafc;
+  font-size: 18pt;
+  font-weight: 800;
+}
+
+.desktop-lab-v12-subtle {
+  color: #94a3b8;
+  font-size: 9pt;
+}
+
+.desktop-lab-v12-chip-row {
+  spacing: 6px;
+}
+
+.desktop-lab-v12-chip {
+  border-radius: 10px;
+  padding: 5px 8px;
+  background-color: rgba(31, 41, 55, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  color: #d1d5db;
+  font-size: 9pt;
+  font-weight: 700;
+}
+
+.desktop-lab-v12-chip:hover,
+.desktop-lab-v12-chip:focus {
+  background-color: rgba(34, 197, 94, 0.24);
+  border-color: rgba(74, 222, 128, 0.76);
+}
+
+.desktop-lab-v12-motion-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: rgba(45, 212, 191, 0.70);
+  box-shadow: 0 0 14px rgba(45, 212, 191, 0.55);
+}

@@ -19,6 +19,56 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-09 13:22 CST - v 1.2.1 desktop lab overlay
+
+- Version label: v1.2.1-desktop-lab-overlay.
+- Task summary: start version 1.2 from `task/v 1.2/v 1.2.1.md` by adding a black desktop lab surface, Markdown-focused text editing defaults, a left quick-launch dock, data overlay, and idle protection settings.
+- Changed files:
+  - `TASK.md`
+  - `LAB_DIARY.md`
+  - `scripts/check-workflow.sh`
+  - `task/v 1.2/v 1.2.1.md`
+  - `profiles/vm-initial-desktop-task/README.txt`
+  - `profiles/vm-initial-desktop-task/dconf-org-gnome.ini`
+  - `profiles/vm-initial-desktop-task/enabled-extensions.txt`
+  - `profiles/vm-initial-desktop-task/gsettings-export.sh`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/`
+  - `versions/v1/v1.2/v1.2.1/`
+- Desktop settings or profiles changed:
+  - Updated the tracked tuned profile `profiles/vm-initial-desktop-task`.
+  - Set the desktop background to solid black with no wallpaper image.
+  - Kept `org.gnome.desktop.wm.preferences button-layout` as `close,maximize,minimize:` for top-left window buttons.
+  - Kept `bluetooth-battery@young` and `codex-usage@young` enabled.
+  - Added and enabled `desktop-lab-v12@young` in the tuned profile and version snapshot.
+  - Configured GNOME Text Editor for 3-second autosave delay, session restore, line numbers, spellcheck, wrapping, dark style, and `~/Documents/Markdown Notes`.
+  - Set idle delay to 300 seconds, enabled break reminders, enabled idle dimming, and kept AC inactive sleep as `nothing` so background work can keep running.
+  - Imported `profiles/vm-initial-desktop-task` into this VM desktop session with `./scripts/import-layout.sh`.
+  - Installed a clickable version launcher under `versions/v1/v1.2/v1.2.1/`.
+- Features included:
+  - New `desktop-lab-v12@young` Shell extension with a left-side dock grouped into writing, code, web, and system actions.
+  - One-click Markdown note action that creates a timestamped `.md` file and opens it through the default file handler.
+  - Clock and watchlist overlay with market-symbol shortcuts.
+  - Slow moving idle marker for the black desktop lab surface.
+  - Guarded best-effort battery actor hiding when the running GNOME Shell exposes compatible quick-settings actors.
+  - `scripts/check-workflow.sh` now validates the v1.2.1 profile settings and extension features.
+- Verification:
+  - `./scripts/import-layout.sh profiles/vm-initial-desktop-task` completed successfully.
+  - `./scripts/install-version-launcher.sh v1.2.1 profiles/vm-initial-desktop-task` completed successfully.
+  - `versions/v1/v1.2/v1.2.1/apply-v1.2.1.sh < /dev/null` completed successfully.
+  - `gsettings get org.gnome.desktop.background picture-options` returned `'none'`.
+  - `gsettings get org.gnome.desktop.background primary-color` and `secondary-color` returned `'#000000'`.
+  - `gsettings get org.gnome.desktop.interface show-battery-percentage` returned `false`.
+  - `gsettings get org.gnome.TextEditor auto-save-delay` returned `uint32 3`.
+  - `gsettings get org.gnome.desktop.session idle-delay` returned `uint32 300`.
+  - `gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type` returned `'nothing'`.
+  - `gnome-extensions pack --force --out-dir /tmp` completed successfully for `bluetooth-battery@young`, `codex-usage@young`, and `desktop-lab-v12@young`.
+  - `desktop-file-validate versions/v1/v1.2/v1.2.1/Apply v1.2.1.desktop` completed successfully.
+  - `./scripts/check-workflow.sh` completed successfully before commit with only the expected dirty worktree warning.
+- Known limits:
+  - The running GNOME Shell session copied the new `desktop-lab-v12@young` files to `~/.local/share/gnome-shell/extensions/`, but `gnome-extensions info desktop-lab-v12@young` did not see the new UUID before logout/login. The profile and version launcher are correct; log out and back in for Shell to rescan and activate the new overlay.
+  - Battery icon removal is best-effort because the built-in GNOME quick-settings power icon is not exposed through a stable public Shell extension API. The stable profile setting hides the numeric battery percentage.
+  - Watchlist shortcuts open quote pages; this version does not fetch live prices into the panel.
+
 ### 2026-07-08 15:03 CST - Project-local workflow folders
 
 - Version label: project-local-workflow-folders.

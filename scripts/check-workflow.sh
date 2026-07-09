@@ -54,6 +54,22 @@ require_heading() {
   fi
 }
 
+require_text() {
+  local file="$1"
+  local text="$2"
+  local description="$3"
+
+  if [ ! -f "$file" ]; then
+    return
+  fi
+
+  if grep -Fq "$text" "$file"; then
+    pass "$description"
+  else
+    fail "$description"
+  fi
+}
+
 validate_gsettings_file() {
   local file="$1"
   local parsed
@@ -314,6 +330,32 @@ if [ "${#profile_dirs[@]}" -eq 0 ]; then
 else
   pass "found ${#profile_dirs[@]} tracked profile directory"
 fi
+
+tuned_profile="profiles/vm-initial-desktop-task"
+tuned_settings="$tuned_profile/gsettings-export.sh"
+tuned_enabled="$tuned_profile/enabled-extensions.txt"
+tuned_v12_extension="$tuned_profile/extensions/desktop-lab-v12@young"
+
+require_file "$tuned_v12_extension/metadata.json"
+require_file "$tuned_v12_extension/extension.js"
+require_file "$tuned_v12_extension/stylesheet.css"
+
+require_text "$tuned_enabled" "desktop-lab-v12@young" "desktop-lab-v12@young is enabled in $tuned_enabled"
+require_text "$tuned_settings" "gsettings set org.gnome.desktop.background picture-options \\'none\\'" "v1.2 background disables wallpaper image"
+require_text "$tuned_settings" "gsettings set org.gnome.desktop.background primary-color \\'#000000\\'" "v1.2 background primary color is black"
+require_text "$tuned_settings" "gsettings set org.gnome.desktop.background secondary-color \\'#000000\\'" "v1.2 background secondary color is black"
+require_text "$tuned_settings" "gsettings set org.gnome.TextEditor auto-save-delay uint32\\ 3" "Text Editor autosave delay is configured"
+require_text "$tuned_settings" "gsettings set org.gnome.TextEditor restore-session true" "Text Editor session restore is configured"
+require_text "$tuned_settings" "gsettings set org.gnome.TextEditor show-line-numbers true" "Text Editor line numbers are configured"
+require_text "$tuned_settings" "gsettings set org.gnome.TextEditor wrap-text true" "Text Editor wrapping is configured"
+require_text "$tuned_settings" "gsettings set org.gnome.desktop.session idle-delay uint32\\ 300" "v1.2 idle delay is configured"
+require_text "$tuned_settings" "gsettings set org.gnome.desktop.break-reminders selected-breaks \\[\\'eyesight\\'\\,\\ \\'movement\\'\\]" "v1.2 break reminders are selected"
+require_text "$tuned_settings" "gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type \\'nothing\\'" "AC inactive sleep keeps background work running"
+require_text "$tuned_v12_extension/extension.js" "DOCK_GROUPS" "desktop-lab-v12 defines dock app clusters"
+require_text "$tuned_v12_extension/extension.js" "_createMarkdownNote" "desktop-lab-v12 includes Markdown note creation"
+require_text "$tuned_v12_extension/extension.js" "WATCHLIST" "desktop-lab-v12 includes a watchlist panel"
+require_text "$tuned_v12_extension/extension.js" "_moveMotionDot" "desktop-lab-v12 includes a moving idle marker"
+require_text "$tuned_v12_extension/extension.js" "_tryHideBatteryIcon" "desktop-lab-v12 includes guarded battery-icon hiding"
 
 shell_major=""
 if command -v gnome-shell >/dev/null 2>&1; then

@@ -1,0 +1,7 @@
+{
+  "uuid": "desktop-lab-v12@young",
+  "name": "Desktop Lab v1.2",
+  "description": "Adds the v1.2 desktop lab dock, Markdown note action, data overlay, and idle marker.",
+  "shell-version": ["49"],
+  "url": "https://local-only.invalid/desktop-lab-v12"
+}

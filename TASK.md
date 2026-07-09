@@ -5,14 +5,10 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Current request
 
-- Version `v1.2.2`: refine the desktop lab profile from `task/v 1.2/v 1.2.2.md`.
-- Remove the v1.2.1 Text Editor customization and return Text Editor to the normal profile defaults.
-- Keep the solid black lab background.
-- Replace the previous clock/watchlist shortcut overlay with a simple circular wall-clock near the upper middle and a visible market board that does not open quote URLs.
-- Make the left-side app dock larger and vertically centered, with grouped app clusters.
-- Clear the GNOME favorite-apps dash contents so the left lab dock is the primary quick launcher.
-- Add a guarded bottom drag/scroll zone that opens the application grid.
-- Replace the small moving idle marker with a 30-minute animated rest screen.
+- Version `v1.2.3`: test the new `aesthetic preference.md` guidance against the existing desktop lab profile from `v1.2.2`.
+- Keep the v1.2.2 behavior and feature set intact.
+- Refine the desktop-lab overlay so the dock, wall clock, market board, app-grid drag zone, and 30-minute rest screen feel calm, spacious, restrained, and Apple-like.
+- Keep the solid black lab background as the base surface.
 - Keep the Bluetooth battery panel indicator and Codex usage indicator.
 
 ## Desired features
@@ -27,7 +23,9 @@ Codex should read this file at the start of each desktop customization task.
 - Add a visible market board for common symbols without opening a browser on click.
 - Add a bottom edge drag/scroll zone that opens the GNOME application grid when supported by the current Shell API.
 - Show an animated rest screen after 30 minutes of no input while keeping background work running.
-- Create an executable script and clickable GNOME launcher that import the `v1.2.2` profile snapshot.
+- Apply the `aesthetic preference.md` direction with neutral translucent surfaces, restrained text weights, subtle hover/focus states, and low-saturation motion.
+- Avoid decorative rainbow, blue/teal-heavy, or flashy visual treatment.
+- Create an executable script and clickable GNOME launcher that import the `v1.2.3` profile snapshot.
 - Make the project-local `versions/` archive the source of truth for saved launchers.
 
 ## Constraints
@@ -63,13 +61,17 @@ Codex should read this file at the start of each desktop customization task.
 - `desktop-lab-v12@young` creates a visible market board instead of clickable quote URL chips.
 - `desktop-lab-v12@young` creates a guarded bottom drag/scroll zone for opening the app grid.
 - `desktop-lab-v12@young` creates a 30-minute animated rest screen instead of a small moving idle marker.
+- `desktop-lab-v12@young` applies the `aesthetic preference.md` direction with neutral translucent surfaces and restrained typography.
+- The v1.2.3 stylesheet does not use the old saturated blue hover accent or teal gesture-zone accent.
+- The v1.2.3 animated rest screen uses low-saturation neutral motion instead of blue/green diagonal lines.
+- The v1.2.3 rest screen label is concise and polished.
 - GNOME break reminders and idle dimming are disabled for this tuned profile.
 - AC and battery inactive sleep remain `nothing` so the VM does not suspend background work.
 - Battery percentage is disabled and the lab extension includes guarded battery-icon hiding.
 - Importing `profiles/vm-initial-desktop-task` with `./scripts/import-layout.sh` completes.
-- `versions/v1/v1.2/v1.2.2/apply-v1.2.2.sh` exists and is executable.
-- `versions/v1/v1.2/v1.2.2/Apply v1.2.2.desktop` exists and is executable.
-- The `v1.2.2` version launcher stores a `profile/` snapshot with `gsettings-export.sh`.
+- `versions/v1/v1.2/v1.2.3/apply-v1.2.3.sh` exists and is executable.
+- `versions/v1/v1.2/v1.2.3/Apply v1.2.3.desktop` exists and is executable.
+- The `v1.2.3` version launcher stores a `profile/` snapshot with `gsettings-export.sh`.
 - `scripts/install-version-launcher.sh` defaults to the repo-local `versions/` directory.
 - Existing project-local launchers do not reference the old home-level versions directory.
 - `bluetooth-battery@young` extension bundle packs successfully with `gnome-extensions pack --force`.

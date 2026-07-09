@@ -1,0 +1,7 @@
+{
+  "uuid": "bluetooth-battery@young",
+  "name": "Bluetooth Battery",
+  "description": "Shows connected Bluetooth device battery levels in the GNOME top panel.",
+  "shell-version": ["49"],
+  "url": "https://local-only.invalid/bluetooth-battery"
+}

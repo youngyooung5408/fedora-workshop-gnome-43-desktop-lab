@@ -19,6 +19,55 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-09 16:13 CST - v 1.2.3 aesthetic preference pass
+
+- Version label: v1.2.3-aesthetic-preference-pass.
+- Task summary: test the new `aesthetic preference.md` guidance against the existing v1.2.2 desktop lab profile, keeping the same desktop behavior while refining the visual treatment to feel calmer, more neutral, and Apple-like.
+- Changed files:
+  - `TASK.md`
+  - `LAB_DIARY.md`
+  - `scripts/check-workflow.sh`
+  - `task/v 1.2/v 1.2.3.md`
+  - `profiles/vm-initial-desktop-task/README.txt`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/extension.js`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/metadata.json`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/stylesheet.css`
+  - `versions/v1/v1.2/v1.2.3/`
+- Desktop settings or profiles changed:
+  - Updated the tracked tuned profile `profiles/vm-initial-desktop-task`.
+  - Kept the v1.2.2 GNOME behavior: solid black desktop background, empty GNOME favorite-apps, 30-minute idle trigger, disabled idle dimming, disabled selected break reminders, and inactive sleep set to `nothing`.
+  - Regenerated the project-local `v1.2.3` launcher snapshot from the tuned profile.
+  - Imported `profiles/vm-initial-desktop-task` into this VM desktop session.
+  - Applied the saved `v1.2.3` launcher snapshot with `versions/v1/v1.2/v1.2.3/apply-v1.2.3.sh < /dev/null`.
+- Features included:
+  - Neutral translucent dock and market surfaces using restrained light borders and lower shadow intensity.
+  - Softer hover and focus states without the old saturated blue dock hover accent.
+  - Bottom app-grid gesture zone changed from teal to a subtle neutral edge affordance.
+  - Wall-clock drawing changed to a low-saturation neutral palette with a faint face fill.
+  - Rest screen motion changed from blue/green diagonal lines to quieter neutral motion.
+  - Rest screen label shortened from `rest screen` to `Rest`.
+  - Workflow verifier now checks the v1.2.3 task source, aesthetic metadata, neutral styling, removed saturated colors, and the v1.2.3 launcher snapshot.
+- Verification:
+  - `git diff --check` completed successfully.
+  - `bash -n scripts/check-workflow.sh` completed successfully.
+  - `gnome-extensions pack --force --out-dir /tmp` completed successfully for `bluetooth-battery@young`, `codex-usage@young`, and `desktop-lab-v12@young`.
+  - `./scripts/import-layout.sh profiles/vm-initial-desktop-task` completed successfully.
+  - `./scripts/install-version-launcher.sh v1.2.3 profiles/vm-initial-desktop-task` completed successfully.
+  - `versions/v1/v1.2/v1.2.3/apply-v1.2.3.sh < /dev/null` completed successfully.
+  - `gnome-extensions disable desktop-lab-v12@young && gnome-extensions enable desktop-lab-v12@young` completed successfully, and `gnome-extensions info desktop-lab-v12@young` reported `State: ACTIVE`.
+  - `./scripts/check-workflow.sh` completed successfully with only the expected dirty worktree warning before commit.
+  - `gsettings get org.gnome.desktop.background picture-options` returned `'none'`.
+  - `gsettings get org.gnome.desktop.background primary-color` and `secondary-color` returned `'#000000'`.
+  - `gsettings get org.gnome.shell favorite-apps` returned `@as []`.
+  - `gsettings get org.gnome.desktop.session idle-delay` returned `uint32 1800`.
+  - `gsettings get org.gnome.settings-daemon.plugins.power idle-dim` returned `false`.
+  - `journalctl --user -b` showed no `desktop-lab-v12` JavaScript errors after the extension was toggled.
+- Known limits:
+  - `gnome-extensions info desktop-lab-v12@young` still showed cached old description text after reload, but the installed metadata file in `~/.local/share/gnome-shell/extensions/desktop-lab-v12@young/metadata.json`, the tracked profile, and the `v1.2.3` launcher snapshot all contain the v1.2.3 aesthetic description.
+  - Market values still depend on the public Stooq CSV endpoint and fall back to `--` when offline or unavailable.
+  - The application-grid drag/scroll zone still uses guarded GNOME Shell APIs because the overview internals are not a stable extension API.
+  - Log out and back in if GNOME Shell does not fully refresh the updated extension UI after applying the profile.
+
 ### 2026-07-09 15:05 CST - v 1.2.2 desktop lab workflow refinement
 
 - Version label: v1.2.2-desktop-lab-workflow-refinement.

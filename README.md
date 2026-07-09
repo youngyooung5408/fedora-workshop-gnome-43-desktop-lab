@@ -61,9 +61,14 @@ This workflow is meant to survive across Codex conversations.
    - verification result
    - known limits or follow-up items
 7. Codex commits the changed lab files to Git.
-8. Codex reports the version label, commit hash, changed files, import result, project-local launcher path, and verification result back to the user.
+8. Codex pushes the completed commit to the configured Git remote:
+   ```bash
+   git push
+   ```
+   If the remote or authentication is unavailable, Codex reports the push failure and leaves the commit local.
+9. Codex reports the version label, commit hash, changed files, import result, project-local launcher path, verification result, and push result back to the user.
 
-A lab version is one Git commit on `main`.
+A lab version is one Git commit on `main`, pushed to the configured remote when available.
 The Git history is the exact record; `LAB_DIARY.md` is the readable summary for checking from this VM or from the host.
 The exact commit hash for a diary entry is reported after the commit and can always be checked with `git log`.
 

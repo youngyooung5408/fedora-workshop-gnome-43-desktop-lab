@@ -15,3 +15,4 @@
 - `c` is the minor fix version for task-level fixes.
 - If `task/version.md` is updated with more specific version workflow rules, follow that file as the source of truth.
 - After every version update using `v a.b.c`, record the matching lab diary Markdown update for that version before considering the version workflow complete.
+- After committing a completed lab version, run `git push` to the configured remote. If the push fails because the remote or authentication is unavailable, report that the commit remains local.

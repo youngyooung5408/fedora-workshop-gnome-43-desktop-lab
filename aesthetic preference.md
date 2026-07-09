@@ -14,10 +14,11 @@ Keep durable preference notes focused on reusable direction. Do not add temporar
 
 ## Durable Desktop Preferences
 
-- Desktop clocks should stay very simple: no minute tick scale, no dense markings, and date text limited to month and year unless a task asks for more detail.
-- Left-side docks should feel interactive in a Mac-like way, with smooth hover magnification, clear app grouping, and folder-style access to app clusters.
-- App clusters should behave like useful folders or flyouts, not only static labels.
-- Data panels, including market panels, should remain visible, API-backed when possible, and visually textured with restrained translucent surfaces.
+- Desktop clocks should stay very simple: no minute tick scale, no dense markings, no extra inner margin/ring, month-and-day date text, and continuous analog movement rather than minute jumps.
+- Left-side docks should feel interactive in a Mac-like way, with pointer-proximity wave magnification instead of whole-dock growth, clear app grouping, click-open folder access to app clusters, and support for custom drag/drop ordering when useful.
+- App clusters should behave like useful folders or flyouts that open intentionally on click, not automatically just because the pointer passes over them.
+- Detailed particle-like, technological texture is preferred when it stays restrained, neutral, and polished.
+- Data panels, including market panels, should remain visible and visually textured with restrained translucent surfaces, but keep only essential values visible and hide update-time or provider/API labels unless explicitly requested.
 - Long-idle rest screens should use reliable system idle detection when GNOME Shell exposes it, with a timer fallback only when needed.
 
 # Apple Design Guidelines

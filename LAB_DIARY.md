@@ -19,6 +19,60 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-09 17:20 CST - v 1.2.5 clock, dock, and stock simplification pass
+
+- Version label: v1.2.5-clock-dock-stock-simplification-pass.
+- Task summary: finish the version 1.2.5 task note by correcting the clock date and movement, changing the dock from whole-panel hover growth to a Mac-like wave with click-open folders and custom drag/drop group reordering, and simplifying the market panel by removing visible update-time and Yahoo/API provider text.
+- Changed files:
+  - `TASK.md`
+  - `LAB_DIARY.md`
+  - `aesthetic preference.md`
+  - `scripts/check-workflow.sh`
+  - `task/v 1.2/v 1.2.5.md`
+  - `profiles/vm-initial-desktop-task/README.txt`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/extension.js`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/metadata.json`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/stylesheet.css`
+  - `versions/v1/v1.2/v1.2.5/`
+- Desktop settings or profiles changed:
+  - Updated the tracked tuned profile `profiles/vm-initial-desktop-task`.
+  - Kept the v1.2.4 GNOME behavior: solid black desktop background, empty GNOME favorite-apps, 30-minute idle trigger, disabled idle dimming, disabled selected break reminders, and inactive sleep set to `nothing`.
+  - Imported `profiles/vm-initial-desktop-task` into this VM desktop session.
+  - Installed the project-local `v1.2.5` launcher snapshot from the tuned profile.
+  - Applied the saved `v1.2.5` launcher snapshot with `versions/v1/v1.2/v1.2.5/apply-v1.2.5.sh < /dev/null`.
+- Features included:
+  - Updated durable aesthetic preferences for month-and-day clock dates, continuous clock motion, click-open app folders, pointer wave dock magnification, custom dock drag/drop, restrained particle-like technological texture, and value-only market panels.
+  - Changed the clock refresh from 30 seconds to 250 ms, removed the extra inner ring, kept the larger 198px face, added smooth second-hand movement, and changed the date from month/year to month/day.
+  - Reworked the left dock so it no longer grows as one whole block on hover; pointer movement now creates per-folder wave scaling.
+  - Changed app clusters to single folder triggers that open flyouts by click instead of pointer hover.
+  - Added custom drag/drop reordering for the left dock groups inside the desktop-lab extension.
+  - Simplified the market panel so it keeps the symbol values but no longer shows update-time text or Yahoo/API provider text.
+  - Updated workflow verifier checks for the v1.2.5 task, aesthetic preferences, continuous clock, click-open dock folders, dock drag/drop, simplified market panel, metadata, and v1.2.5 launcher snapshot.
+- Verification:
+  - `bash -n scripts/check-workflow.sh` completed successfully.
+  - `git diff --check` completed successfully.
+  - `gnome-extensions pack --force --out-dir /tmp` completed successfully for `bluetooth-battery@young`, `codex-usage@young`, and `desktop-lab-v12@young`.
+  - The market data fetch test returned values for SPY, QQQ, NVDA, and AAPL.
+  - `./scripts/import-layout.sh profiles/vm-initial-desktop-task` completed successfully.
+  - `./scripts/install-version-launcher.sh v1.2.5 profiles/vm-initial-desktop-task` completed successfully.
+  - `versions/v1/v1.2/v1.2.5/apply-v1.2.5.sh < /dev/null` completed successfully.
+  - `gnome-extensions disable desktop-lab-v12@young && gnome-extensions enable desktop-lab-v12@young` completed successfully, and `gnome-extensions info desktop-lab-v12@young` reported `State: ACTIVE`.
+  - The installed metadata file at `~/.local/share/gnome-shell/extensions/desktop-lab-v12@young/metadata.json` contains the v1.2.5 description.
+  - `journalctl --user -b` showed no `desktop-lab-v12` JavaScript or stylesheet errors after the extension was toggled.
+  - `./scripts/check-workflow.sh` completed successfully with only the expected dirty worktree warning before commit.
+  - `gsettings get org.gnome.desktop.background picture-options` returned `'none'`.
+  - `gsettings get org.gnome.desktop.background primary-color` and `secondary-color` returned `'#000000'`.
+  - `gsettings get org.gnome.shell favorite-apps` returned `@as []`.
+  - `gsettings get org.gnome.desktop.session idle-delay` returned `uint32 1800`.
+  - `gsettings get org.gnome.settings-daemon.plugins.power idle-dim` returned `false`.
+- Known limits:
+  - The drag/drop behavior is a custom desktop-lab dock group reorder path, not native GNOME overview app-grid folder editing.
+  - Custom dock reorder state is for the running Shell session; the saved profile restores the default v1.2.5 group order after profile reimport or extension reload.
+  - The rest screen was verified by code path, extension reload, settings, and absence of Shell errors; this run did not wait unattended for 30 minutes in real time.
+  - Market values still depend on the public chart endpoint internally and fall back to `--` if the endpoint is unavailable, but the panel no longer exposes update-time or provider/API text.
+  - `gnome-extensions info desktop-lab-v12@young` still showed cached old description text after reload, but the installed metadata file, tracked profile, and `v1.2.5` launcher snapshot all contain the v1.2.5 description.
+  - Log out and back in if GNOME Shell does not fully refresh the updated extension UI after applying the profile.
+
 ### 2026-07-09 16:45 CST - v 1.2.4 interactive dock and reliable data pass
 
 - Version label: v1.2.4-interactive-dock-and-reliable-data-pass.

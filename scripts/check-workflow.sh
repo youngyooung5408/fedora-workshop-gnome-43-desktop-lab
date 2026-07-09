@@ -70,6 +70,22 @@ require_text() {
   fi
 }
 
+require_absent_text() {
+  local file="$1"
+  local text="$2"
+  local description="$3"
+
+  if [ ! -f "$file" ]; then
+    return
+  fi
+
+  if grep -Fq "$text" "$file"; then
+    fail "$description"
+  else
+    pass "$description"
+  fi
+}
+
 validate_gsettings_file() {
   local file="$1"
   local parsed
@@ -344,17 +360,23 @@ require_text "$tuned_enabled" "desktop-lab-v12@young" "desktop-lab-v12@young is 
 require_text "$tuned_settings" "gsettings set org.gnome.desktop.background picture-options \\'none\\'" "v1.2 background disables wallpaper image"
 require_text "$tuned_settings" "gsettings set org.gnome.desktop.background primary-color \\'#000000\\'" "v1.2 background primary color is black"
 require_text "$tuned_settings" "gsettings set org.gnome.desktop.background secondary-color \\'#000000\\'" "v1.2 background secondary color is black"
-require_text "$tuned_settings" "gsettings set org.gnome.TextEditor auto-save-delay uint32\\ 3" "Text Editor autosave delay is configured"
-require_text "$tuned_settings" "gsettings set org.gnome.TextEditor restore-session true" "Text Editor session restore is configured"
-require_text "$tuned_settings" "gsettings set org.gnome.TextEditor show-line-numbers true" "Text Editor line numbers are configured"
-require_text "$tuned_settings" "gsettings set org.gnome.TextEditor wrap-text true" "Text Editor wrapping is configured"
-require_text "$tuned_settings" "gsettings set org.gnome.desktop.session idle-delay uint32\\ 300" "v1.2 idle delay is configured"
-require_text "$tuned_settings" "gsettings set org.gnome.desktop.break-reminders selected-breaks \\[\\'eyesight\\'\\,\\ \\'movement\\'\\]" "v1.2 break reminders are selected"
+require_absent_text "$tuned_settings" "gsettings set org.gnome.TextEditor" "v1.2.2 removes Text Editor custom settings"
+require_text "$tuned_settings" "gsettings set org.gnome.shell favorite-apps @as\\ \\[\\]" "v1.2.2 clears GNOME favorite-apps"
+require_text scripts/import-layout.sh '[ "$key" = "app-picker-layout" ]' "import skips app-grid ordering without skipping favorite-apps"
+require_absent_text scripts/import-layout.sh '[ "$key" = "favorite-apps" ]' "import no longer skips favorite-apps"
+require_text "$tuned_settings" "gsettings set org.gnome.desktop.session idle-delay uint32\\ 1800" "v1.2.2 idle trigger is 30 minutes"
+require_text "$tuned_settings" "gsettings set org.gnome.desktop.break-reminders selected-breaks @as\\ \\[\\]" "v1.2.2 break reminders are not selected"
+require_text "$tuned_settings" "gsettings set org.gnome.settings-daemon.plugins.power idle-dim false" "v1.2.2 disables GNOME idle dimming"
 require_text "$tuned_settings" "gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type \\'nothing\\'" "AC inactive sleep keeps background work running"
+require_text "$tuned_settings" "gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type \\'nothing\\'" "battery inactive sleep keeps background work running"
 require_text "$tuned_v12_extension/extension.js" "DOCK_GROUPS" "desktop-lab-v12 defines dock app clusters"
-require_text "$tuned_v12_extension/extension.js" "_createMarkdownNote" "desktop-lab-v12 includes Markdown note creation"
-require_text "$tuned_v12_extension/extension.js" "WATCHLIST" "desktop-lab-v12 includes a watchlist panel"
-require_text "$tuned_v12_extension/extension.js" "_moveMotionDot" "desktop-lab-v12 includes a moving idle marker"
+require_text "$tuned_v12_extension/extension.js" "_drawClockFace" "desktop-lab-v12 includes a circular wall clock"
+require_text "$tuned_v12_extension/extension.js" "MARKET_SYMBOLS" "desktop-lab-v12 includes visible market symbols"
+require_text "$tuned_v12_extension/extension.js" "_buildGestureZone" "desktop-lab-v12 includes a bottom app-grid gesture zone"
+require_text "$tuned_v12_extension/extension.js" "IDLE_SCREEN_SECONDS = 30 * 60" "desktop-lab-v12 rest screen waits 30 minutes"
+require_text "$tuned_v12_extension/extension.js" "_drawIdleBackground" "desktop-lab-v12 includes an animated rest screen background"
+require_absent_text "$tuned_v12_extension/extension.js" "_createMarkdownNote" "desktop-lab-v12 no longer creates Markdown notes"
+require_absent_text "$tuned_v12_extension/extension.js" "_moveMotionDot" "desktop-lab-v12 no longer uses the moving idle marker"
 require_text "$tuned_v12_extension/extension.js" "_tryHideBatteryIcon" "desktop-lab-v12 includes guarded battery-icon hiding"
 
 shell_major=""

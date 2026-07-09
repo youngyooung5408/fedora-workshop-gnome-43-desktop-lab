@@ -112,7 +112,7 @@ This folder stores a clickable VM layout version launcher.
 
 - Version: $PATCH
 - Source lab repo: $ROOT
-- Source commit when generated: $COMMIT
+- Source commit before launcher generation: $COMMIT
 - Snapshot profile: $SNAPSHOT_DIR
 - Executable script: $APPLY_SCRIPT
 - Clickable launcher: $DESKTOP_FILE

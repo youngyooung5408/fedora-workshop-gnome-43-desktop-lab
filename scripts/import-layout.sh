@@ -44,10 +44,11 @@ while IFS= read -r line; do
   shift 4
   value="$*"
 
-  # Keep the VM independent from host-only apps. Missing apps can still be
-  # installed later without blocking the desktop layout and extensions.
+  # Keep the VM independent from host-only app grid ordering. Favorite apps are
+  # still layout data, so apply them when a tuned profile intentionally changes
+  # the dash contents.
   if [ "$schema" = "org.gnome.shell" ] &&
-     { [ "$key" = "favorite-apps" ] || [ "$key" = "app-picker-layout" ]; }; then
+     [ "$key" = "app-picker-layout" ]; then
     continue
   fi
 

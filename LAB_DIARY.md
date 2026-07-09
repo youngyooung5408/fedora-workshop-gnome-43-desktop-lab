@@ -19,6 +19,57 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-09 15:05 CST - v 1.2.2 desktop lab workflow refinement
+
+- Version label: v1.2.2-desktop-lab-workflow-refinement.
+- Task summary: finish the version 1.2 minor refinement from `task/v 1.2/v 1.2.2.md` by removing the v1.2.1 text-editing customization, making the left dock the primary launcher, replacing the market shortcuts and idle dot with visible desktop features, and saving a new project-local launcher snapshot.
+- Changed files:
+  - `TASK.md`
+  - `LAB_DIARY.md`
+  - `scripts/check-workflow.sh`
+  - `scripts/import-layout.sh`
+  - `scripts/install-version-launcher.sh`
+  - `task/v 1.2/v 1.2.2.md`
+  - `profiles/vm-initial-desktop-task/README.txt`
+  - `profiles/vm-initial-desktop-task/dconf-org-gnome.ini`
+  - `profiles/vm-initial-desktop-task/favorite-apps.txt`
+  - `profiles/vm-initial-desktop-task/gsettings-export.sh`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/`
+  - `versions/v1/v1.2/v1.2.2/`
+- Desktop settings or profiles changed:
+  - Updated the tracked tuned profile `profiles/vm-initial-desktop-task`.
+  - Kept the desktop background as solid black with no wallpaper image.
+  - Removed the `org.gnome.TextEditor` custom settings that v1.2.1 added.
+  - Set `org.gnome.shell favorite-apps` to `@as []` so the left lab dock is the primary quick launcher.
+  - Changed `scripts/import-layout.sh` so imports apply `favorite-apps` while still skipping app-grid ordering.
+  - Set the idle trigger to 30 minutes, disabled GNOME idle dimming and selected break reminders, and kept AC and battery inactive sleep as `nothing`.
+  - Imported the saved `v1.2.2` launcher snapshot into this VM desktop session with `versions/v1/v1.2/v1.2.2/apply-v1.2.2.sh < /dev/null`.
+- Features included:
+  - Larger middle-left dock grouped into writing, code, web, system, and application-grid clusters.
+  - Simple circular wall-clock overlay near the upper middle of the desktop.
+  - Visible market board for SPY, QQQ, NVDA, and AAPL that fetches values directly instead of opening quote URLs.
+  - Bottom edge drag/scroll zone that opens the application grid through guarded GNOME Shell APIs.
+  - Animated 30-minute rest screen that replaces the small moving idle marker.
+  - Updated workflow verifier checks for v1.2.2 and fails if the old Markdown note action or moving idle marker returns.
+- Verification:
+  - `bash -n` completed successfully for the edited shell scripts and tuned `gsettings-export.sh`.
+  - `gnome-extensions pack --force --out-dir /tmp profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young` completed successfully.
+  - `./scripts/check-workflow.sh` completed successfully after the new `v1.2.2` snapshot was generated, with only the expected dirty worktree warning.
+  - `./scripts/install-version-launcher.sh v1.2.2 profiles/vm-initial-desktop-task` completed successfully.
+  - `versions/v1/v1.2/v1.2.2/apply-v1.2.2.sh < /dev/null` completed successfully.
+  - `gsettings get org.gnome.shell favorite-apps` returned `@as []`.
+  - `gsettings get org.gnome.desktop.session idle-delay` returned `uint32 1800`.
+  - `gsettings get org.gnome.desktop.break-reminders selected-breaks` returned `@as []`.
+  - `gsettings get org.gnome.settings-daemon.plugins.power idle-dim` returned `false`.
+  - `gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type` and `sleep-inactive-battery-type` returned `'nothing'`.
+  - `gnome-extensions disable desktop-lab-v12@young && gnome-extensions enable desktop-lab-v12@young` completed successfully, and `gnome-extensions info desktop-lab-v12@young` reported `State: ACTIVE`.
+  - `journalctl --user -b` showed no `desktop-lab-v12` JavaScript errors after the extension was toggled.
+- Known limits:
+  - `gnome-extensions info desktop-lab-v12@young` still showed cached old description text after reload, but the metadata files in the profile, version snapshot, and `~/.local/share/gnome-shell/extensions/desktop-lab-v12@young/` contain the corrected v1.2.2 description.
+  - Market values depend on the public Stooq CSV endpoint and fall back to `--` when offline or unavailable.
+  - The application-grid drag/scroll zone uses guarded GNOME Shell APIs because the overview internals are not a stable extension API.
+  - Log out and back in if GNOME Shell does not fully refresh the updated extension UI after applying the profile.
+
 ### 2026-07-09 13:22 CST - v 1.2.1 desktop lab overlay
 
 - Version label: v1.2.1-desktop-lab-overlay.

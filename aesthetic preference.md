@@ -2,6 +2,16 @@
 
 When setting up a custom desktop, it is important to have a personal aesthetic preference. This project should follow an Apple-like aesthetic direction for future desktop, UI, and feature work.
 
+## Living Preference Maintenance
+
+This file is a living record of the user's current visual and interaction preferences.
+
+If a newer user preference differs from the existing aesthetic direction, update this file instead of treating the preference as a one-off exception.
+
+When a task introduces a durable key desktop, UI, or interaction feature, add a concise note here so later workflow runs can preserve and refine that feature.
+
+Keep durable preference notes focused on reusable direction. Do not add temporary implementation details that only matter to one task.
+
 # Apple Design Guidelines
 
 ## Philosophy

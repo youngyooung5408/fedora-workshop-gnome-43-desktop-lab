@@ -24,6 +24,7 @@ So this project moves settings between host and VM for you.
 ## Files
 
 - `TASK.md` - user-maintained task list and feature requests for Codex
+- `aesthetic preference.md` - living visual preference source for desktop, UI, layout, and feature decisions
 - `LAB_DIARY.md` - readable version diary for every committed lab version
 - `scripts/export-host-layout.sh` — dump the current host GNOME layout
 - `scripts/import-layout.sh` — load a dumped layout onto the current machine/VM
@@ -40,33 +41,36 @@ So this project moves settings between host and VM for you.
 This workflow is meant to survive across Codex conversations.
 
 1. User updates `TASK.md` with the desired desktop changes, feature ideas, constraints, and anything that must not change.
-2. Codex reads `TASK.md`, inspects the current VM/lab state, and makes the requested desktop layout or lab file changes.
-3. Codex imports the changed profile into this VM when the task is ready for live desktop testing:
+2. Codex reads `TASK.md`, `task/version.md`, and `aesthetic preference.md`, then inspects the current VM/lab state.
+3. Codex compares newer user preferences and accepted results against `aesthetic preference.md`. If they differ from the current aesthetic direction, Codex updates `aesthetic preference.md` so later work follows the user's latest preference.
+4. When a new task introduces durable key visual, interaction, or desktop features, Codex adds concise notes for those features to `aesthetic preference.md` before considering the workflow complete.
+5. Codex makes the requested desktop layout or lab file changes.
+6. Codex imports the changed profile into this VM when the task is ready for live desktop testing:
    ```bash
    ./scripts/import-layout.sh profiles/vm-initial-desktop-task
    ```
-4. Codex installs or updates the project-local clickable version launcher:
+7. Codex installs or updates the project-local clickable version launcher:
    ```bash
    ./scripts/install-version-launcher.sh v1.1.2 profiles/vm-initial-desktop-task
    ```
-5. Codex runs the acceptance checks listed in `TASK.md` and the workflow verifier:
+8. Codex runs the acceptance checks listed in `TASK.md` and the workflow verifier:
    ```bash
    ./scripts/check-workflow.sh
    ```
-6. Codex updates `LAB_DIARY.md` with the new version entry:
+9. Codex updates `LAB_DIARY.md` with the new version entry:
    - version label
    - task summary
    - files, settings, or profiles changed
    - features included in the version
    - verification result
    - known limits or follow-up items
-7. Codex commits the changed lab files to Git.
-8. Codex pushes the completed commit to the configured Git remote:
+10. Codex commits the changed lab files to Git.
+11. Codex pushes the completed commit to the configured Git remote:
    ```bash
    git push
    ```
    If the remote or authentication is unavailable, Codex reports the push failure and leaves the commit local.
-9. Codex reports the version label, commit hash, changed files, import result, project-local launcher path, verification result, and push result back to the user.
+12. Codex reports the version label, commit hash, changed files, import result, project-local launcher path, verification result, and push result back to the user.
 
 A lab version is one Git commit on `main`, pushed to the configured remote when available.
 The Git history is the exact record; `LAB_DIARY.md` is the readable summary for checking from this VM or from the host.

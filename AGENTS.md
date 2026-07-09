@@ -4,6 +4,8 @@
 
 - Read `aesthetic preference.md` before making desktop, UI, layout, or visual feature changes.
 - Treat `aesthetic preference.md` as the default visual source of truth unless a newer user instruction overrides it.
+- When a newer user instruction or accepted result conflicts with the current aesthetic direction, update `aesthetic preference.md` so it records the user's current preference.
+- When a new task introduces a durable key visual, interaction, or desktop feature, add a concise note to `aesthetic preference.md` before considering the workflow complete.
 - Keep future feature work aligned with the Apple-like aesthetic described there: calm, spacious, restrained, functional, and polished.
 
 ## Versioning

@@ -19,6 +19,31 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-09 16:26 CST - Aesthetic preference maintenance workflow
+
+- Version label: aesthetic-preference-maintenance-workflow.
+- Task summary: add a workflow rule that keeps `aesthetic preference.md` synchronized with newer user preferences and durable key features from new tasks.
+- Changed files:
+  - `AGENTS.md`
+  - `README.md`
+  - `LAB_DIARY.md`
+  - `aesthetic preference.md`
+  - `scripts/check-workflow.sh`
+  - `task/v 1.2/v 1.2.4.md`
+- Desktop settings or profiles changed:
+  - None. This is a workflow-documentation update only.
+- Features included:
+  - Future Codex runs must update `aesthetic preference.md` when a newer user instruction or accepted result differs from the current aesthetic direction.
+  - Future Codex runs must add concise `aesthetic preference.md` notes when new tasks introduce durable key desktop, UI, visual, or interaction features.
+  - The workflow verifier now checks that the agent notes, README workflow, and aesthetic preference source all include this maintenance rule.
+  - The v1.2.4 task note records this workflow request for later reference.
+- Verification:
+  - `bash -n scripts/check-workflow.sh` completed successfully.
+  - `git diff --check` completed successfully.
+  - `./scripts/check-workflow.sh` completed successfully with only the expected dirty worktree warning before commit.
+- Known limits:
+  - This version does not change or regenerate the v1.2.3 desktop profile or project-local launcher snapshot.
+
 ### 2026-07-09 16:13 CST - v 1.2.3 aesthetic preference pass
 
 - Version label: v1.2.3-aesthetic-preference-pass.

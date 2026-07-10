@@ -5,11 +5,14 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Current request
 
-- Version `v1.2.5`: refine the desktop-lab overlay from `v1.2.4` using the completed task note at `task/v 1.2/v 1.2.5.md`.
-- Keep the v1.2.4 behavior and feature set intact unless this task explicitly refines it.
-- Fix the clock date to month and day, remove the inner clock margin/ring feel, and make the analog clock move continuously instead of jumping by minute.
-- Make the left dock behave more like a Mac dock wave instead of growing as one whole block, add a more detailed technological texture direction, make app clusters/folders open on click rather than hover, and add a custom drag/drop reorder path.
-- Simplify the stock panel by removing the visible update time and Yahoo Chart API/provider text.
+- Version `v1.2.6`: refine the desktop-lab overlay from `v1.2.5` using the completed task note at `task/v 1.2/v 1.2.6.md`.
+- Keep the v1.2.5 behavior and feature set intact unless this task explicitly refines it.
+- Move the clock and stock widgets to the desktop background/workspace layer when the current Shell exposes that path, so they move with the background during overview shrinking instead of staying fixed like top-panel chrome.
+- Show the clock and stock widgets only on the main workspace and leave other workspaces visually empty.
+- Keep the left dock as Shell-level chrome that can appear on every workspace, but hide it until the pointer reaches the left edge.
+- Remove the clock second hand and add 12 simple hourly scale dots.
+- Keep the stock panel simple, but add a stock chooser app so selected symbols can be changed from the panel.
+- Simplify the left dock and app flyouts by removing category words, visible app descriptions, the "Apps" title wording, and extra nested margin boxes.
 - Keep the solid black lab background as the base surface.
 - Keep the Bluetooth battery panel indicator and Codex usage indicator.
 
@@ -21,17 +24,21 @@ Codex should read this file at the start of each desktop customization task.
 - Set the desktop background to solid black as the base lab background.
 - Do not apply custom GNOME Text Editor autosave, session restore, line number, wrapping, dark style, or Markdown notes directory settings.
 - Add a larger middle-left dock with app clusters for writing, coding, web, system tools, and application-grid access.
+- Hide the left dock by default and reveal it from the left screen edge while keeping it available on every workspace.
 - Add a Mac-like interactive middle-left dock with pointer wave magnification and click-open folder flyouts for app clusters.
 - Add custom drag/drop reordering for the left dock groups, accepting that this personal extension path may rely on less stable Shell behavior.
-- Add a larger simple circular wall-clock overlay near the upper middle of the desktop.
-- Remove clock minute tick scales and show month and date as the date.
+- Keep the dock and app flyouts icon-only and visually transparent, without category words, app descriptions, or "Apps" title wording.
+- Add a larger simple circular wall-clock widget near the upper middle of the main workspace background.
+- Remove clock minute tick scales, remove the second hand, add 12 hourly dots, and show month and date as the date.
 - Keep the clock face continuously moving with sub-second refresh instead of minute jumps.
-- Add a visible textured market board for common symbols without opening a browser on click, but do not show update-time or provider/API labels in the panel.
+- Add a visible textured market board for chosen symbols without opening a browser on click, but do not show update-time or provider/API labels in the panel.
+- Add a compact stock chooser app from the market panel for adding and removing symbols.
+- Prefer Alpha Vantage when the user provides `DESKTOP_LAB_ALPHA_VANTAGE_KEY` or `~/.config/desktop-lab-v12/alpha-vantage-key`, while keeping no-key fallback quotes.
 - Add a bottom edge drag/scroll zone that opens the GNOME application grid when supported by the current Shell API.
 - Show an animated rest screen after 30 minutes of no input while keeping background work running, using the GNOME Shell idle monitor when available.
 - Apply the `aesthetic preference.md` direction with neutral translucent surfaces, restrained text weights, subtle hover/focus states, and low-saturation motion.
 - Avoid decorative rainbow, blue/teal-heavy, or flashy visual treatment.
-- Create an executable script and clickable GNOME launcher that import the `v1.2.5` profile snapshot.
+- Create an executable script and clickable GNOME launcher that import the `v1.2.6` profile snapshot.
 - Make the project-local `versions/` archive the source of truth for saved launchers.
 
 ## Constraints
@@ -63,32 +70,44 @@ Codex should read this file at the start of each desktop customization task.
 - The tuned profile sets `org.gnome.shell favorite-apps` to an empty array.
 - `scripts/import-layout.sh` applies `favorite-apps` from the tuned profile while still skipping app-grid ordering.
 - `desktop-lab-v12@young` creates a Mac-like interactive larger vertically centered left dock with grouped app clusters.
+- `desktop-lab-v12@young` hides the left dock by default and reveals it from a left-edge pointer zone.
+- `desktop-lab-v12@young` keeps the left dock as Shell-level chrome so it can appear on every workspace.
 - `desktop-lab-v12@young` magnifies dock buttons as a pointer-proximity wave instead of resizing the whole dock.
 - `desktop-lab-v12@young` supports custom drag/drop reordering of the left dock groups.
 - `desktop-lab-v12@young` creates folder flyouts for app clusters.
 - `desktop-lab-v12@young` opens app cluster folder flyouts on click, not hover.
-- `desktop-lab-v12@young` creates a larger circular wall-clock overlay near the upper middle of the desktop.
+- `desktop-lab-v12@young` creates a larger circular wall-clock widget near the upper middle of the main workspace background.
+- `desktop-lab-v12@young` adds the clock and stock widgets to the Shell background group when available, with guarded fallback chrome.
+- `desktop-lab-v12@young` hides the clock and stock widgets outside the main workspace.
 - `desktop-lab-v12@young` removes clock minute tick marks.
+- `desktop-lab-v12@young` removes the clock second hand.
+- `desktop-lab-v12@young` adds 12 simple hourly clock dots.
 - `desktop-lab-v12@young` shows month and day for the clock date label.
 - `desktop-lab-v12@young` refreshes the clock at sub-second cadence so the analog hands move continuously.
 - `desktop-lab-v12@young` creates a visible textured market board instead of clickable quote URL chips.
+- `desktop-lab-v12@young` creates a compact stock chooser app for adding and removing market symbols.
+- `desktop-lab-v12@young` stores chosen market symbols in the user config directory.
+- `desktop-lab-v12@young` supports optional Alpha Vantage quote lookup with no-key fallback quotes.
 - `desktop-lab-v12@young` does not show update-time text in the market panel.
 - `desktop-lab-v12@young` does not show Yahoo Chart API/provider text in the market panel.
+- `desktop-lab-v12@young` keeps dock category buttons icon-only without visible group label text.
+- `desktop-lab-v12@young` keeps app flyout items icon-only without visible app description text.
+- `desktop-lab-v12@young` does not show the old "Category Apps" title wording.
 - `desktop-lab-v12@young` creates a guarded bottom drag/scroll zone for opening the app grid.
 - `desktop-lab-v12@young` creates a 30-minute animated rest screen using the GNOME Shell idle monitor when available.
 - `desktop-lab-v12@young` keeps a timer fallback for the rest screen if the Shell idle monitor is unavailable.
 - `desktop-lab-v12@young` applies the `aesthetic preference.md` direction with neutral translucent surfaces and restrained typography.
-- The v1.2.5 stylesheet does not use the old saturated blue hover accent or teal gesture-zone accent.
-- The v1.2.5 animated rest screen uses low-saturation neutral motion instead of blue/green diagonal lines.
-- The v1.2.5 rest screen label is concise and polished.
-- The v1.2.5 metadata records the v1.2.5 refinement.
+- The v1.2.6 stylesheet does not use the old saturated blue hover accent or teal gesture-zone accent.
+- The v1.2.6 animated rest screen uses low-saturation neutral motion instead of blue/green diagonal lines.
+- The v1.2.6 rest screen label is concise and polished.
+- The v1.2.6 metadata records the v1.2.6 refinement.
 - GNOME break reminders and idle dimming are disabled for this tuned profile.
 - AC and battery inactive sleep remain `nothing` so the VM does not suspend background work.
 - Battery percentage is disabled and the lab extension includes guarded battery-icon hiding.
 - Importing `profiles/vm-initial-desktop-task` with `./scripts/import-layout.sh` completes.
-- `versions/v1/v1.2/v1.2.5/apply-v1.2.5.sh` exists and is executable.
-- `versions/v1/v1.2/v1.2.5/Apply v1.2.5.desktop` exists and is executable.
-- The `v1.2.5` version launcher stores a `profile/` snapshot with `gsettings-export.sh`.
+- `versions/v1/v1.2/v1.2.6/apply-v1.2.6.sh` exists and is executable.
+- `versions/v1/v1.2/v1.2.6/Apply v1.2.6.desktop` exists and is executable.
+- The `v1.2.6` version launcher stores a `profile/` snapshot with `gsettings-export.sh`.
 - `scripts/install-version-launcher.sh` defaults to the repo-local `versions/` directory.
 - Existing project-local launchers do not reference the old home-level versions directory.
 - `bluetooth-battery@young` extension bundle packs successfully with `gnome-extensions pack --force`.

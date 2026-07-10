@@ -14,11 +14,12 @@ Keep durable preference notes focused on reusable direction. Do not add temporar
 
 ## Durable Desktop Preferences
 
-- Desktop clocks should stay very simple: no minute tick scale, no dense markings, no extra inner margin/ring, month-and-day date text, and continuous analog movement rather than minute jumps.
-- Left-side docks should feel interactive in a Mac-like way, with pointer-proximity wave magnification instead of whole-dock growth, clear app grouping, click-open folder access to app clusters, and support for custom drag/drop ordering when useful.
-- App clusters should behave like useful folders or flyouts that open intentionally on click, not automatically just because the pointer passes over them.
+- Desktop clocks should stay very simple: no minute tick scale, no dense markings, no extra inner margin/ring, 12 small hourly dots when scale is needed, no second hand, month-and-day date text, and continuous analog movement rather than minute jumps.
+- Clock and stock widgets should behave like desktop background widgets on the main workspace when GNOME Shell exposes a safe path for that layer, so they move with the background in overview and leave other workspaces visually empty.
+- Left-side docks should feel interactive in a Mac-like way, with pointer-proximity wave magnification instead of whole-dock growth, clear app grouping, click-open folder access to app clusters, support for custom drag/drop ordering when useful, and edge reveal behavior instead of always-visible chrome.
+- App clusters should behave like useful folders or flyouts that open intentionally on click, not automatically just because the pointer passes over them. Prefer icon-only dock and flyout controls without category words, app descriptions, or repeated "Apps" wording when the icons are clear.
 - Detailed particle-like, technological texture is preferred when it stays restrained, neutral, and polished.
-- Data panels, including market panels, should remain visible and visually textured with restrained translucent surfaces, but keep only essential values visible and hide update-time or provider/API labels unless explicitly requested.
+- Data panels, including market panels, should remain visible and visually textured with restrained translucent surfaces, but keep only essential values visible and hide update-time or provider/API labels unless explicitly requested. Market panels should let selected symbols be changed directly from a compact chooser.
 - Long-idle rest screens should use reliable system idle detection when GNOME Shell exposes it, with a timer fallback only when needed.
 
 # Apple Design Guidelines

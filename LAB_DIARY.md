@@ -19,6 +19,62 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-10 14:35 CST - v 1.2.6 background widgets, edge dock, and stock chooser pass
+
+- Version label: v1.2.6-background-widgets-edge-dock-stock-chooser-pass.
+- Task summary: finish the version 1.2.6 task note by moving the clock and stock widgets toward the desktop background/workspace layer, keeping those widgets on the main workspace only, changing the left dock to hidden left-edge reveal chrome, simplifying dock and flyout visuals to icon-only controls, removing the clock second hand, adding 12 hourly clock dots, and adding a configurable stock symbol chooser.
+- Changed files:
+  - `TASK.md`
+  - `LAB_DIARY.md`
+  - `aesthetic preference.md`
+  - `scripts/check-workflow.sh`
+  - `task/v 1.2/v 1.2.6.md`
+  - `profiles/vm-initial-desktop-task/README.txt`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/extension.js`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/metadata.json`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/stylesheet.css`
+  - `versions/v1/v1.2/v1.2.6/`
+- Desktop settings or profiles changed:
+  - Updated the tracked tuned profile `profiles/vm-initial-desktop-task`.
+  - Kept the v1.2.5 GNOME behavior: solid black desktop background, empty GNOME favorite-apps, 30-minute idle trigger, disabled idle dimming, disabled selected break reminders, and inactive sleep set to `nothing`.
+  - Imported `profiles/vm-initial-desktop-task` into this VM desktop session.
+  - Installed the project-local `v1.2.6` launcher snapshot from the tuned profile.
+  - Applied the saved `v1.2.6` launcher snapshot with `versions/v1/v1.2/v1.2.6/apply-v1.2.6.sh < /dev/null`.
+- Features included:
+  - Updated durable aesthetic preferences for background-level main-workspace clock/stock widgets, edge-revealed dock chrome, icon-only dock and app flyout controls, 12 hourly clock dots, no second hand, and configurable stock symbols.
+  - Added guarded background actor placement for the clock, stock panel, and stock chooser through `Main.layoutManager._backgroundGroup` when the current Shell exposes it, with fallback chrome if the private field is unavailable.
+  - Added main-workspace visibility control so the clock and stock widgets hide outside workspace index 0.
+  - Kept the left dock as Shell chrome, but changed it to hide offscreen and reveal from a narrow left-edge pointer zone.
+  - Removed visible dock category labels, removed app labels from flyout items, removed the old `Category Apps` title wording, and made dock/flyout surfaces more transparent.
+  - Removed the rendered clock second hand while preserving sub-second refresh for smooth hour/minute hand motion, and added 12 small hourly dots.
+  - Added a compact stock chooser in the market panel for adding and removing selected symbols, stored in `~/.config/desktop-lab-v12/market-symbols.json`.
+  - Added optional Alpha Vantage quote lookup using `DESKTOP_LAB_ALPHA_VANTAGE_KEY` or `~/.config/desktop-lab-v12/alpha-vantage-key`, while keeping no-key fallback quotes so the panel works immediately.
+  - Updated workflow verifier checks for the v1.2.6 task, aesthetic preferences, background widget path, workspace visibility, edge reveal dock, icon-only flyouts, clock dots/no second hand, stock chooser, metadata, and v1.2.6 launcher snapshot.
+- Verification:
+  - `bash -n scripts/check-workflow.sh` completed successfully.
+  - `git diff --check` completed successfully.
+  - `gnome-extensions pack --force --out-dir /tmp profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young` completed successfully.
+  - `./scripts/check-workflow.sh` completed successfully with only the expected dirty worktree warning before commit.
+  - `./scripts/import-layout.sh profiles/vm-initial-desktop-task` completed successfully.
+  - `./scripts/install-version-launcher.sh v1.2.6 profiles/vm-initial-desktop-task` completed successfully.
+  - `versions/v1/v1.2/v1.2.6/apply-v1.2.6.sh < /dev/null` completed successfully.
+  - `gnome-extensions disable desktop-lab-v12@young && gnome-extensions enable desktop-lab-v12@young` completed successfully, and `gnome-extensions info desktop-lab-v12@young` reported `State: ACTIVE`.
+  - The installed metadata file at `~/.local/share/gnome-shell/extensions/desktop-lab-v12@young/metadata.json` contains the v1.2.6 description.
+  - `journalctl --user -b` showed no `desktop-lab-v12` JavaScript or stylesheet errors after the extension was toggled.
+  - The no-key fallback market data fetch returned values for SPY, QQQ, NVDA, and AAPL.
+  - `gsettings get org.gnome.desktop.background picture-options` returned `'none'`.
+  - `gsettings get org.gnome.desktop.background primary-color` and `secondary-color` returned `'#000000'`.
+  - `gsettings get org.gnome.shell favorite-apps` returned `@as []`.
+  - `gsettings get org.gnome.desktop.session idle-delay` returned `uint32 1800`.
+  - `gsettings get org.gnome.settings-daemon.plugins.power idle-dim` returned `false`.
+- Known limits:
+  - The GNOME Shell background group is a private Shell field. The extension uses it defensively and falls back to chrome if unavailable, but this layer can change in future Shell releases.
+  - Shell Eval over D-Bus is disabled in this session, so private background group state could not be queried directly. The extension reload, installed metadata, clean journal, and workflow checks were used for runtime verification.
+  - `gnome-extensions info desktop-lab-v12@young` still showed cached old description text after reload, but the installed metadata file, tracked profile, and `v1.2.6` launcher snapshot all contain the v1.2.6 description.
+  - Alpha Vantage requires a user-provided API key and has free-tier request limits. Without a key, the stock chooser uses the existing no-key fallback quote path.
+  - The rest screen was verified by code path, extension reload, settings, and absence of Shell errors; this run did not wait unattended for 30 minutes in real time.
+  - Log out and back in if GNOME Shell does not fully refresh the updated extension UI after applying the profile.
+
 ### 2026-07-09 17:20 CST - v 1.2.5 clock, dock, and stock simplification pass
 
 - Version label: v1.2.5-clock-dock-stock-simplification-pass.

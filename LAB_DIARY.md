@@ -19,6 +19,51 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-10 20:56 CST - v 1.2.8 overview background embedding and sliding dock silhouette
+
+- Version label: v1.2.8-overview-background-embedding-sliding-dock-silhouette.
+- Task summary: finish the version 1.2.8 task note by making the clock and market widgets participate in the GNOME Shell Activities workspace-background transition instead of disappearing, and replace the separate hidden-dock hint with a visible slice of the real dock that slides into view.
+- Changed files:
+  - `TASK.md`
+  - `LAB_DIARY.md`
+  - `aesthetic preference.md`
+  - `scripts/check-workflow.sh`
+  - `task/v 1.2/v 1.2.8.md`
+  - `profiles/vm-initial-desktop-task/README.txt`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/extension.js`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/metadata.json`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/stylesheet.css`
+  - `versions/v1/v1.2/v1.2.8/`
+- Desktop settings or profiles changed:
+  - Updated the tracked tuned profile `profiles/vm-initial-desktop-task` while preserving the v1.2.7 GNOME settings and extension set.
+  - Kept the vertical marine background colors `#041D2F` and `#0A5266`, empty GNOME favorite-apps, 30-minute idle trigger, disabled idle dimming and selected break reminders, and inactive sleep set to `nothing`.
+  - Imported the tuned profile into this VM, installed the project-local v1.2.8 launcher snapshot, and applied that saved snapshot.
+- Features included:
+  - Added one full-monitor background widget layer containing the clock and market actors.
+  - During Activities overview, the extension reparents that layer into GNOME Shell 49's active main-workspace background bin so Shell applies the workspace's movement, scaling, and clipping to both widgets.
+  - The layer stays embedded through the overview exit animation and returns to the desktop background when the overview state reaches its hidden endpoint, before Shell destroys its temporary workspace actors.
+  - Kept guarded overview-group and manual-transform fallbacks for Shell layouts where the private workspace background bin is unavailable.
+  - Replaced the separate animated edge-hint actor with a 14px slice of the actual dock surface.
+  - Changed dock reveal/hide from layout-position movement and zero-opacity hiding to `translation_x` animation with longer cubic easing and a restrained marine surface/right border.
+  - Updated durable aesthetic preferences and workflow checks for background embedding, transition-safe restoration, dock silhouette, and the v1.2.8 launcher snapshot.
+- Verification:
+  - `bash -n scripts/check-workflow.sh`, metadata JSON parsing, and `git diff --check` completed successfully.
+  - `gnome-extensions pack --force` completed successfully for `bluetooth-battery@young`, `codex-usage@young`, and `desktop-lab-v12@young`.
+  - `./scripts/import-layout.sh profiles/vm-initial-desktop-task` completed successfully.
+  - `./scripts/install-version-launcher.sh v1.2.8 profiles/vm-initial-desktop-task` completed successfully.
+  - `versions/v1/v1.2/v1.2.8/apply-v1.2.8.sh < /dev/null` completed successfully.
+  - `desktop-file-validate` and `bash -n` passed for the v1.2.8 launcher files.
+  - The extension remained enabled and active after both imports, and its installed source and metadata match the clean v1.2.8 profile snapshot.
+  - `org.gnome.Shell.Extensions.GetExtensionErrors` returned an empty list for the active session instance, and focused journal checks found no desktop-lab, JavaScript, type, reference, stylesheet, or GNOME Shell errors after import.
+  - Live settings returned vertical shading, primary `#041D2F`, secondary `#0A5266`, empty favorite-apps, idle delay `1800`, and idle dimming `false`.
+  - `./scripts/check-workflow.sh` passed with only the expected dirty-worktree warning before commit.
+- Known limits:
+  - The overview workspace background bin and state adjustment are private GNOME Shell internals. The implementation is guarded and includes fallbacks, but these paths may need adjustment on later Shell releases.
+  - GNOME Shell 49 kept the already-loaded v1.2.7 JavaScript module when the extension was disabled and enabled, reported `ReloadExtension` as unsupported, and did not discover a temporary test UUID without a session restart. The installed v1.2.8 files are clean and package successfully, but the new overview embedding and dock animation require logout/login before live visual acceptance testing.
+  - GNOME Shell denied D-Bus screenshot capture for this session, so automated visual comparison was unavailable; perform the v1.2.8 visual acceptance check after logout/login loads the new module.
+  - `gnome-extensions info` still reports cached v1.2.7 description text, while the installed metadata file, tracked profile, and v1.2.8 launcher snapshot all contain the v1.2.8 description.
+  - Log out and back in if GNOME Shell does not fully refresh the updated extension UI after applying the profile.
+
 ### 2026-07-10 15:25 CST - v 1.2.7 marine background, overview widgets, and editable dock pass
 
 - Version label: v1.2.7-marine-overview-widgets-editable-dock-pass.

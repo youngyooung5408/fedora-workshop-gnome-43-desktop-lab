@@ -15,11 +15,14 @@ Keep durable preference notes focused on reusable direction. Do not add temporar
 ## Durable Desktop Preferences
 
 - Desktop clocks should stay very simple: no minute tick scale, no dense markings, no extra inner margin/ring, 12 small hourly dots when scale is needed, no second hand, month-and-day date text, and continuous analog movement rather than minute jumps.
-- Clock and stock widgets should behave like desktop background widgets on the main workspace when GNOME Shell exposes a safe path for that layer, so they move with the background in overview and leave other workspaces visually empty.
-- Left-side docks should feel interactive in a Mac-like way, with pointer-proximity wave magnification instead of whole-dock growth, clear app grouping, click-open folder access to app clusters, support for custom drag/drop ordering when useful, and edge reveal behavior instead of always-visible chrome.
+- Dark marine blue is preferred over a pure solid black background when the lab surface needs more depth while staying calm and low-saturation.
+- Clock and stock widgets should behave like desktop background widgets on the main workspace when GNOME Shell exposes a safe path for that layer, and should use an overview-scale fallback so they visually shrink with the background instead of behaving like fixed top-panel chrome.
+- Left-side docks should feel interactive in a Mac-like way, with pointer-proximity wave magnification instead of whole-dock growth, clear app grouping, click-open folder access to app clusters, support for custom drag/drop ordering when useful, smooth edge reveal behavior, and a subtle edge hint when hidden.
 - App clusters should behave like useful folders or flyouts that open intentionally on click, not automatically just because the pointer passes over them. Prefer icon-only dock and flyout controls without category words, app descriptions, or repeated "Apps" wording when the icons are clear.
+- Opened app flyouts should feel easy to target, with larger app icons/buttons than the hidden dock trigger when space allows.
+- Dock groups should have an understandable editing path for adding categories and app desktop IDs, with personal edits saved in user config rather than hard-coded only in the extension source.
 - Detailed particle-like, technological texture is preferred when it stays restrained, neutral, and polished.
-- Data panels, including market panels, should remain visible and visually textured with restrained translucent surfaces, but keep only essential values visible and hide update-time or provider/API labels unless explicitly requested. Market panels should let selected symbols be changed directly from a compact chooser.
+- Data panels, including market panels, should remain visible and visually textured with restrained translucent surfaces, but keep only essential values visible and hide update-time or provider/API labels unless explicitly requested. Market panels should let selected symbols be changed directly from a compact chooser with simple preset shortcuts when useful.
 - Long-idle rest screens should use reliable system idle detection when GNOME Shell exposes it, with a timer fallback only when needed.
 
 # Apple Design Guidelines

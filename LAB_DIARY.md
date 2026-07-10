@@ -19,6 +19,63 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-10 15:25 CST - v 1.2.7 marine background, overview widgets, and editable dock pass
+
+- Version label: v1.2.7-marine-overview-widgets-editable-dock-pass.
+- Task summary: finish the version 1.2.7 task note by replacing the pure black desktop surface with a dark marine background, adding an overview-scale fallback so the clock and market widgets shrink with Activities overview, smoothing the hidden left dock reveal with a persistent edge hint, enlarging app flyouts, improving stock selection with preset buttons, and adding a compact dock editor for user-added groups and app desktop IDs.
+- Changed files:
+  - `TASK.md`
+  - `LAB_DIARY.md`
+  - `aesthetic preference.md`
+  - `scripts/check-workflow.sh`
+  - `task/v 1.2/v1.2.7.md`
+  - `profiles/vm-initial-desktop-task/README.txt`
+  - `profiles/vm-initial-desktop-task/dconf-org-gnome.ini`
+  - `profiles/vm-initial-desktop-task/gsettings-export.sh`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/extension.js`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/metadata.json`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/stylesheet.css`
+  - `versions/v1/v1.2/v1.2.7/`
+- Desktop settings or profiles changed:
+  - Updated the tracked tuned profile `profiles/vm-initial-desktop-task`.
+  - Changed the desktop and screensaver color shading to a vertical dark marine pair: primary `#041D2F`, secondary `#0A5266`.
+  - Kept the v1.2.6 GNOME behavior: empty GNOME favorite-apps, 30-minute idle trigger, disabled idle dimming, disabled selected break reminders, and inactive sleep set to `nothing`.
+  - Imported `profiles/vm-initial-desktop-task` into this VM desktop session.
+  - Installed the project-local `v1.2.7` launcher snapshot from the tuned profile.
+  - Applied the saved `v1.2.7` launcher snapshot with `versions/v1/v1.2/v1.2.7/apply-v1.2.7.sh < /dev/null`.
+- Features included:
+  - Updated durable aesthetic preferences for dark marine backgrounds, overview-scaling background widgets, smoother hinted dock reveal, larger flyout app targets, editable dock groups, and stock preset shortcuts.
+  - Added `Main.overview` show/hide handling that scales and shifts the clock and market board during Activities overview as a fallback when Shell background internals do not move extension actors exactly with the workspace background.
+  - Added a narrow animated marine edge hint for the hidden dock, widened the reveal zone, and lengthened reveal/hide easing.
+  - Enlarged opened app flyout buttons and icons while keeping the dock and flyouts icon-only.
+  - Added stock preset buttons that share the same add/remove path as typed symbols.
+  - Added a compact dock editor action for adding groups and app `.desktop` IDs, saved to `~/.config/desktop-lab-v12/dock-groups.json`.
+  - Updated workflow verifier checks for the v1.2.7 task, aesthetic preferences, marine background settings, overview widget scaling, hidden dock hint, larger flyouts, stock presets, dock editor, metadata, and v1.2.7 launcher snapshot.
+- Verification:
+  - `bash -n scripts/check-workflow.sh` completed successfully.
+  - `git diff --check` completed successfully.
+  - `gnome-extensions pack --force --out-dir /tmp profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young` completed successfully.
+  - `./scripts/import-layout.sh profiles/vm-initial-desktop-task` completed successfully.
+  - `./scripts/install-version-launcher.sh v1.2.7 profiles/vm-initial-desktop-task` completed successfully.
+  - `versions/v1/v1.2/v1.2.7/apply-v1.2.7.sh < /dev/null` completed successfully.
+  - `./scripts/check-workflow.sh` completed successfully with only the expected dirty worktree warning before commit.
+  - `gnome-extensions disable desktop-lab-v12@young` and `gnome-extensions enable desktop-lab-v12@young` completed successfully, and `gnome-extensions info desktop-lab-v12@young` reported `State: ACTIVE`.
+  - The installed metadata file at `~/.local/share/gnome-shell/extensions/desktop-lab-v12@young/metadata.json` contains the v1.2.7 description.
+  - Focused `journalctl --user -b --since '5 minutes ago'` filtering found no `desktop-lab-v12`, JavaScript, TypeError, ReferenceError, or stylesheet errors after reload.
+  - The no-key fallback market data fetch returned values for SPY, QQQ, NVDA, and AAPL.
+  - `gsettings get org.gnome.desktop.background color-shading-type` returned `'vertical'`.
+  - `gsettings get org.gnome.desktop.background primary-color` returned `'#041D2F'`, and `secondary-color` returned `'#0A5266'`.
+  - `gsettings get org.gnome.shell favorite-apps` returned `@as []`.
+  - `gsettings get org.gnome.desktop.session idle-delay` returned `uint32 1800`.
+  - `gsettings get org.gnome.settings-daemon.plugins.power idle-dim` returned `false`.
+- Known limits:
+  - The GNOME Shell background group and overview geometry are private Shell internals. v1.2.7 keeps the guarded background layer and adds a scale fallback, but exact overview motion may still vary across Shell releases.
+  - The dock editor is intentionally compact: it adds groups and app `.desktop` IDs, but it is not a full installed-app browser.
+  - `gnome-extensions info desktop-lab-v12@young` still showed cached old description text after reload, but the installed metadata file, tracked profile, and `v1.2.7` launcher snapshot all contain the v1.2.7 description.
+  - Alpha Vantage requires a user-provided API key and has free-tier request limits. Without a key, the stock chooser uses the existing no-key fallback quote path.
+  - The rest screen was verified by code path, extension reload, settings, and absence of Shell errors; this run did not wait unattended for 30 minutes in real time.
+  - Log out and back in if GNOME Shell does not fully refresh the updated extension UI after applying the profile.
+
 ### 2026-07-10 14:35 CST - v 1.2.6 background widgets, edge dock, and stock chooser pass
 
 - Version label: v1.2.6-background-widgets-edge-dock-stock-chooser-pass.

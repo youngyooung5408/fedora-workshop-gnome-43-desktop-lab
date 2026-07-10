@@ -5,7 +5,7 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Current request
 
-- Version `v1.2.8`: refine the desktop-lab overlay from `v1.2.7` using the completed task note at `task/v 1.2/v 1.2.8.md`.
+- Version `v1.2.9`: refine the desktop-lab left dock from `v1.2.8` using the completed task note at `task/v 1.2/v 1.2.9.md`.
 - Keep the v1.2.7 behavior and feature set intact unless this task explicitly refines it.
 - Keep the clock and stock widgets in one main-workspace background layer and reparent that layer into the active overview workspace background so Shell moves and shrinks both widgets with the background.
 - Show the clock and stock widgets only on the main workspace and leave other workspaces visually empty.
@@ -83,6 +83,8 @@ Codex should read this file at the start of each desktop customization task.
 - `desktop-lab-v12@young` supports custom drag/drop reordering of the left dock groups.
 - `desktop-lab-v12@young` creates folder flyouts for app clusters.
 - `desktop-lab-v12@young` opens app cluster folder flyouts on click, not hover.
+- After an app cluster is clicked, `desktop-lab-v12@young` keeps the dock and its flyout open while the pointer moves away.
+- A click outside the dock, cluster flyout, and dock editor dismisses a dock pinned by a cluster click.
 - `desktop-lab-v12@young` creates a larger circular wall-clock widget near the upper middle of the main workspace background.
 - `desktop-lab-v12@young` places the clock and stock widgets inside one full-monitor background layer on the main workspace.
 - `desktop-lab-v12@young` reparents the shared widget layer into the GNOME Shell overview workspace background bin while Activities overview is visible.
@@ -117,6 +119,7 @@ Codex should read this file at the start of each desktop customization task.
 - The v1.2.8 animated rest screen uses low-saturation marine motion instead of blue/green diagonal lines.
 - The v1.2.8 rest screen label is concise and polished.
 - The v1.2.8 metadata records the v1.2.8 refinement.
+- The v1.2.9 metadata records the v1.2.9 refinement.
 - GNOME break reminders and idle dimming are disabled for this tuned profile.
 - AC and battery inactive sleep remain `nothing` so the VM does not suspend background work.
 - Battery percentage is disabled and the lab extension includes guarded battery-icon hiding.
@@ -124,6 +127,9 @@ Codex should read this file at the start of each desktop customization task.
 - `versions/v1/v1.2/v1.2.8/apply-v1.2.8.sh` exists and is executable.
 - `versions/v1/v1.2/v1.2.8/Apply v1.2.8.desktop` exists and is executable.
 - The `v1.2.8` version launcher stores a `profile/` snapshot with `gsettings-export.sh`.
+- `versions/v1/v1.2/v1.2.9/apply-v1.2.9.sh` exists and is executable.
+- `versions/v1/v1.2/v1.2.9/Apply v1.2.9.desktop` exists and is executable.
+- The `v1.2.9` version launcher stores a `profile/` snapshot with `gsettings-export.sh`.
 - `scripts/install-version-launcher.sh` defaults to the repo-local `versions/` directory.
 - Existing project-local launchers do not reference the old home-level versions directory.
 - `bluetooth-battery@young` extension bundle packs successfully with `gnome-extensions pack --force`.

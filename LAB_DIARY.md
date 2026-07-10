@@ -19,6 +19,40 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-10 21:46 CST - v 1.2.9 click-pinned dock clusters
+
+- Version label: v1.2.9-click-pinned-dock-clusters.
+- Task summary: make left-dock app clusters remain available after being clicked, rather than dismissing as soon as the pointer leaves the dock.
+- Changed files:
+  - `TASK.md`
+  - `LAB_DIARY.md`
+  - `aesthetic preference.md`
+  - `scripts/check-workflow.sh`
+  - `task/v 1.2/v 1.2.9.md`
+  - `profiles/vm-initial-desktop-task/README.txt`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/extension.js`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/metadata.json`
+  - `versions/v1/v1.2/v1.2.9/`
+- Desktop settings or profiles changed:
+  - Updated the tracked tuned profile and imported it into this VM.
+  - Created and applied the project-local v1.2.9 launcher snapshot.
+  - Preserved all existing GNOME settings and the Bluetooth battery and Codex usage extensions.
+- Features included:
+  - A cluster click now pins the revealed dock and its flyout, so pointer movement alone cannot dismiss it.
+  - A click outside the dock, cluster flyout, and dock editor clears that pin and hides the dock.
+  - Recorded the durable interaction preference and added v1.2.9 workflow assertions and metadata.
+- Verification:
+  - `bash -n` passed for the workflow scripts and profile settings script.
+  - `gjs -m` parsed the extension until the expected unavailable GNOME Shell resource import outside Shell.
+  - `./scripts/import-layout.sh profiles/vm-initial-desktop-task` completed successfully.
+  - `./scripts/install-version-launcher.sh v1.2.9 profiles/vm-initial-desktop-task` completed successfully.
+  - `versions/v1/v1.2/v1.2.9/apply-v1.2.9.sh < /dev/null` completed successfully.
+  - The installed extension source and metadata match the tracked v1.2.9 profile; `gnome-extensions info` reports it enabled and active.
+  - `./scripts/check-workflow.sh` passed, including extension bundle packing and desktop-launcher validation, with only the expected pre-commit dirty-worktree warning.
+- Known limits:
+  - GNOME Shell is still serving its cached v1.2.8 description for the active instance; the installed metadata and v1.2.9 snapshot contain the updated description.
+  - A logout and login is required before visually accepting the newly loaded extension JavaScript in the live Shell session.
+
 ### 2026-07-10 20:56 CST - v 1.2.8 overview background embedding and sliding dock silhouette
 
 - Version label: v1.2.8-overview-background-embedding-sliding-dock-silhouette.

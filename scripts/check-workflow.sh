@@ -63,7 +63,7 @@ require_text() {
     return
   fi
 
-  if grep -Fq "$text" "$file"; then
+  if grep -Fq -- "$text" "$file"; then
     pass "$description"
   else
     fail "$description"
@@ -79,7 +79,7 @@ require_absent_text() {
     return
   fi
 
-  if grep -Fq "$text" "$file"; then
+  if grep -Fq -- "$text" "$file"; then
     fail "$description"
   else
     pass "$description"
@@ -234,6 +234,39 @@ PY
   fi
 }
 
+validate_host_manifest() {
+  local manifest="$1"
+  if python3 - "$manifest" <<'PY'
+import json
+import pathlib
+import re
+import sys
+
+path = pathlib.Path(sys.argv[1])
+data = json.loads(path.read_text(encoding="utf-8"))
+required = {"version", "extensions", "settings"}
+if set(data) != required:
+    raise SystemExit("manifest must contain exactly version, extensions, and settings")
+if data["version"] != path.parent.name or not re.fullmatch(r"v\d+\.\d+\.\d+", data["version"]):
+    raise SystemExit("manifest version must match its version directory")
+if not data["extensions"] or len(data["extensions"]) != len(set(data["extensions"])):
+    raise SystemExit("extensions must be a non-empty unique list")
+for uuid in data["extensions"]:
+    if not isinstance(uuid, str) or not (path.parent / "profile" / "extensions" / uuid / "metadata.json").is_file():
+        raise SystemExit(f"missing declared extension: {uuid}")
+for item in data["settings"]:
+    if set(item) != {"schema", "key", "value"} or not all(isinstance(v, str) for v in item.values()):
+        raise SystemExit("each setting requires string schema, key, and value")
+    if not item["schema"].startswith("org.gnome.shell.extensions."):
+        raise SystemExit(f"broad host setting is prohibited: {item['schema']} {item['key']}")
+PY
+  then
+    pass "$manifest is a safe, explicit host manifest"
+  else
+    fail "$manifest is not a safe host manifest"
+  fi
+}
+
 validate_version_launcher() {
   local version_dir="$1"
   local version
@@ -382,6 +415,12 @@ require_text "aesthetic preference.md" "hide update-time or provider/API labels"
 require_text "aesthetic preference.md" "selected symbols be changed directly from a compact chooser" "aesthetic preference records v1.2.6 stock chooser preference"
 require_text "aesthetic preference.md" "preset shortcuts" "aesthetic preference records v1.2.7 stock preset preference"
 require_text "TASK.md" 'Version `v1.2.9`' "TASK.md records v1.2.9 as the current request"
+require_text "TASK.md" 'Version `v1.2.10`' "TASK.md records v1.2.10 host installation safety work"
+require_text "task/v 1.2/v 1.2.10.md" "## version 1.2.10" "v1.2.10 task note exists"
+require_file scripts/update-host.sh
+require_text scripts/update-host.sh "Safe host update preview" "host updater previews changes"
+require_text scripts/update-host.sh "--rollback" "host updater supports rollback"
+require_absent_text scripts/update-host.sh "bluetoothctl" "host updater does not manipulate Bluetooth"
 require_text "task/v 1.2/v 1.2.9.md" "## version 1.2.9" "v1.2.9 task note exists"
 require_text "$tuned_enabled" "desktop-lab-v12@young" "desktop-lab-v12@young is enabled in $tuned_enabled"
 require_text "$tuned_settings" "gsettings set org.gnome.desktop.background picture-options \\'none\\'" "v1.2 background disables wallpaper image"
@@ -529,6 +568,14 @@ require_text "$version_v129_extension/extension.js" "_dockPinnedByCluster" "v1.2
 require_text "$version_v129_extension/extension.js" "if (this._dockPinnedByCluster)" "v1.2.9 launcher snapshot protects pinned dock from pointer motion"
 require_text "$version_v129_extension/metadata.json" "v1.2.9 refinement" "v1.2.9 launcher snapshot records its refinement"
 
+version_v1210="versions/v1/v1.2/v1.2.10"
+require_file "$version_v1210/apply-v1.2.10.sh"
+require_file "$version_v1210/Apply v1.2.10.desktop"
+require_file "$version_v1210/profile/gsettings-export.sh"
+require_file "$version_v1210/host-manifest.json"
+validate_host_manifest "$version_v1210/host-manifest.json"
+require_text "$version_v1210/README.md" "Lab restore warning" "v1.2.10 labels its exact launcher as a lab restore"
+
 shell_major=""
 if command -v gnome-shell >/dev/null 2>&1; then
   shell_major="$(gnome-shell --version | awk '{print $3}' | cut -d. -f1)"
@@ -573,6 +620,16 @@ fi
 for version_dir in "${version_dirs[@]}"; do
   validate_version_launcher "$version_dir"
 done
+
+while IFS= read -r manifest; do
+  validate_host_manifest "$manifest"
+done < <(find versions -name host-manifest.json -print | sort)
+
+if tests/test-update-host.sh; then
+  pass "safe host updater isolated apply and rollback tests pass"
+else
+  fail "safe host updater isolated apply and rollback tests failed"
+fi
 
 if [ "$git_available" -eq 1 ]; then
   if [ -n "$(git status --short)" ]; then

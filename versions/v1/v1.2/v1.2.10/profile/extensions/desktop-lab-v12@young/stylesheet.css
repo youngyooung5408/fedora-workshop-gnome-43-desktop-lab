@@ -1,0 +1,365 @@
+.desktop-lab-v12-dock {
+  background-color: rgba(4, 29, 47, 0.66);
+  border: 0;
+  border-right: 1px solid rgba(206, 235, 242, 0.18);
+  border-radius: 0 14px 14px 0;
+  padding: 8px 7px;
+  spacing: 12px;
+  box-shadow: none;
+}
+
+.desktop-lab-v12-dock-reveal-zone {
+  background-color: transparent;
+}
+
+.desktop-lab-v12-cluster {
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  spacing: 0;
+}
+
+.desktop-lab-v12-cluster:hover {
+  background-color: transparent;
+}
+
+.desktop-lab-v12-cluster-dragging {
+  background-color: rgba(245, 245, 247, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+}
+
+.desktop-lab-v12-group-label {
+  color: transparent;
+  font-size: 1pt;
+}
+
+.desktop-lab-v12-app-button {
+  width: 58px;
+  height: 58px;
+  border-radius: 17px;
+  background-color: transparent;
+  border: 0;
+  color: #f5f5f7;
+}
+
+.desktop-lab-v12-folder-trigger {
+  background-color: transparent;
+}
+
+.desktop-lab-v12-app-button:hover,
+.desktop-lab-v12-app-button:focus {
+  background-color: rgba(245, 245, 247, 0.12);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.desktop-lab-v12-folder-flyout {
+  background-color: rgba(8, 42, 57, 0.48);
+  border: 0;
+  border-radius: 20px;
+  padding: 10px;
+  spacing: 10px;
+  color: #f5f5f7;
+  box-shadow: 0 16px 38px rgba(0, 12, 18, 0.34);
+}
+
+.desktop-lab-v12-folder-title {
+  color: #f5f5f7;
+  font-size: 10pt;
+  font-weight: 600;
+}
+
+.desktop-lab-v12-folder-items {
+  spacing: 10px;
+}
+
+.desktop-lab-v12-folder-button {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  padding: 0;
+  background-color: transparent;
+  border: 0;
+}
+
+.desktop-lab-v12-folder-button:hover,
+.desktop-lab-v12-folder-button:focus {
+  background-color: rgba(245, 245, 247, 0.12);
+}
+
+.desktop-lab-v12-folder-row {
+  spacing: 9px;
+}
+
+.desktop-lab-v12-folder-label {
+  color: #f5f5f7;
+  font-size: 10pt;
+  font-weight: 500;
+}
+
+.desktop-lab-v12-clock-panel {
+  color: #f5f5f7;
+  spacing: 6px;
+  text-align: center;
+}
+
+.desktop-lab-v12-clock-face {
+  width: 198px;
+  height: 198px;
+}
+
+.desktop-lab-v12-clock-time {
+  color: #f5f5f7;
+  font-size: 16pt;
+  font-weight: 600;
+  text-align: center;
+}
+
+.desktop-lab-v12-subtle {
+  color: #b8b8bd;
+  font-size: 9pt;
+  text-align: center;
+}
+
+.desktop-lab-v12-market-panel {
+  min-width: 238px;
+  background-color: rgba(5, 36, 52, 0.78);
+  background-gradient-direction: vertical;
+  background-gradient-start: rgba(16, 79, 98, 0.70);
+  background-gradient-end: rgba(4, 28, 43, 0.78);
+  border: 1px solid rgba(217, 244, 250, 0.18);
+  border-radius: 18px;
+  padding: 13px;
+  spacing: 9px;
+  color: #f5f5f7;
+  box-shadow: 0 22px 54px rgba(0, 12, 18, 0.44);
+}
+
+.desktop-lab-v12-market-header {
+  spacing: 12px;
+}
+
+.desktop-lab-v12-market-title {
+  color: #f5f5f7;
+  font-size: 10pt;
+  font-weight: 600;
+}
+
+.desktop-lab-v12-market-configure {
+  width: 28px;
+  height: 24px;
+  border-radius: 8px;
+  background-color: transparent;
+  border: 0;
+  color: #f5f5f7;
+}
+
+.desktop-lab-v12-market-configure:hover,
+.desktop-lab-v12-market-configure:focus {
+  background-color: rgba(245, 245, 247, 0.10);
+}
+
+.desktop-lab-v12-market-rows {
+  spacing: 3px;
+}
+
+.desktop-lab-v12-market-row {
+  spacing: 12px;
+  padding: 5px 0;
+}
+
+.desktop-lab-v12-market-symbol {
+  width: 54px;
+  color: #c7c7cc;
+  font-size: 10pt;
+  font-weight: 600;
+}
+
+.desktop-lab-v12-market-value {
+  color: #f5f5f7;
+  font-size: 10pt;
+  font-weight: 600;
+}
+
+.desktop-lab-v12-stock-chooser {
+  background-color: rgba(7, 42, 58, 0.84);
+  background-gradient-direction: vertical;
+  background-gradient-start: rgba(17, 80, 101, 0.72);
+  background-gradient-end: rgba(4, 30, 45, 0.82);
+  border: 1px solid rgba(217, 244, 250, 0.16);
+  border-radius: 16px;
+  padding: 11px;
+  spacing: 9px;
+  color: #f5f5f7;
+  box-shadow: 0 18px 44px rgba(0, 12, 18, 0.40);
+}
+
+.desktop-lab-v12-stock-entry-row {
+  spacing: 8px;
+}
+
+.desktop-lab-v12-stock-entry {
+  min-width: 148px;
+  min-height: 30px;
+  border-radius: 10px;
+  padding: 5px 9px;
+  background-color: rgba(245, 245, 247, 0.08);
+  border: 1px solid rgba(245, 245, 247, 0.12);
+  color: #f5f5f7;
+  font-size: 10pt;
+}
+
+.desktop-lab-v12-stock-presets {
+  spacing: 6px;
+}
+
+.desktop-lab-v12-stock-preset-button {
+  min-width: 42px;
+  min-height: 26px;
+  border-radius: 9px;
+  padding: 4px 7px;
+  background-color: rgba(245, 245, 247, 0.07);
+  border: 1px solid rgba(245, 245, 247, 0.10);
+  color: #f5f5f7;
+  font-size: 9pt;
+  font-weight: 600;
+}
+
+.desktop-lab-v12-stock-preset-button:hover,
+.desktop-lab-v12-stock-preset-button:focus {
+  background-color: rgba(245, 245, 247, 0.14);
+}
+
+.desktop-lab-v12-stock-items {
+  spacing: 6px;
+}
+
+.desktop-lab-v12-stock-row {
+  spacing: 10px;
+  padding: 3px 0;
+}
+
+.desktop-lab-v12-stock-symbol {
+  width: 128px;
+  color: #f5f5f7;
+  font-size: 10pt;
+  font-weight: 600;
+}
+
+.desktop-lab-v12-stock-icon-button {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background-color: rgba(245, 245, 247, 0.07);
+  border: 1px solid rgba(245, 245, 247, 0.10);
+  color: #f5f5f7;
+}
+
+.desktop-lab-v12-stock-icon-button:hover,
+.desktop-lab-v12-stock-icon-button:focus {
+  background-color: rgba(245, 245, 247, 0.14);
+  border-color: rgba(245, 245, 247, 0.22);
+}
+
+.desktop-lab-v12-dock-editor {
+  background-color: rgba(7, 42, 58, 0.86);
+  background-gradient-direction: vertical;
+  background-gradient-start: rgba(18, 83, 104, 0.74);
+  background-gradient-end: rgba(4, 30, 45, 0.84);
+  border: 1px solid rgba(217, 244, 250, 0.17);
+  border-radius: 18px;
+  padding: 12px;
+  spacing: 9px;
+  color: #f5f5f7;
+  box-shadow: 0 20px 48px rgba(0, 12, 18, 0.42);
+}
+
+.desktop-lab-v12-dock-editor-row {
+  spacing: 8px;
+}
+
+.desktop-lab-v12-dock-editor-entry {
+  min-width: 160px;
+  min-height: 30px;
+  border-radius: 10px;
+  padding: 5px 9px;
+  background-color: rgba(245, 245, 247, 0.08);
+  border: 1px solid rgba(245, 245, 247, 0.12);
+  color: #f5f5f7;
+  font-size: 10pt;
+}
+
+.desktop-lab-v12-dock-editor-entry-small {
+  min-width: 76px;
+}
+
+.desktop-lab-v12-dock-editor-add,
+.desktop-lab-v12-dock-editor-remove {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background-color: rgba(245, 245, 247, 0.07);
+  border: 1px solid rgba(245, 245, 247, 0.10);
+  color: #f5f5f7;
+}
+
+.desktop-lab-v12-dock-editor-add:hover,
+.desktop-lab-v12-dock-editor-add:focus,
+.desktop-lab-v12-dock-editor-remove:hover,
+.desktop-lab-v12-dock-editor-remove:focus {
+  background-color: rgba(245, 245, 247, 0.14);
+  border-color: rgba(245, 245, 247, 0.22);
+}
+
+.desktop-lab-v12-dock-editor-items {
+  spacing: 5px;
+}
+
+.desktop-lab-v12-dock-editor-group-row {
+  spacing: 10px;
+  padding: 3px 0;
+}
+
+.desktop-lab-v12-dock-editor-group-label {
+  width: 236px;
+  color: #f5f5f7;
+  font-size: 10pt;
+  font-weight: 600;
+}
+
+.desktop-lab-v12-gesture-zone {
+  background-color: rgba(245, 245, 247, 0.035);
+  border-top: 1px solid rgba(245, 245, 247, 0.10);
+}
+
+.desktop-lab-v12-gesture-zone:hover {
+  background-color: rgba(245, 245, 247, 0.075);
+}
+
+.desktop-lab-v12-idle-overlay {
+  background-color: #041d2f;
+  color: #f5f5f7;
+}
+
+.desktop-lab-v12-idle-canvas {
+  background-color: #041d2f;
+}
+
+.desktop-lab-v12-idle-content {
+  spacing: 8px;
+}
+
+.desktop-lab-v12-idle-clock {
+  color: #f5f5f7;
+  font-size: 54pt;
+  font-weight: 400;
+  text-align: center;
+}
+
+.desktop-lab-v12-idle-subtitle {
+  color: #b8b8bd;
+  font-size: 12pt;
+  font-weight: 500;
+  text-align: center;
+}

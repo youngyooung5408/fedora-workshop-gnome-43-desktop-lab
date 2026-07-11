@@ -5,6 +5,14 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Current request
 
+- Version `v1.2.10`: separate exact lab restoration from safe host installation.
+- Keep historical version launchers unchanged as exact lab snapshots for
+  comparing features across versions.
+- Add a latest-version host updater driven by an explicit reviewed manifest.
+- Preserve host scaling, sizing, unrelated settings and extensions, local
+  managed-setting customizations, and Bluetooth state.
+- Preview and confirm changes, create a rollback backup, and support dry runs.
+
 - Version `v1.2.9`: refine the desktop-lab left dock from `v1.2.8` using the completed task note at `task/v 1.2/v 1.2.9.md`.
 - Keep the v1.2.7 behavior and feature set intact unless this task explicitly refines it.
 - Keep the clock and stock widgets in one main-workspace background layer and reparent that layer into the active overview workspace background so Shell moves and shrinks both widgets with the background.
@@ -139,5 +147,6 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Notes for host apply
 
-- Import `profiles/vm-initial-desktop-task` with `./scripts/import-layout.sh profiles/vm-initial-desktop-task`.
+- Use `./scripts/update-host.sh --dry-run`, then `./scripts/update-host.sh`.
+- Do not use `scripts/import-layout.sh` or a historical Apply launcher on the host; those are exact lab restoration tools.
 - Log out and back in after import if GNOME Shell does not immediately reload the updated top-panel extension.

@@ -5,15 +5,16 @@ Use a GNOME Boxes VM as a safe layout lab:
 1. export this computer's GNOME layout
 2. import it into a Fedora GNOME VM
 3. change the layout inside the VM
-4. export the VM layout
-5. apply the changed layout back onto this computer
+4. export the VM layout for version history and comparison
+5. use the safe host updater to install reviewed project features
 
 ## What this project is for
 
-This project is for the exact workflow you asked for:
+This project supports two deliberately separate workflows:
 - start from the current layout of this computer
 - customize it in the VM/app environment
-- overwrite the host layout when you like the result
+- keep exact lab snapshots for visual comparison
+- update the host without overwriting its unrelated settings
 
 ## Important limitation
 
@@ -30,6 +31,7 @@ So this project moves settings between host and VM for you.
 - `scripts/import-layout.sh` — load a dumped layout onto the current machine/VM
 - `scripts/export-current-layout.sh` — export the current machine/VM layout to a chosen folder
 - `scripts/apply-to-host.sh` — apply a chosen dump back onto the host
+- `scripts/update-host.sh` — preview, back up, and safely install the latest host manifest
 - `scripts/check-workflow.sh` — verify workflow documents, scripts, tracked profiles, project-local versions, and extension bundles
 - `scripts/install-version-launcher.sh` — create clickable `versions/vA/vA.B/vA.B.C/` launchers
 - `profiles/host-current/` — current exported host snapshot
@@ -86,6 +88,10 @@ Record important profile exports in `LAB_DIARY.md` when they matter.
 Curated version launcher snapshots under `versions/` are tracked so each saved VM lab version travels with the repo.
 
 ## Version Launchers
+
+> **Lab restore warning:** Version launchers reproduce an exact saved lab layout.
+> They can overwrite GNOME settings and must not be used as the normal host
+> updater. Use `./scripts/update-host.sh` on the host instead.
 
 Clickable VM layout version launchers live inside this Git repo under `versions/`.
 The hierarchy is:
@@ -145,12 +151,19 @@ window controls to the upper-right order `close`, `maximize/restore`,
 `minimize`.
 
 ### Back on the host
-After copying `profiles/vm-tuned/` back to the host:
+After pulling the latest project version:
 ```bash
-./scripts/apply-to-host.sh profiles/vm-tuned
+./scripts/update-host.sh --dry-run
+./scripts/update-host.sh
 ```
 
-Then log out and back in if needed.
+The updater chooses the latest reviewed host manifest, previews its changes,
+creates a rollback backup, replaces only declared project extensions, merges
+their UUIDs into the enabled-extension list, and preserves unrelated settings.
+It prints the exact rollback command after a successful update.
+
+`scripts/apply-to-host.sh` and the version launchers remain available for exact
+lab restoration and comparison, but they are intentionally destructive.
 
 ## Scope of what is captured
 
@@ -166,5 +179,5 @@ This project captures:
 
 ## Caution
 
-Applying a VM-tuned profile back to the host will overwrite GNOME settings in the covered areas.
-Back up first if you care about the current state.
+Applying a VM-tuned profile or lab version launcher overwrites GNOME settings
+in the covered areas. For normal host installation, use `scripts/update-host.sh`.

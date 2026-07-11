@@ -19,6 +19,32 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-11 14:15 CST - v 1.2.10 safe host installation
+
+- Version label: v1.2.10-safe-host-installation.
+- Task summary: separate exact historical lab restoration from normal host updates so new project features can be installed without replaying a complete GNOME snapshot over the host.
+- Changed files:
+  - `README.md`, `TASK.md`, `version installation.md`, and `task/v 1.2/v 1.2.10.md`
+  - `scripts/update-host.sh`, `scripts/install-version-launcher.sh`, and `scripts/check-workflow.sh`
+  - `tests/test-update-host.sh`
+  - `versions/v1/v1.2/v1.2.10/`
+- Desktop settings or profiles changed:
+  - Historical Apply launchers and the exact snapshot importer remain available for lab comparison.
+  - The v1.2.10 host manifest declares only the three project extensions and no global GNOME settings.
+  - The safe updater preserves display scaling, text sizing, favorite apps, unrelated extensions, Bluetooth state, and every undeclared setting.
+- Features included:
+  - Added latest-version manifest selection, a change preview, explicit confirmation, dry-run support, timestamped backups, and targeted rollback.
+  - Project extension UUIDs are merged into the existing enabled-extension list instead of replacing it.
+  - Managed settings use the last applied value as a baseline; local changes win and are reported rather than overwritten.
+  - Version documentation now identifies exact launchers as destructive lab restores and directs host users to the safe updater.
+- Verification:
+  - `bash -n` passed for the updater, workflow checker, and isolated updater test.
+  - `tests/test-update-host.sh` passed with a temporary home and fake GSettings service, covering dry-run immutability, extension preservation, enabled-list merging, backup, apply, and rollback.
+  - `./scripts/update-host.sh --dry-run` selected v1.2.10 and reported no global settings changes without modifying the live host.
+- Known limits:
+  - GNOME Shell may keep cached extension JavaScript until logout/login.
+  - Exact lab launchers remain destructive by design and must not be used as the host update path.
+
 ### 2026-07-10 21:46 CST - v 1.2.9 click-pinned dock clusters
 
 - Version label: v1.2.9-click-pinned-dock-clusters.

@@ -110,6 +110,10 @@ cat > "$README_FILE" <<EOF
 
 This folder stores a clickable VM layout version launcher.
 
+> **Lab restore warning:** This launcher reproduces the exact saved lab profile
+> and can overwrite current GNOME settings. On a host, use
+> \`./scripts/update-host.sh\` instead.
+
 - Version: $PATCH
 - Source lab repo: $ROOT
 - Source commit before launcher generation: $COMMIT

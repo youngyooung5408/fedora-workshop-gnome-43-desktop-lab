@@ -17,7 +17,7 @@
 - `c` is the minor fix version for task-level fixes.
 - If `task/version.md` is updated with more specific version workflow rules, follow that file as the source of truth.
 - After every version update using `v a.b.c`, record the matching lab diary Markdown update for that version before considering the version workflow complete.
-- Every new version launcher must contain a reviewed `host-manifest.json`. The launcher generator carries the last reviewed manifest forward by default; review it when managed extensions or extension settings change.
+- Every new version launcher must contain a `host-manifest.json` generated from an explicit release entry in `host-features.json`. Never carry a previous manifest forward automatically. Reuse unchanged feature revision identifiers and add a new revision only for a feature that actually changed.
 - After a new lab version is finished and its launcher is generated, automatically apply that launcher in the lab VM and verify `lab -version` reports the new version. Do not leave the VM on an older finished version unless the user explicitly asks to defer or skip application.
 - Never apply a version launcher, `scripts/import-layout.sh`, or `scripts/apply-to-host.sh` to the host during a normal host update. On the host, use only `scripts/update-host.sh --dry-run` followed by `scripts/update-host.sh`.
 - After committing a completed lab version, run `git push` to the configured remote. If the push fails because the remote or authentication is unavailable, report that the commit remains local.

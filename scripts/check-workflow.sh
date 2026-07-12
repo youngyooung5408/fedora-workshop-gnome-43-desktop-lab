@@ -261,6 +261,34 @@ import sys
 
 path = pathlib.Path(sys.argv[1])
 data = json.loads(path.read_text(encoding="utf-8"))
+if data.get("format") == 2:
+    if set(data) != {"format", "version", "features"}:
+        raise SystemExit("format 2 manifest requires exactly format, version, and features")
+    if data["version"] != path.parent.name or not re.fullmatch(r"v\d+\.\d+\.\d+", data["version"]):
+        raise SystemExit("manifest version must match its version directory")
+    ids = []
+    for item in data["features"]:
+        ids.append(item.get("id"))
+        if item.get("kind") == "extension":
+            required = {"id", "kind", "revision", "uuid", "payload", "sha256"}
+            if set(item) != required or not re.fullmatch(r"[0-9a-f]{64}", item["sha256"]):
+                raise SystemExit("invalid extension feature entry")
+            expected = pathlib.PurePosixPath("profile") / "extensions" / item["uuid"]
+            if pathlib.PurePosixPath(item["payload"]) != expected:
+                raise SystemExit("extension payload must be scoped to its version profile")
+        elif item.get("kind") == "gsettings":
+            required = {"id", "kind", "revision", "schema", "key", "value"}
+            if set(item) != required:
+                raise SystemExit("invalid gsettings feature entry")
+            allowed = {("org.gnome.desktop.wm.preferences", "button-layout")}
+            if (item["schema"], item["key"]) not in allowed:
+                raise SystemExit(f"unreviewed broad host setting: {item['schema']} {item['key']}")
+        else:
+            raise SystemExit("unsupported feature kind")
+    if not ids or len(ids) != len(set(ids)):
+        raise SystemExit("feature ids must be a non-empty unique list")
+    raise SystemExit(0)
+
 required = {"version", "extensions", "settings"}
 if set(data) != required:
     raise SystemExit("manifest must contain exactly version, extensions, and settings")
@@ -278,7 +306,18 @@ for item in data["settings"]:
         raise SystemExit(f"broad host setting is prohibited: {item['schema']} {item['key']}")
 PY
   then
-    pass "$manifest is a safe, explicit host manifest"
+    manifest_format="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("format", 1))' "$manifest")"
+    if [ "$manifest_format" = 2 ]; then
+      expected_manifest="$(mktemp)"
+      if python3 scripts/host-feature-registry.py manifest "$(basename "$(dirname "$manifest")")" "$(dirname "$manifest")/profile" "$expected_manifest" && cmp -s "$manifest" "$expected_manifest"; then
+        pass "$manifest exactly matches the reviewed feature registry"
+      else
+        fail "$manifest differs from the reviewed feature registry"
+      fi
+      rm -f "$expected_manifest"
+    else
+      pass "$manifest is a safe historical host manifest"
+    fi
   else
     fail "$manifest is not a safe host manifest"
   fi
@@ -364,6 +403,8 @@ require_file LAB_DIARY.md
 require_file scripts/lab
 require_file scripts/record-current-version.sh
 require_file scripts/install-lab-command.sh
+require_file scripts/host-feature-registry.py
+require_file host-features.json
 require_heading README.md "## Codex Workflow"
 require_heading TASK.md "## Acceptance checks"
 require_heading LAB_DIARY.md "## Versions"
@@ -383,6 +424,13 @@ done
 
 require_text scripts/lab 'Current GNOME Desktop Lab version:' "lab command reports the current version"
 require_text scripts/install-version-launcher.sh 'record-current-version.sh' "future launchers record their applied version"
+require_text scripts/install-version-launcher.sh 'Refusing to overwrite immutable version' "version generator preserves historical releases"
+require_absent_text scripts/install-version-launcher.sh 'previous_manifest' "version generator does not carry host manifests forward"
+if python3 scripts/host-feature-registry.py validate >/dev/null; then
+  pass "host feature registry and all registered release payloads validate"
+else
+  fail "host feature registry or registered release payload is invalid"
+fi
 require_text AGENTS.md 'automatically apply that launcher in the lab VM' "agent workflow automatically applies each finished lab version"
 require_text README.md 'automatically applies the newly generated launcher in the lab VM' "Codex workflow automatically applies each finished lab version"
 require_text TASK.md 'Every newly finished lab version is automatically applied in the lab VM' "task acceptance checks require automatic VM application"
@@ -470,6 +518,7 @@ require_text "TASK.md" 'Version `v1.2.13`' "TASK.md records v1.2.13 bounded dock
 require_text "TASK.md" 'Version `v1.2.14`' "TASK.md records v1.2.14 fullscreen compatibility fix"
 require_text "TASK.md" 'Version `v1.2.15`' "TASK.md records v1.2.15 active-window dock suppression"
 require_text "TASK.md" 'Version `v1.2.16`' "TASK.md records v1.2.16 presentation regression repair"
+require_text "TASK.md" 'Version `v1.2.17`' "TASK.md records v1.2.17 feature-scoped host workflow"
 require_text "task/v 1.2/v 1.2.10.md" "## version 1.2.10" "v1.2.10 task note exists"
 require_text "task/v 1.2/v 1.2.11.md" "## version 1.2.11" "v1.2.11 task note exists"
 require_text "task/v 1.2/v 1.2.13.md" "## version 1.2.13" "v1.2.13 task note exists"
@@ -477,9 +526,12 @@ require_text "task/v 1.2/v 1.2.14.md" "## version 1.2.14" "v1.2.14 task note exi
 require_text "task/v 1.2/v 1.2.15.md" "## version 1.2.15" "v1.2.15 task note exists"
 require_text "task/v 1.2/v 1.2.16.md" "## version 1.2.16" "v1.2.16 task note exists"
 require_text "task/v 1.2/v 1.2.16.md" "## Diagnosis" "v1.2.16 records the extension startup failure diagnosis"
+require_text "task/v 1.2/v 1.2.17.md" "## version 1.2.17" "v1.2.17 task note exists"
 require_file scripts/update-host.sh
-require_text scripts/update-host.sh "Safe host update preview" "host updater previews changes"
+require_text scripts/update-host.sh "Safe host feature audit" "host updater audits registered features"
 require_text scripts/update-host.sh "--rollback" "host updater supports rollback"
+require_text scripts/update-host.sh "--version vA.B.C" "host updater supports deliberate historical feature revisions"
+require_text scripts/update-host.sh "unknown local content" "host updater blocks unknown managed extension content"
 require_absent_text scripts/update-host.sh "bluetoothctl" "host updater does not manipulate Bluetooth"
 require_text "task/v 1.2/v 1.2.9.md" "## version 1.2.9" "v1.2.9 task note exists"
 require_text "$tuned_enabled" "desktop-lab-v12@young" "desktop-lab-v12@young is enabled in $tuned_enabled"

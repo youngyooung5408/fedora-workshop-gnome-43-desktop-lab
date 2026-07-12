@@ -2,26 +2,36 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+REGISTRY_TOOL="$ROOT/scripts/host-feature-registry.py"
 CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}/gnome-layout-sync-lab"
 BACKUP_ROOT="$CONFIG_ROOT/backups"
 STATE_DIR="$CONFIG_ROOT/state"
 EXT_ROOT="$HOME/.local/share/gnome-shell/extensions"
+TARGET_VERSION=""
 DRY_RUN=0
+AUDIT_ONLY=0
 ASSUME_YES=0
 ROLLBACK_DIR=""
 
 usage() {
   cat <<'EOF'
-Usage: scripts/update-host.sh [--dry-run] [--yes]
+Usage: scripts/update-host.sh [--version vA.B.C] [--audit|--dry-run] [--yes]
        scripts/update-host.sh --rollback <backup-directory> [--yes]
 
-Safely installs the latest version that contains host-manifest.json.
-Lab snapshot launchers are intentionally separate and remain exact restores.
+Audits and applies only the explicitly registered features for a host release.
+The VM profile is never imported. Unregistered host settings and files remain
+untouched. Unknown modifications inside a managed extension block the update.
 EOF
 }
 
 while [ $# -gt 0 ]; do
   case "$1" in
+    --version)
+      [ $# -ge 2 ] || { echo "--version requires vA.B.C" >&2; exit 2; }
+      TARGET_VERSION="$2"
+      shift
+      ;;
+    --audit) AUDIT_ONLY=1 ;;
     --dry-run) DRY_RUN=1 ;;
     --yes) ASSUME_YES=1 ;;
     --rollback)
@@ -48,15 +58,11 @@ confirm() {
   [[ "$reply" = y || "$reply" = Y || "$reply" = yes || "$reply" = YES ]]
 }
 
-rollback() {
+restore_backup() {
   local backup="$1"
-  [ -d "$backup" ] || { echo "Backup not found: $backup" >&2; exit 1; }
-  [ -f "$backup/changed-extensions.txt" ] || { echo "Invalid backup: $backup" >&2; exit 1; }
-
-  echo "Rollback preview: $backup"
-  sed 's/^/  extension: /' "$backup/changed-extensions.txt"
-  [ -s "$backup/settings.tsv" ] && sed 's/^/  setting: /' "$backup/settings.tsv"
-  confirm "Restore this backup?" || { echo "Rollback cancelled."; exit 1; }
+  local uuid
+  [ -d "$backup" ] || { echo "Backup not found: $backup" >&2; return 1; }
+  [ -f "$backup/changed-extensions.txt" ] || { echo "Invalid backup: $backup" >&2; return 1; }
 
   mkdir -p "$EXT_ROOT" "$CONFIG_ROOT"
   while IFS= read -r uuid; do
@@ -73,145 +79,205 @@ rollback() {
   if [ -f "$backup/disable-user-extensions.txt" ]; then
     gsettings set org.gnome.shell disable-user-extensions "$(cat "$backup/disable-user-extensions.txt")"
   fi
-  while IFS=$'\t' read -r schema key value; do
-    [ -n "${schema:-}" ] || continue
-    gsettings set "$schema" "$key" "$value"
-  done < "$backup/settings.tsv"
+  if [ -f "$backup/settings.tsv" ]; then
+    while IFS=$'\t' read -r schema key value; do
+      [ -n "${schema:-}" ] || continue
+      gsettings set "$schema" "$key" "$value"
+    done < "$backup/settings.tsv"
+  fi
 
   rm -rf "$STATE_DIR"
   if [ -d "$backup/state" ]; then
     cp -a "$backup/state" "$STATE_DIR"
   fi
-  echo "Rollback complete. Log out and back in if GNOME Shell still shows cached extension code."
+}
+
+rollback() {
+  local backup="$1"
+  echo "Rollback preview: $backup"
+  [ -f "$backup/changed-extensions.txt" ] && sed 's/^/  extension: /' "$backup/changed-extensions.txt"
+  [ -s "$backup/settings.tsv" ] && sed 's/^/  setting: /' "$backup/settings.tsv"
+  confirm "Restore this feature backup?" || { echo "Rollback cancelled."; exit 1; }
+  restore_backup "$backup"
+  echo "Rollback complete. Log out and back in if GNOME Shell still has cached extension code."
 }
 
 if [ -n "$ROLLBACK_DIR" ]; then
-  [ "$DRY_RUN" -eq 0 ] || { echo "--dry-run cannot be combined with --rollback" >&2; exit 2; }
+  [ "$DRY_RUN" -eq 0 ] && [ "$AUDIT_ONLY" -eq 0 ] || {
+    echo "--audit/--dry-run cannot be combined with --rollback" >&2
+    exit 2
+  }
   rollback "$ROLLBACK_DIR"
   exit 0
 fi
 
-mapfile -t manifest_info < <(python3 - "$ROOT/versions" <<'PY'
+if [ -z "$TARGET_VERSION" ]; then
+  TARGET_VERSION="$(python3 "$REGISTRY_TOOL" latest)"
+fi
+
+resolved_json="$(python3 "$REGISTRY_TOOL" resolve "$TARGET_VERSION")"
+mapfile -t feature_lines < <(python3 - "$resolved_json" <<'PY'
 import json
-import pathlib
-import re
 import sys
 
-root = pathlib.Path(sys.argv[1])
-candidates = []
-for path in root.glob("v*/v*.*/*.*/host-manifest.json"):
-    match = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)", path.parent.name)
-    if match:
-        candidates.append((tuple(map(int, match.groups())), path))
-if not candidates:
-    raise SystemExit("No host-installable version manifest found")
-version, path = max(candidates)
-data = json.loads(path.read_text(encoding="utf-8"))
-if data.get("version") != path.parent.name:
-    raise SystemExit(f"Manifest version mismatch: {path}")
-print(path)
-print(data["version"])
-for uuid in data.get("extensions", []):
-    print("EXT\t" + uuid)
-for item in data.get("settings", []):
-    print("SET\t" + item["schema"] + "\t" + item["key"] + "\t" + item["value"])
+for feature in json.loads(sys.argv[1])["features"]:
+    if feature["kind"] == "extension":
+        print("\t".join([
+            "EXT", feature["id"], feature["revision"], feature["uuid"],
+            feature["payload"], feature["sha256"],
+        ]))
+    else:
+        print("\t".join([
+            "SET", feature["id"], feature["revision"], feature["schema"],
+            feature["key"], feature["value"],
+        ]))
 PY
 )
 
-MANIFEST="${manifest_info[0]}"
-VERSION="${manifest_info[1]}"
-VERSION_DIR="$(dirname "$MANIFEST")"
-EXTENSIONS=()
-SETTINGS=()
-for line in "${manifest_info[@]:2}"; do
-  if [[ "$line" == EXT$'\t'* ]]; then
-    EXTENSIONS+=("${line#*$'\t'}")
-  elif [[ "$line" == SET$'\t'* ]]; then
-    SETTINGS+=("${line#*$'\t'}")
-  fi
-done
-
-echo "Safe host update preview"
-echo "  current: $(cat "$STATE_DIR/version" 2>/dev/null || echo 'not installed')"
-echo "  target:  $VERSION"
-echo "  manifest: $MANIFEST"
-echo "  project extensions to update:"
-printf '    %s\n' "${EXTENSIONS[@]}"
-echo "  unrelated extensions: preserved"
-echo "  display scaling, text sizing, Bluetooth, favorites, and other undeclared settings: preserved"
-current_disable_user_extensions="$(gsettings get org.gnome.shell disable-user-extensions)"
-if [ "$current_disable_user_extensions" = "true" ]; then
-  echo "  GNOME user extensions: currently disabled; updater will enable them (rollback restores this)"
-else
-  echo "  GNOME user extensions: already enabled"
-fi
-
+declare -a SELECTED_EXTENSIONS=()
+declare -a CHANGED_EXTENSIONS=()
 declare -a SETTINGS_TO_APPLY=()
-declare -a SETTINGS_PRESERVED=()
-for item in "${SETTINGS[@]}"; do
-  IFS=$'\t' read -r schema key desired <<< "$item"
-  current="$(gsettings get "$schema" "$key")"
-  previous=""
-  if [ -f "$STATE_DIR/settings.tsv" ]; then
-    previous="$(awk -F '\t' -v s="$schema" -v k="$key" '$1 == s && $2 == k {print $3; exit}' "$STATE_DIR/settings.tsv")"
-  fi
-  if [ -z "$previous" ]; then
-    SETTINGS_PRESERVED+=("$schema $key (first install keeps $current)")
-  elif [ "$current" != "$previous" ]; then
-    SETTINGS_PRESERVED+=("$schema $key (locally changed; keeps $current)")
-  elif [ "$current" != "$desired" ]; then
-    SETTINGS_TO_APPLY+=("$item")
+declare -a FEATURE_STATE_LINES=()
+blocked=0
+ENABLEMENT_CHANGE=0
+
+echo "Safe host feature audit"
+echo "  target release: $TARGET_VERSION"
+echo "  registry: $ROOT/host-features.json"
+echo "  only registered feature surfaces can change"
+
+for line in "${feature_lines[@]}"; do
+  IFS=$'\t' read -r kind feature_id revision field1 field2 field3 <<< "$line"
+  if [ "$kind" = EXT ]; then
+    uuid="$field1"
+    source_dir="$field2"
+    target_hash="$field3"
+    SELECTED_EXTENSIONS+=("$uuid")
+    if [ ! -d "$source_dir" ]; then
+      echo "  BLOCKED $feature_id: target payload is missing: $source_dir" >&2
+      blocked=1
+      continue
+    fi
+    if [ ! -d "$EXT_ROOT/$uuid" ]; then
+      echo "  INSTALL $feature_id ($revision): extension is absent"
+      CHANGED_EXTENSIONS+=("$line")
+      FEATURE_STATE_LINES+=("$feature_id"$'\t'"$revision"$'\t'"$target_hash")
+      continue
+    fi
+    current_hash="$(python3 "$REGISTRY_TOOL" tree-hash "$EXT_ROOT/$uuid")"
+    if [ "$current_hash" = "$target_hash" ]; then
+      echo "  SKIP $feature_id ($revision): extension payload is already identical"
+    elif known_revision="$(python3 "$REGISTRY_TOOL" identify "$feature_id" "$current_hash" 2>/dev/null)"; then
+      echo "  UPDATE $feature_id: known revision $known_revision -> $revision"
+      CHANGED_EXTENSIONS+=("$line")
+    else
+      echo "  BLOCKED $feature_id: installed extension has unknown local content" >&2
+      echo "    current sha256: $current_hash" >&2
+      echo "    target sha256:  $target_hash" >&2
+      blocked=1
+    fi
+    FEATURE_STATE_LINES+=("$feature_id"$'\t'"$revision"$'\t'"$target_hash")
+  elif [ "$kind" = SET ]; then
+    schema="$field1"
+    key="$field2"
+    desired="$field3"
+    current="$(gsettings get "$schema" "$key")"
+    if [ "$current" = "$desired" ]; then
+      echo "  SKIP $feature_id ($revision): $schema $key is already $desired"
+    else
+      echo "  SET $feature_id ($revision):"
+      echo "    $schema $key"
+      echo "    current: $current"
+      echo "    target:  $desired"
+      SETTINGS_TO_APPLY+=("$line")
+    fi
+    FEATURE_STATE_LINES+=("$feature_id"$'\t'"$revision"$'\t'"$desired")
   fi
 done
 
-if [ "${#SETTINGS_TO_APPLY[@]}" -gt 0 ]; then
-  echo "  settings to update:"
-  printf '    %s\n' "${SETTINGS_TO_APPLY[@]}"
-else
-  echo "  settings to update: none"
-fi
-if [ "${#SETTINGS_PRESERVED[@]}" -gt 0 ]; then
-  echo "  local settings preserved:"
-  printf '    %s\n' "${SETTINGS_PRESERVED[@]}"
+if [ "${#SELECTED_EXTENSIONS[@]}" -gt 0 ]; then
+  current_enabled_audit="$(gsettings get org.gnome.shell enabled-extensions)"
+  mapfile -t missing_enabled < <(python3 - "$current_enabled_audit" "${SELECTED_EXTENSIONS[@]}" <<'PY'
+import ast
+import sys
+
+items = ast.literal_eval(sys.argv[1].removeprefix("@as "))
+for uuid in sys.argv[2:]:
+    if uuid not in items:
+        print(uuid)
+PY
+)
+  if [ "${#missing_enabled[@]}" -gt 0 ]; then
+    ENABLEMENT_CHANGE=1
+    printf '  ENABLE registered extension: %s\n' "${missing_enabled[@]}"
+  fi
+  if [ "$(gsettings get org.gnome.shell disable-user-extensions)" != false ]; then
+    ENABLEMENT_CHANGE=1
+    echo "  ENABLE GNOME user extensions globally (rollback restores the current switch)"
+  fi
 fi
 
-for uuid in "${EXTENSIONS[@]}"; do
-  source_dir="$VERSION_DIR/profile/extensions/$uuid"
-  [ -d "$source_dir" ] || { echo "Manifest extension is missing: $source_dir" >&2; exit 1; }
-done
+echo "  unrelated extensions and all unregistered GNOME settings: preserved"
 
-if [ "$DRY_RUN" -eq 1 ]; then
-  echo "Dry run complete; no changes made."
+if [ "$blocked" -ne 0 ]; then
+  echo "Audit blocked the update; no changes were made." >&2
+  exit 1
+fi
+if [ "$AUDIT_ONLY" -eq 1 ] || [ "$DRY_RUN" -eq 1 ]; then
+  echo "Read-only audit complete; no changes made."
   exit 0
 fi
-confirm "Create a backup and apply $VERSION?" || { echo "Update cancelled."; exit 1; }
+
+if [ "${#CHANGED_EXTENSIONS[@]}" -eq 0 ] && [ "${#SETTINGS_TO_APPLY[@]}" -eq 0 ] && [ "$ENABLEMENT_CHANGE" -eq 0 ]; then
+  echo "All registered features already match $TARGET_VERSION; no changes made."
+  exit 0
+fi
+
+confirm "Back up and apply only the listed $TARGET_VERSION feature changes?" || {
+  echo "Update cancelled."
+  exit 1
+}
 
 timestamp="$(date +%Y%m%d-%H%M%S)"
-BACKUP_DIR="$BACKUP_ROOT/$timestamp-$VERSION"
+BACKUP_DIR="$BACKUP_ROOT/$timestamp-$TARGET_VERSION"
 mkdir -p "$BACKUP_DIR/extensions" "$EXT_ROOT"
-printf '%s\n' "${EXTENSIONS[@]}" > "$BACKUP_DIR/changed-extensions.txt"
-gsettings get org.gnome.shell enabled-extensions > "$BACKUP_DIR/enabled-extensions.txt"
-printf '%s\n' "$current_disable_user_extensions" > "$BACKUP_DIR/disable-user-extensions.txt"
+: > "$BACKUP_DIR/changed-extensions.txt"
 : > "$BACKUP_DIR/settings.tsv"
-for item in "${SETTINGS_TO_APPLY[@]}"; do
-  IFS=$'\t' read -r schema key _ <<< "$item"
-  printf '%s\t%s\t%s\n' "$schema" "$key" "$(gsettings get "$schema" "$key")" >> "$BACKUP_DIR/settings.tsv"
+gsettings get org.gnome.shell enabled-extensions > "$BACKUP_DIR/enabled-extensions.txt"
+gsettings get org.gnome.shell disable-user-extensions > "$BACKUP_DIR/disable-user-extensions.txt"
+
+for line in "${CHANGED_EXTENSIONS[@]}"; do
+  IFS=$'\t' read -r _ _ _ uuid _ _ <<< "$line"
+  printf '%s\n' "$uuid" >> "$BACKUP_DIR/changed-extensions.txt"
+  [ ! -d "$EXT_ROOT/$uuid" ] || cp -a "$EXT_ROOT/$uuid" "$BACKUP_DIR/extensions/$uuid"
 done
-for uuid in "${EXTENSIONS[@]}"; do
-  [ -d "$EXT_ROOT/$uuid" ] && cp -a "$EXT_ROOT/$uuid" "$BACKUP_DIR/extensions/$uuid"
+for line in "${SETTINGS_TO_APPLY[@]}"; do
+  IFS=$'\t' read -r _ _ _ schema key _ <<< "$line"
+  printf '%s\t%s\t%s\n' "$schema" "$key" "$(gsettings get "$schema" "$key")" >> "$BACKUP_DIR/settings.tsv"
 done
 [ ! -d "$STATE_DIR" ] || cp -a "$STATE_DIR" "$BACKUP_DIR/state"
 
-for uuid in "${EXTENSIONS[@]}"; do
-  source_dir="$VERSION_DIR/profile/extensions/$uuid"
+apply_failed() {
+  local status=$?
+  trap - ERR
+  echo "Feature update failed; restoring $BACKUP_DIR" >&2
+  restore_backup "$BACKUP_DIR" || true
+  exit "$status"
+}
+trap apply_failed ERR
+
+for line in "${CHANGED_EXTENSIONS[@]}"; do
+  IFS=$'\t' read -r _ _ _ uuid source_dir _ <<< "$line"
   rm -rf "$EXT_ROOT/$uuid"
   cp -a "$source_dir" "$EXT_ROOT/$uuid"
 done
 
-current_enabled="$(gsettings get org.gnome.shell enabled-extensions)"
-merged_enabled="$(python3 - "$current_enabled" "${EXTENSIONS[@]}" <<'PY'
+if [ "${#SELECTED_EXTENSIONS[@]}" -gt 0 ]; then
+  current_enabled="$(gsettings get org.gnome.shell enabled-extensions)"
+  merged_enabled="$(python3 - "$current_enabled" "${SELECTED_EXTENSIONS[@]}" <<'PY'
 import ast
 import sys
+
 items = ast.literal_eval(sys.argv[1].removeprefix("@as "))
 for uuid in sys.argv[2:]:
     if uuid not in items:
@@ -219,30 +285,26 @@ for uuid in sys.argv[2:]:
 print(repr(items))
 PY
 )"
-gsettings set org.gnome.shell disable-user-extensions false
-gsettings set org.gnome.shell enabled-extensions "$merged_enabled"
+  if [ "$(gsettings get org.gnome.shell disable-user-extensions)" != false ]; then
+    gsettings set org.gnome.shell disable-user-extensions false
+  fi
+  if [ "$current_enabled" != "$merged_enabled" ]; then
+    gsettings set org.gnome.shell enabled-extensions "$merged_enabled"
+  fi
+fi
 
-for item in "${SETTINGS_TO_APPLY[@]}"; do
-  IFS=$'\t' read -r schema key desired <<< "$item"
+for line in "${SETTINGS_TO_APPLY[@]}"; do
+  IFS=$'\t' read -r _ _ _ schema key desired <<< "$line"
   gsettings set "$schema" "$key" "$desired"
 done
 
 mkdir -p "$STATE_DIR"
-printf '%s\n' "$VERSION" > "$STATE_DIR/version"
-: > "$STATE_DIR/settings.tsv.next"
-for item in "${SETTINGS[@]}"; do
-  IFS=$'\t' read -r schema key desired <<< "$item"
-  baseline=""
-  if printf '%s\n' "${SETTINGS_TO_APPLY[@]}" | grep -Fxq "$item"; then
-    baseline="$desired"
-  elif [ -f "$STATE_DIR/settings.tsv" ]; then
-    baseline="$(awk -F '\t' -v s="$schema" -v k="$key" '$1 == s && $2 == k {print $3; exit}' "$STATE_DIR/settings.tsv")"
-  fi
-  [ -z "$baseline" ] || printf '%s\t%s\t%s\n' "$schema" "$key" "$baseline" >> "$STATE_DIR/settings.tsv.next"
-done
-mv "$STATE_DIR/settings.tsv.next" "$STATE_DIR/settings.tsv"
+printf '%s\n' "$TARGET_VERSION" > "$STATE_DIR/version"
+printf '%s\n' "$resolved_json" > "$STATE_DIR/features.json"
+printf '%s\n' "${FEATURE_STATE_LINES[@]}" > "$STATE_DIR/features.tsv"
+trap - ERR
 
-echo "Applied safe host update $VERSION."
+echo "Applied registered host features for $TARGET_VERSION."
 echo "Backup: $BACKUP_DIR"
 echo "Rollback: $0 --rollback '$BACKUP_DIR'"
-echo "Log out and back in if GNOME Shell still shows cached extension code."
+echo "Log out and back in if GNOME Shell still has cached extension code."

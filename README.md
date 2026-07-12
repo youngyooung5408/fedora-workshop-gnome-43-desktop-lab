@@ -52,13 +52,15 @@ This workflow is meant to survive across Codex conversations.
    ```bash
    ./scripts/import-layout.sh profiles/vm-initial-desktop-task
    ```
-7. Codex installs or updates the project-local clickable version launcher:
+7. Codex explicitly records the release's host feature revisions in
+   `host-features.json`, then installs the project-local clickable version
+   launcher:
    ```bash
    ./scripts/install-version-launcher.sh v1.1.2 profiles/vm-initial-desktop-task
    ```
-   This also carries the latest reviewed safe-host manifest into the new
-   version. Review that manifest only when managed extensions or their own
-   settings change.
+   The generator stages the new directory, copies the VM snapshot, and creates
+   an immutable host manifest from that exact registry entry. It refuses to
+   overwrite old versions and never carries a previous manifest forward.
 8. Codex automatically applies the newly generated launcher in the lab VM, then verifies that `lab -version` reports the new version. Application is skipped only when the user explicitly asks to defer it:
    ```bash
    ./versions/v1/v1.1/v1.1.2/apply-v1.1.2.sh < /dev/null
@@ -177,7 +179,7 @@ cd ~/gnome-layout-sync-lab
 ```
 
 This tuned profile enables the Bluetooth battery panel indicator and sets
-window controls to the upper-right order `close`, `maximize/restore`,
+window controls to the upper-left order `close`, `maximize/restore`,
 `minimize`.
 
 ### Back on the host
@@ -191,10 +193,15 @@ This is the permanent host-install path for every version. Do not run an
 `Apply vA.B.C` launcher, `scripts/import-layout.sh`, or
 `scripts/apply-to-host.sh` for a normal host update.
 
-The updater chooses the latest reviewed host manifest, previews its changes,
-creates a rollback backup, replaces only declared project extensions, merges
-their UUIDs into the enabled-extension list, and preserves unrelated settings.
-It prints the exact rollback command after a successful update.
+The updater chooses the latest registered host release unless `--version` is
+given. It audits only that release's named feature surfaces, skips identical
+payloads, blocks unknown local extension modifications, previews exact changes,
+creates a rollback backup, and preserves everything outside the registry. It
+prints the exact rollback command after a successful update.
+
+The full VM profile is never a host target. `host-features.json` is the source
+of truth for which extension directory or individual GSettings key each feature
+may change and which feature revision belongs to every host release.
 
 `scripts/apply-to-host.sh` and the version launchers remain available for exact
 lab restoration and comparison, but they are intentionally destructive.

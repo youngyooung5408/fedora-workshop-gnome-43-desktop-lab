@@ -25,12 +25,18 @@ locally changed managed setting is kept and reported rather than overwritten.
 It also backs up and restores GNOME's global user-extension switch if rollback
 is needed.
 
-Every newly generated version automatically carries forward the most recent
-reviewed `host-manifest.json`. The workflow verifier fails if the newest version
-does not have a valid manifest. This makes the safe updater the standard path
-for later versions, while still allowing the manifest to be deliberately
-reviewed when a version adds or removes a managed extension or extension-only
-setting.
+Every host-approved change is recorded as a named feature in
+`host-features.json`. A feature owns one exact extension directory or GSettings
+key and has immutable revisions. Each release explicitly selects revisions;
+unchanged features reuse their prior revision. The launcher generator creates
+the version manifest from this explicit entry and never carries an earlier
+manifest forward.
+
+The host updater audits live feature contents rather than treating its state
+version as proof. It skips identical features, stops on unknown local changes
+inside managed extensions, and changes nothing outside the selected release's
+registered feature surfaces. The complete VM profile is never synchronized to
+the host.
 
 Use `./scripts/update-host.sh --dry-run` to inspect the latest update without
 making changes, then run `./scripts/update-host.sh` and confirm the preview.

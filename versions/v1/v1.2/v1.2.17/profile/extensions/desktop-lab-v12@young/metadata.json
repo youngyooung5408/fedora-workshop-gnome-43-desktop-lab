@@ -1,0 +1,7 @@
+{
+  "uuid": "desktop-lab-v12@young",
+  "name": "Desktop Lab v1.2",
+  "description": "Adds the v1.2 desktop lab with marine background, workspace-embedded clock and stock widgets, a dynamically bounded edge-reveal dock, startup-safe monitor-aware fullscreen suppression and left-edge window suppression, click-pinned app clusters, configurable stocks, and editable dock groups.",
+  "shell-version": ["49"],
+  "url": "https://local-only.invalid/desktop-lab-v12"
+}

@@ -16,7 +16,9 @@ else
   exit 1
 fi
 
-VERSION_DIR="$VERSIONS_ROOT/$MAJOR/$MINOR/$PATCH"
+FINAL_VERSION_DIR="$VERSIONS_ROOT/$MAJOR/$MINOR/$PATCH"
+VERSION_PARENT="$VERSIONS_ROOT/$MAJOR/$MINOR"
+VERSION_DIR=""
 SNAPSHOT_DIR="$VERSION_DIR/profile"
 APPLY_SCRIPT="$VERSION_DIR/apply-$PATCH.sh"
 DESKTOP_FILE="$VERSION_DIR/Apply $PATCH.desktop"
@@ -39,52 +41,34 @@ if [ ! -f "$PROFILE_DIR/gsettings-export.sh" ]; then
   exit 1
 fi
 
-mkdir -p "$VERSION_DIR"
-rm -rf "$SNAPSHOT_DIR"
+if [ -e "$FINAL_VERSION_DIR" ]; then
+  echo "Refusing to overwrite immutable version: $FINAL_VERSION_DIR" >&2
+  exit 1
+fi
+
+mkdir -p "$VERSION_PARENT"
+VERSION_DIR="$(mktemp -d "$VERSION_PARENT/.${PATCH}.staging.XXXXXX")"
+trap 'rm -rf "$VERSION_DIR"' EXIT
+SNAPSHOT_DIR="$VERSION_DIR/profile"
+APPLY_SCRIPT="$VERSION_DIR/apply-$PATCH.sh"
+DESKTOP_FILE="$VERSION_DIR/Apply $PATCH.desktop"
+README_FILE="$VERSION_DIR/README.md"
+HOST_MANIFEST="$VERSION_DIR/host-manifest.json"
+FINAL_APPLY_SCRIPT="$FINAL_VERSION_DIR/apply-$PATCH.sh"
+FINAL_DESKTOP_FILE="$FINAL_VERSION_DIR/Apply $PATCH.desktop"
+
+echo "Version generation preview"
+echo "  create: $FINAL_VERSION_DIR"
+echo "  copy profile: $PROFILE_DIR -> $FINAL_VERSION_DIR/profile"
+echo "  generate: $FINAL_APPLY_SCRIPT"
+echo "  generate: $FINAL_DESKTOP_FILE"
+echo "  generate: $FINAL_VERSION_DIR/README.md"
+echo "  generate from host-features.json: $FINAL_VERSION_DIR/host-manifest.json"
+
 mkdir -p "$SNAPSHOT_DIR"
 cp -a "$PROFILE_DIR/." "$SNAPSHOT_DIR/"
 
-# Every new lab release must also be safely host-installable. Carry forward the
-# most recent reviewed allowlist, changing only its version. Existing manifests
-# are never overwritten, so a release can deliberately review and add/remove
-# managed extensions or extension-specific settings.
-if [ ! -f "$HOST_MANIFEST" ]; then
-  previous_manifest="$(python3 - "$VERSIONS_ROOT" "$PATCH" <<'PY'
-import json
-import pathlib
-import re
-import sys
-
-root = pathlib.Path(sys.argv[1])
-target = tuple(map(int, sys.argv[2][1:].split(".")))
-candidates = []
-for path in root.glob("v*/v*.*/*.*/host-manifest.json"):
-    match = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)", path.parent.name)
-    if match and tuple(map(int, match.groups())) < target:
-        candidates.append((tuple(map(int, match.groups())), path))
-if candidates:
-    print(max(candidates)[1])
-PY
-)"
-  if [ -z "$previous_manifest" ]; then
-    echo "Cannot create $PATCH safely: no earlier reviewed host-manifest.json exists." >&2
-    exit 1
-  fi
-  python3 - "$previous_manifest" "$HOST_MANIFEST" "$PATCH" "$SNAPSHOT_DIR" <<'PY'
-import json
-import pathlib
-import sys
-
-source, destination, version, profile = map(pathlib.Path, sys.argv[1:])
-data = json.loads(source.read_text(encoding="utf-8"))
-data["version"] = str(version)
-missing = [uuid for uuid in data["extensions"] if not (profile / "extensions" / uuid).is_dir()]
-if missing:
-    raise SystemExit("Carried host manifest references missing extension(s): " + ", ".join(missing))
-destination.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
-PY
-  echo "Carried reviewed safe-host manifest forward from $previous_manifest"
-fi
+python3 "$ROOT/scripts/host-feature-registry.py" manifest "$PATCH" "$SNAPSHOT_DIR" "$HOST_MANIFEST"
 
 COMMIT="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || printf 'unknown')"
 
@@ -119,16 +103,16 @@ EOF
 chmod +x "$APPLY_SCRIPT"
 
 if command -v ptyxis >/dev/null 2>&1; then
-  DESKTOP_EXEC="ptyxis -- $APPLY_SCRIPT"
+  DESKTOP_EXEC="ptyxis -- $FINAL_APPLY_SCRIPT"
   DESKTOP_TERMINAL="false"
 elif command -v gnome-terminal >/dev/null 2>&1; then
-  DESKTOP_EXEC="gnome-terminal -- $APPLY_SCRIPT"
+  DESKTOP_EXEC="gnome-terminal -- $FINAL_APPLY_SCRIPT"
   DESKTOP_TERMINAL="false"
 elif command -v kgx >/dev/null 2>&1; then
-  DESKTOP_EXEC="kgx -- $APPLY_SCRIPT"
+  DESKTOP_EXEC="kgx -- $FINAL_APPLY_SCRIPT"
   DESKTOP_TERMINAL="false"
 else
-  DESKTOP_EXEC="$APPLY_SCRIPT"
+  DESKTOP_EXEC="$FINAL_APPLY_SCRIPT"
   DESKTOP_TERMINAL="true"
 fi
 
@@ -161,21 +145,21 @@ This folder stores a clickable VM layout version launcher.
 - Version: $PATCH
 - Source lab repo: $ROOT
 - Source commit before launcher generation: $COMMIT
-- Snapshot profile: $SNAPSHOT_DIR
-- Executable script: $APPLY_SCRIPT
-- Clickable launcher: $DESKTOP_FILE
-- Safe host manifest: $HOST_MANIFEST
+- Snapshot profile: $FINAL_VERSION_DIR/profile
+- Executable script: $FINAL_APPLY_SCRIPT
+- Clickable launcher: $FINAL_DESKTOP_FILE
+- Safe host manifest: $FINAL_VERSION_DIR/host-manifest.json
 
 To apply this version from a terminal:
 
 \`\`\`bash
-"$APPLY_SCRIPT"
+"$FINAL_APPLY_SCRIPT"
 \`\`\`
 
 To apply this version from GNOME Files, double-click:
 
 \`\`\`
-$DESKTOP_FILE
+$FINAL_DESKTOP_FILE
 \`\`\`
 
 After applying, log out and back in if GNOME Shell does not immediately reload the panel extensions.
@@ -185,7 +169,10 @@ if command -v desktop-file-validate >/dev/null 2>&1; then
   desktop-file-validate "$DESKTOP_FILE"
 fi
 
+mv "$VERSION_DIR" "$FINAL_VERSION_DIR"
+trap - EXIT
+
 echo "Installed $PATCH version launcher:"
-echo "  $APPLY_SCRIPT"
-echo "  $DESKTOP_FILE"
-echo "  $HOST_MANIFEST"
+echo "  $FINAL_APPLY_SCRIPT"
+echo "  $FINAL_DESKTOP_FILE"
+echo "  $FINAL_VERSION_DIR/host-manifest.json"

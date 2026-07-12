@@ -5,6 +5,7 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Current request
 
+- Version `v1.2.17`: replace coarse automatically carried host manifests with an explicit feature registry, make host updates content-aware and version-selectable, preserve everything outside registered feature surfaces, and add the previously omitted `close`, `maximize/restore`, `minimize` window-button order as a single managed GSettings feature.
 - Version `v1.2.16`: restore the exact v1.2.14 dock, clock, and market presentation while retaining v1.2.15's maximized/left-tiled dock suppression; repair the extension startup error that left those actors partially initialized, and guard against another unintended presentation regression.
 - Version `v1.2.15`: preserve fullscreen suppression, suppress the left dock for maximized and left-tiled active windows on the dock monitor, keep it available beside right-tiled windows, and immediately reevaluate focus, geometry, and workspace changes.
 - Version `v1.2.14`: fix the remaining v1.2.13 fullscreen dock problem by using GNOME Shell's authoritative per-monitor fullscreen state instead of relying on the focused window fallback.
@@ -77,6 +78,15 @@ Codex should read this file at the start of each desktop customization task.
 - Do not remove the existing Bluetooth battery indicator or Codex usage indicator icon.
 
 ## Acceptance checks
+
+- `host-features.json` is the sole source of truth for host feature ownership, revisions, and release composition.
+- New version generation refuses silent manifest carry-forward and refuses to overwrite historical version directories.
+- Host audit and dry-run modes do not write files or settings.
+- The v1.2.17 host release manages only the three project extensions and `org.gnome.desktop.wm.preferences button-layout`.
+- The v1.2.17 host update sets the window controls to `close,maximize,minimize:` and rollback restores the prior host value.
+- Byte-identical managed extensions are skipped rather than recopied.
+- Unknown local content inside a managed extension blocks the whole update before any mutation.
+- A deliberately selected older release restores only its registered feature revisions and leaves features it does not own untouched.
 
 - `desktop-lab-v12@young` completes `enable()` without calling the unsupported `St.Widget.set_visible()` method or entering GNOME Shell's `ERROR` state.
 - The tuned extension stylesheet, GNOME settings export, and dconf profile remain byte-for-byte identical to the accepted v1.2.14 presentation.

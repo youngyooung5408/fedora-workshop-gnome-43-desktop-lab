@@ -19,6 +19,29 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-12 21:32 CST - v 1.2.17 feature-scoped host workflow
+
+- Version label: v1.2.17-feature-scoped-host-workflow.
+- Task summary: stop treating the VM profile or an automatically carried manifest as a host template; record exact host-approved feature ownership and revisions, restore the omitted window-button order, and avoid rewriting unchanged extensions.
+- Changed files:
+  - Added the append-only `host-features.json` registry and its validation/manifest helper.
+  - Reworked version generation to preview writes, stage output, generate the manifest from an explicit release entry, and refuse historical version overwrite.
+  - Rebuilt the safe host updater around feature hashes, exact setting ownership, version selection, content-aware skips, unknown-content blocking, backups, automatic failure restoration, and rollback.
+  - Expanded updater tests, workflow checks, task notes, installation documentation, and generated the immutable v1.2.17 launcher snapshot.
+- Host feature contract:
+  - Bluetooth Battery and Codex Usage retain their existing accepted revisions and are skipped when byte-identical.
+  - Desktop Lab retains the repaired v1.2.16 payload revision.
+  - Window-button order owns only `org.gnome.desktop.wm.preferences button-layout` and targets `close,maximize,minimize:`.
+  - Every unregistered host setting, extension, file, and connection state remains outside update scope.
+- Verification:
+  - Registry validation confirms every registered release payload matches its pinned SHA-256 tree hash.
+  - Isolated updater tests cover read-only dry-run, identical-extension skips, known Desktop Lab upgrade, exact button-order apply and rollback, preservation of unrelated state, deliberate old-version selection, and safe blocking of unknown managed extension content.
+  - The staged launcher generator succeeded in an isolated versions directory and refused a second attempt to overwrite the same version.
+  - The full workflow verifier passed with only the expected dirty-worktree warning.
+- Known limits:
+  - GNOME Shell can keep extension JavaScript cached until logout/login; the updater reports this after applying extension changes.
+  - Historical manifests remain untouched for Git history, while every saved v1.1.2-v1.2.16 feature composition is represented by the new registry for deliberate `--version` selection.
+
 ### 2026-07-12 19:15 CST - v 1.2.16 presentation regression repair
 
 - Version label: v1.2.16-presentation-regression-repair.

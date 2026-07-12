@@ -21,6 +21,7 @@ SNAPSHOT_DIR="$VERSION_DIR/profile"
 APPLY_SCRIPT="$VERSION_DIR/apply-$PATCH.sh"
 DESKTOP_FILE="$VERSION_DIR/Apply $PATCH.desktop"
 README_FILE="$VERSION_DIR/README.md"
+HOST_MANIFEST="$VERSION_DIR/host-manifest.json"
 
 if [[ "$PROFILE_ARG" = /* ]]; then
   PROFILE_DIR="$PROFILE_ARG"
@@ -42,6 +43,48 @@ mkdir -p "$VERSION_DIR"
 rm -rf "$SNAPSHOT_DIR"
 mkdir -p "$SNAPSHOT_DIR"
 cp -a "$PROFILE_DIR/." "$SNAPSHOT_DIR/"
+
+# Every new lab release must also be safely host-installable. Carry forward the
+# most recent reviewed allowlist, changing only its version. Existing manifests
+# are never overwritten, so a release can deliberately review and add/remove
+# managed extensions or extension-specific settings.
+if [ ! -f "$HOST_MANIFEST" ]; then
+  previous_manifest="$(python3 - "$VERSIONS_ROOT" "$PATCH" <<'PY'
+import json
+import pathlib
+import re
+import sys
+
+root = pathlib.Path(sys.argv[1])
+target = tuple(map(int, sys.argv[2][1:].split(".")))
+candidates = []
+for path in root.glob("v*/v*.*/*.*/host-manifest.json"):
+    match = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)", path.parent.name)
+    if match and tuple(map(int, match.groups())) < target:
+        candidates.append((tuple(map(int, match.groups())), path))
+if candidates:
+    print(max(candidates)[1])
+PY
+)"
+  if [ -z "$previous_manifest" ]; then
+    echo "Cannot create $PATCH safely: no earlier reviewed host-manifest.json exists." >&2
+    exit 1
+  fi
+  python3 - "$previous_manifest" "$HOST_MANIFEST" "$PATCH" "$SNAPSHOT_DIR" <<'PY'
+import json
+import pathlib
+import sys
+
+source, destination, version, profile = map(pathlib.Path, sys.argv[1:])
+data = json.loads(source.read_text(encoding="utf-8"))
+data["version"] = str(version)
+missing = [uuid for uuid in data["extensions"] if not (profile / "extensions" / uuid).is_dir()]
+if missing:
+    raise SystemExit("Carried host manifest references missing extension(s): " + ", ".join(missing))
+destination.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+PY
+  echo "Carried reviewed safe-host manifest forward from $previous_manifest"
+fi
 
 COMMIT="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || printf 'unknown')"
 
@@ -120,6 +163,7 @@ This folder stores a clickable VM layout version launcher.
 - Snapshot profile: $SNAPSHOT_DIR
 - Executable script: $APPLY_SCRIPT
 - Clickable launcher: $DESKTOP_FILE
+- Safe host manifest: $HOST_MANIFEST
 
 To apply this version from a terminal:
 
@@ -143,3 +187,4 @@ fi
 echo "Installed $PATCH version launcher:"
 echo "  $APPLY_SCRIPT"
 echo "  $DESKTOP_FILE"
+echo "  $HOST_MANIFEST"

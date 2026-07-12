@@ -12,17 +12,21 @@ printf 'keep\n' > "$HOME/.local/share/gnome-shell/extensions/unrelated@example/o
 mkdir -p "$HOME/.local/share/gnome-shell/extensions/desktop-lab-v12@young"
 printf 'old\n' > "$HOME/.local/share/gnome-shell/extensions/desktop-lab-v12@young/original"
 printf "['unrelated@example']\n" > "$TMP/enabled"
+printf "true\n" > "$TMP/disabled"
 
 cat > "$TMP/bin/gsettings" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
 state="${TEST_GSETTINGS_STATE:?}"
+disabled_state="${TEST_GSETTINGS_DISABLED_STATE:?}"
 if [ "$1" = get ] && [ "$2" = org.gnome.shell ] && [ "$3" = enabled-extensions ]; then
   cat "$state"
 elif [ "$1" = set ] && [ "$2" = org.gnome.shell ] && [ "$3" = enabled-extensions ]; then
   printf '%s\n' "$4" > "$state"
 elif [ "$1" = set ] && [ "$2" = org.gnome.shell ] && [ "$3" = disable-user-extensions ]; then
-  :
+  printf '%s\n' "$4" > "$disabled_state"
+elif [ "$1" = get ] && [ "$2" = org.gnome.shell ] && [ "$3" = disable-user-extensions ]; then
+  cat "$disabled_state"
 else
   echo "Unexpected gsettings call: $*" >&2
   exit 1
@@ -31,6 +35,7 @@ EOF
 chmod +x "$TMP/bin/gsettings"
 export PATH="$TMP/bin:$PATH"
 export TEST_GSETTINGS_STATE="$TMP/enabled"
+export TEST_GSETTINGS_DISABLED_STATE="$TMP/disabled"
 
 before="$(find "$HOME" -type f -print -exec sha256sum {} \; | sort)"
 "$ROOT/scripts/update-host.sh" --dry-run >/dev/null
@@ -44,9 +49,11 @@ backup="$(sed -n 's/^Backup: //p' <<< "$output")"
 [ -f "$HOME/.local/share/gnome-shell/extensions/desktop-lab-v12@young/metadata.json" ]
 grep -Fq "unrelated@example" "$TMP/enabled"
 grep -Fq "desktop-lab-v12@young" "$TMP/enabled"
+[ "$(cat "$TMP/disabled")" = "false" ]
 
 "$ROOT/scripts/update-host.sh" --rollback "$backup" --yes >/dev/null
 [ -f "$HOME/.local/share/gnome-shell/extensions/desktop-lab-v12@young/original" ]
 [ "$(cat "$TMP/enabled")" = "['unrelated@example']" ]
+[ "$(cat "$TMP/disabled")" = "true" ]
 
 echo "Safe host updater tests passed."

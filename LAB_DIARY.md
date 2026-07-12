@@ -19,6 +19,40 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-12 14:07 CST - v 1.2.11 fullscreen dock suppression
+
+- Version label: v1.2.11-fullscreen-dock-suppression.
+- Task summary: prevent the custom left dock from appearing over fullscreen games and applications while preserving its normal edge-reveal behavior outside fullscreen.
+- Changed files:
+  - `TASK.md`, `aesthetic preference.md`, `task/v 1.2/v 1.2.11.md`, and this diary
+  - `profiles/vm-initial-desktop-task/README.txt`
+  - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/extension.js` and `metadata.json`
+  - `versions/v1/v1.2/v1.2.11/`
+  - safe-host workflow documentation, updater, launcher generator, verifier, and isolated updater test
+- Desktop settings or profiles changed:
+  - Imported the tracked tuned profile and the exact v1.2.11 snapshot into this VM.
+  - The safe host manifest carries forward only the three reviewed project extensions and declares no global GNOME settings.
+  - Display scaling, favorites, wallpaper, Bluetooth state, unrelated extensions, and other undeclared host settings remain outside the safe host update.
+- Features included:
+  - The dock listens for GNOME Shell fullscreen-state changes on its monitor.
+  - Entering fullscreen closes and hides an open or pinned dock and disables the left-edge reveal zone.
+  - Pointer motion cannot reveal the dock while that monitor remains fullscreen.
+  - Leaving fullscreen restores the normal hidden dock and edge trigger.
+  - Future version generation automatically carries forward the last reviewed safe-host manifest, and the workflow verifier rejects a newest release without valid safe-host metadata.
+  - The host updater now previews, backs up, and rolls back GNOME's global user-extension switch in addition to its existing targeted backups.
+- Verification:
+  - JSON parsing, Bash syntax checks, extension packaging, and `git diff --check` passed.
+  - `./scripts/import-layout.sh profiles/vm-initial-desktop-task` completed successfully in this VM.
+  - `./scripts/install-version-launcher.sh v1.2.11 profiles/vm-initial-desktop-task` created the exact snapshot and carried the v1.2.10 reviewed host manifest forward as v1.2.11.
+  - `versions/v1/v1.2/v1.2.11/apply-v1.2.11.sh < /dev/null` completed successfully in this VM.
+  - `./scripts/update-host.sh --dry-run` selected v1.2.11, listed only the three project extensions, reported no settings updates, and made no changes.
+  - `./scripts/check-workflow.sh` passed, including all extension bundle checks and isolated safe apply/rollback tests, with only the expected pre-commit dirty-worktree warning.
+  - The installed extension source matches the tracked v1.2.11 profile and `gnome-extensions info` reports the extension enabled and active.
+- Known limits:
+  - GNOME Shell is still displaying cached v1.2.9 metadata for the active module. Log out and back in before visually accepting fullscreen suppression.
+  - Automated checks verify the fullscreen signal, monitor guard, forced hide, disabled reveal zone, and restoration path; an actual fullscreen game remains the final visual acceptance test after Shell reload.
+  - Exact lab launchers remain destructive by design and must not be used for normal host updates; use `scripts/update-host.sh --dry-run` and then `scripts/update-host.sh` on the host.
+
 ### 2026-07-11 14:15 CST - v 1.2.10 safe host installation
 
 - Version label: v1.2.10-safe-host-installation.

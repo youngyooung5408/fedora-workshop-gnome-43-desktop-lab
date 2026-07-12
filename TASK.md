@@ -5,6 +5,7 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Current request
 
+- Version `v1.2.11`: suppress the left dock and its edge reveal zone while a fullscreen application or game occupies the dock's monitor, then restore normal hidden-dock behavior after fullscreen ends.
 - Version `v1.2.10`: separate exact lab restoration from safe host installation.
 - Keep historical version launchers unchanged as exact lab snapshots for
   comparing features across versions.
@@ -70,6 +71,10 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Acceptance checks
 
+- `desktop-lab-v12@young` listens for GNOME Shell fullscreen-state changes.
+- `desktop-lab-v12@young` hides the dock and disables its reveal zone while the dock monitor is fullscreen.
+- `desktop-lab-v12@young` refuses edge-triggered dock reveal while the dock monitor is fullscreen.
+- `desktop-lab-v12@young` restores the normal hidden dock and reveal zone after fullscreen ends.
 - The tuned profile sets `org.gnome.desktop.wm.preferences button-layout` to `close,maximize,minimize:`.
 - `bluetooth-battery@young` includes both BlueZ and UPower battery queries.
 - The Codex usage top-panel indicator does not show adjacent numeric percentage text.

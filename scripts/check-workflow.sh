@@ -416,7 +416,9 @@ require_text "aesthetic preference.md" "selected symbols be changed directly fro
 require_text "aesthetic preference.md" "preset shortcuts" "aesthetic preference records v1.2.7 stock preset preference"
 require_text "TASK.md" 'Version `v1.2.9`' "TASK.md records v1.2.9 as the current request"
 require_text "TASK.md" 'Version `v1.2.10`' "TASK.md records v1.2.10 host installation safety work"
+require_text "TASK.md" 'Version `v1.2.11`' "TASK.md records v1.2.11 fullscreen dock suppression"
 require_text "task/v 1.2/v 1.2.10.md" "## version 1.2.10" "v1.2.10 task note exists"
+require_text "task/v 1.2/v 1.2.11.md" "## version 1.2.11" "v1.2.11 task note exists"
 require_file scripts/update-host.sh
 require_text scripts/update-host.sh "Safe host update preview" "host updater previews changes"
 require_text scripts/update-host.sh "--rollback" "host updater supports rollback"
@@ -453,6 +455,10 @@ require_text "$tuned_v12_extension/extension.js" "_reorderDockClusterForY" "v1.2
 require_text "$tuned_v12_extension/extension.js" "_buildFolderFlyout" "v1.2.5 dock includes app cluster folder flyouts"
 require_text "$tuned_v12_extension/extension.js" "_toggleClusterFolder" "v1.2.5 app clusters open folder flyouts by click toggle"
 require_text "$tuned_v12_extension/extension.js" "_dockPinnedByCluster" "v1.2.9 dock keeps a cluster-click pin state"
+require_text "$tuned_v12_extension/extension.js" "in-fullscreen-changed" "v1.2.11 listens for fullscreen changes"
+require_text "$tuned_v12_extension/extension.js" "_isDockMonitorFullscreen" "v1.2.11 checks fullscreen state on the dock monitor"
+require_text "$tuned_v12_extension/extension.js" "this._dockRevealZone?.set_visible(!fullscreen)" "v1.2.11 disables fullscreen edge reveal"
+require_text "$tuned_v12_extension/extension.js" "this._dock.hide()" "v1.2.11 hides the dock during fullscreen"
 require_text "$tuned_v12_extension/extension.js" "if (this._dockPinnedByCluster)" "v1.2.9 pointer motion respects the cluster-click pin"
 require_text "$tuned_v12_extension/extension.js" "this._hideDock();" "v1.2.9 outside clicks can dismiss the pinned dock"
 require_absent_text "$tuned_v12_extension/extension.js" "cluster.connect('enter-event'" "v1.2.5 app clusters do not open folder flyouts on hover"
@@ -506,7 +512,7 @@ require_text "$tuned_v12_extension/extension.js" "_drawIdleBackground" "desktop-
 require_absent_text "$tuned_v12_extension/extension.js" "_createMarkdownNote" "desktop-lab-v12 no longer creates Markdown notes"
 require_absent_text "$tuned_v12_extension/extension.js" "_moveMotionDot" "desktop-lab-v12 no longer uses the moving idle marker"
 require_text "$tuned_v12_extension/extension.js" "_tryHideBatteryIcon" "desktop-lab-v12 includes guarded battery-icon hiding"
-require_text "$tuned_v12_metadata" "v1.2.9 refinement" "desktop-lab-v12 metadata records v1.2.9 refinement"
+require_text "$tuned_v12_metadata" "fullscreen dock suppression" "desktop-lab-v12 metadata records v1.2.11 refinement"
 require_text "$tuned_v12_stylesheet" "background-gradient-direction: vertical;" "v1.2.5 uses textured translucent surfaces"
 require_text "$tuned_v12_stylesheet" "desktop-lab-v12-folder-flyout" "v1.2.5 stylesheet includes app cluster folder flyout"
 require_text "$tuned_v12_stylesheet" "desktop-lab-v12-cluster-dragging" "v1.2.5 stylesheet includes dock drag state"
@@ -620,6 +626,15 @@ fi
 for version_dir in "${version_dirs[@]}"; do
   validate_version_launcher "$version_dir"
 done
+
+latest_version_dir="$(printf '%s\n' "${version_dirs[@]}" | sort -V | tail -n 1)"
+if [ -n "$latest_version_dir" ]; then
+  require_file "$latest_version_dir/host-manifest.json"
+  if [ -f "$latest_version_dir/host-manifest.json" ]; then
+    validate_host_manifest "$latest_version_dir/host-manifest.json"
+    pass "latest release is eligible for the safe host updater"
+  fi
+fi
 
 while IFS= read -r manifest; do
   validate_host_manifest "$manifest"

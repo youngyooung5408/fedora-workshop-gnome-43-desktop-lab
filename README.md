@@ -55,6 +55,9 @@ This workflow is meant to survive across Codex conversations.
    ```bash
    ./scripts/install-version-launcher.sh v1.1.2 profiles/vm-initial-desktop-task
    ```
+   This also carries the latest reviewed safe-host manifest into the new
+   version. Review that manifest only when managed extensions or their own
+   settings change.
 8. Codex runs the acceptance checks listed in `TASK.md` and the workflow verifier:
    ```bash
    ./scripts/check-workflow.sh
@@ -156,6 +159,10 @@ After pulling the latest project version:
 ./scripts/update-host.sh --dry-run
 ./scripts/update-host.sh
 ```
+
+This is the permanent host-install path for every version. Do not run an
+`Apply vA.B.C` launcher, `scripts/import-layout.sh`, or
+`scripts/apply-to-host.sh` for a normal host update.
 
 The updater chooses the latest reviewed host manifest, previews its changes,
 creates a rollback backup, replaces only declared project extensions, merges

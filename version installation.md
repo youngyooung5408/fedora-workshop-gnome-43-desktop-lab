@@ -22,6 +22,15 @@ The host updater merges project extension UUIDs into the existing enabled list
 instead of replacing that list. Before applying, it creates a backup under
 `~/.config/gnome-layout-sync-lab/backups/` and prints a rollback command. A
 locally changed managed setting is kept and reported rather than overwritten.
+It also backs up and restores GNOME's global user-extension switch if rollback
+is needed.
+
+Every newly generated version automatically carries forward the most recent
+reviewed `host-manifest.json`. The workflow verifier fails if the newest version
+does not have a valid manifest. This makes the safe updater the standard path
+for later versions, while still allowing the manifest to be deliberately
+reviewed when a version adds or removes a managed extension or extension-only
+setting.
 
 Use `./scripts/update-host.sh --dry-run` to inspect the latest update without
 making changes, then run `./scripts/update-host.sh` and confirm the preview.

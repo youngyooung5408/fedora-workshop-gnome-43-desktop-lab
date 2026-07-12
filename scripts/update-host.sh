@@ -70,6 +70,9 @@ rollback() {
   if [ -f "$backup/enabled-extensions.txt" ]; then
     gsettings set org.gnome.shell enabled-extensions "$(cat "$backup/enabled-extensions.txt")"
   fi
+  if [ -f "$backup/disable-user-extensions.txt" ]; then
+    gsettings set org.gnome.shell disable-user-extensions "$(cat "$backup/disable-user-extensions.txt")"
+  fi
   while IFS=$'\t' read -r schema key value; do
     [ -n "${schema:-}" ] || continue
     gsettings set "$schema" "$key" "$value"
@@ -136,6 +139,12 @@ echo "  project extensions to update:"
 printf '    %s\n' "${EXTENSIONS[@]}"
 echo "  unrelated extensions: preserved"
 echo "  display scaling, text sizing, Bluetooth, favorites, and other undeclared settings: preserved"
+current_disable_user_extensions="$(gsettings get org.gnome.shell disable-user-extensions)"
+if [ "$current_disable_user_extensions" = "true" ]; then
+  echo "  GNOME user extensions: currently disabled; updater will enable them (rollback restores this)"
+else
+  echo "  GNOME user extensions: already enabled"
+fi
 
 declare -a SETTINGS_TO_APPLY=()
 declare -a SETTINGS_PRESERVED=()
@@ -182,6 +191,7 @@ BACKUP_DIR="$BACKUP_ROOT/$timestamp-$VERSION"
 mkdir -p "$BACKUP_DIR/extensions" "$EXT_ROOT"
 printf '%s\n' "${EXTENSIONS[@]}" > "$BACKUP_DIR/changed-extensions.txt"
 gsettings get org.gnome.shell enabled-extensions > "$BACKUP_DIR/enabled-extensions.txt"
+printf '%s\n' "$current_disable_user_extensions" > "$BACKUP_DIR/disable-user-extensions.txt"
 : > "$BACKUP_DIR/settings.tsv"
 for item in "${SETTINGS_TO_APPLY[@]}"; do
   IFS=$'\t' read -r schema key _ <<< "$item"

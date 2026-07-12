@@ -366,6 +366,9 @@ done
 
 require_text scripts/lab 'Current GNOME Desktop Lab version:' "lab command reports the current version"
 require_text scripts/install-version-launcher.sh 'record-current-version.sh' "future launchers record their applied version"
+require_text AGENTS.md 'automatically apply that launcher in the lab VM' "agent workflow automatically applies each finished lab version"
+require_text README.md 'automatically applies the newly generated launcher in the lab VM' "Codex workflow automatically applies each finished lab version"
+require_text TASK.md 'Every newly finished lab version is automatically applied in the lab VM' "task acceptance checks require automatic VM application"
 require_absent_text scripts/update-host.sh 'install-lab-command.sh' "safe host updater does not install the VM lab command"
 
 if command -v rg >/dev/null 2>&1; then

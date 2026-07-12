@@ -75,6 +75,8 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Acceptance checks
 
+- Every newly finished lab version is automatically applied in the lab VM unless the user explicitly asks to defer it.
+- After automatic application, `lab -version` reports the newly finished version.
 - `desktop-lab-v12@young` sizes the dock from its current cluster count within the monitor's available height.
 - The left-edge reveal zone has the same vertical position and height as the dock.
 - Pointer motion above or below the dock's vertical bounds does not reveal it.

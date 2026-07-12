@@ -59,24 +59,29 @@ This workflow is meant to survive across Codex conversations.
    This also carries the latest reviewed safe-host manifest into the new
    version. Review that manifest only when managed extensions or their own
    settings change.
-8. Codex runs the acceptance checks listed in `TASK.md` and the workflow verifier:
+8. Codex automatically applies the newly generated launcher in the lab VM, then verifies that `lab -version` reports the new version. Application is skipped only when the user explicitly asks to defer it:
+   ```bash
+   ./versions/v1/v1.1/v1.1.2/apply-v1.1.2.sh < /dev/null
+   lab -version
+   ```
+9. Codex runs the acceptance checks listed in `TASK.md` and the workflow verifier:
    ```bash
    ./scripts/check-workflow.sh
    ```
-9. Codex updates `LAB_DIARY.md` with the new version entry:
+10. Codex updates `LAB_DIARY.md` with the new version entry:
    - version label
    - task summary
    - files, settings, or profiles changed
    - features included in the version
    - verification result
    - known limits or follow-up items
-10. Codex commits the changed lab files to Git.
-11. Codex pushes the completed commit to the configured Git remote:
+11. Codex commits the changed lab files to Git.
+12. Codex pushes the completed commit to the configured Git remote:
    ```bash
    git push
    ```
    If the remote or authentication is unavailable, Codex reports the push failure and leaves the commit local.
-12. Codex reports the version label, commit hash, changed files, import result, project-local launcher path, verification result, and push result back to the user.
+13. Codex reports the version label, commit hash, changed files, launcher application result, authoritative `lab -version`, project-local launcher path, verification result, and push result back to the user.
 
 A lab version is one Git commit on `main`, pushed to the configured remote when available.
 The Git history is the exact record; `LAB_DIARY.md` is the readable summary for checking from this VM or from the host.

@@ -5,6 +5,7 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Current request
 
+- Version `v1.2.14`: fix the remaining v1.2.13 fullscreen dock problem by using GNOME Shell's authoritative per-monitor fullscreen state instead of relying on the focused window fallback.
 - Version `v1.2.13`: keep fullscreen dock suppression, restrict left-edge reveal to the dock's dynamically sized vertical bounds as dock groups change, and remove the bottom app-grid drag/scroll zone.
 - Version `v1.2.12`: add an authoritative VM-only current-version tracker. Both
   `lab -version` and `lab --version` report the last successfully applied saved
@@ -75,6 +76,8 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Acceptance checks
 
+- `desktop-lab-v12@young` checks the GNOME Shell layout monitor's `inFullscreen` state before older fullscreen fallbacks.
+- Fullscreen suppression does not depend on the fullscreen window remaining focused.
 - Every newly finished lab version is automatically applied in the lab VM unless the user explicitly asks to defer it.
 - After automatic application, `lab -version` reports the newly finished version.
 - `desktop-lab-v12@young` sizes the dock from its current cluster count within the monitor's available height.

@@ -19,6 +19,27 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-12 15:40 CST - v 1.2.14 authoritative fullscreen monitor state
+
+- Version label: v1.2.14-authoritative-fullscreen-monitor-state.
+- Task summary: fix the remaining v1.2.13 fullscreen dock failure so the left dock cannot appear over a fullscreen application when window focus changes.
+- Changed files:
+  - Expanded `TASK.md` and the v1.2.14 task note with the diagnosis and acceptance checks.
+  - Updated the tuned desktop-lab extension source, metadata, and profile README.
+  - Updated the workflow verifier and added the project-local v1.2.14 launcher snapshot with its carried-forward reviewed safe-host manifest.
+- Features included:
+  - Fullscreen detection now reads GNOME Shell 49's authoritative layout-monitor `inFullscreen` property first, matching the approach used by GNOME's bundled window-list extension.
+  - The older display method and focused-window query remain as compatibility fallbacks.
+  - The v1.2.13 dynamically bounded edge reveal, fullscreen forced-hide path, and removal of the bottom gesture zone remain intact.
+- Verification:
+  - Bash syntax, metadata JSON parsing, extension packaging, and `git diff --check` passed.
+  - `./scripts/check-workflow.sh` passed all profile, launcher, safe-host updater, rollback, and version-tracker checks before version generation.
+  - `./scripts/install-version-launcher.sh v1.2.14 profiles/vm-initial-desktop-task` created the exact snapshot and carried forward the reviewed three-extension host manifest with no global settings.
+  - The v1.2.14 launcher imported successfully, the installed extension source matches the tuned profile, and both `lab -version` forms report v1.2.14.
+- Known limits:
+  - GNOME Shell can keep the already loaded extension module in memory after its files are replaced; log out and back in before the final live fullscreen test.
+  - Automated checks verify the authoritative monitor state, compatibility fallbacks, forced hide, and bounded reveal paths. A real fullscreen application remains the final visual acceptance check after Shell reload.
+
 ### 2026-07-12 15:07 CST - v 1.2.13 dynamically bounded dock reveal
 
 - Version label: v1.2.13-dynamically-bounded-dock-reveal.

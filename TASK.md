@@ -5,6 +5,9 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Current request
 
+- Version `v1.2.12`: add an authoritative VM-only current-version tracker. Both
+  `lab -version` and `lab --version` report the last successfully applied saved
+  lab launcher, including when an older version is restored.
 - Version `v1.2.11`: suppress the left dock and its edge reveal zone while a fullscreen application or game occupies the dock's monitor, then restore normal hidden-dock behavior after fullscreen ends.
 - Version `v1.2.10`: separate exact lab restoration from safe host installation.
 - Keep historical version launchers unchanged as exact lab snapshots for
@@ -70,6 +73,11 @@ Codex should read this file at the start of each desktop customization task.
 - Do not remove the existing Bluetooth battery indicator or Codex usage indicator icon.
 
 ## Acceptance checks
+
+- `lab -version` and `lab --version` report the same authoritative saved version.
+- Every historical and future apply launcher records its own version only after a successful import.
+- Failed imports and invalid version writes preserve the previously recorded version.
+- The safe host updater does not install or update the VM-only version command.
 
 - `desktop-lab-v12@young` listens for GNOME Shell fullscreen-state changes.
 - `desktop-lab-v12@young` hides the dock and disables its reveal zone while the dock monitor is fullscreen.

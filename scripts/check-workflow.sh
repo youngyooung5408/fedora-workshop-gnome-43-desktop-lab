@@ -295,6 +295,15 @@ validate_version_launcher() {
     else
       fail "$apply_script has invalid Bash syntax"
     fi
+
+    require_text "$apply_script" '"$LAB_ROOT/scripts/record-current-version.sh" "$VERSION"' "$apply_script records its version"
+    import_line="$(rg -n -F '"$LAB_ROOT/scripts/import-layout.sh" "$PROFILE_DIR"' "$apply_script" | cut -d: -f1)"
+    record_line="$(rg -n -F '"$LAB_ROOT/scripts/record-current-version.sh" "$VERSION"' "$apply_script" | cut -d: -f1)"
+    if [ -n "$import_line" ] && [ -n "$record_line" ] && [ "$record_line" -gt "$import_line" ]; then
+      pass "$apply_script records only after its import command"
+    else
+      fail "$apply_script does not record after its import command"
+    fi
   fi
 
   if [ -f "$desktop_file" ]; then
@@ -335,9 +344,29 @@ fi
 require_file README.md
 require_file TASK.md
 require_file LAB_DIARY.md
+require_file scripts/lab
+require_file scripts/record-current-version.sh
+require_file scripts/install-lab-command.sh
 require_heading README.md "## Codex Workflow"
 require_heading TASK.md "## Acceptance checks"
 require_heading LAB_DIARY.md "## Versions"
+
+for file in scripts/lab scripts/record-current-version.sh scripts/install-lab-command.sh; do
+  if [ -x "$file" ]; then
+    pass "$file is executable"
+  else
+    fail "$file is not executable"
+  fi
+  if bash -n "$file"; then
+    pass "$file has valid Bash syntax"
+  else
+    fail "$file has invalid Bash syntax"
+  fi
+done
+
+require_text scripts/lab 'Current GNOME Desktop Lab version:' "lab command reports the current version"
+require_text scripts/install-version-launcher.sh 'record-current-version.sh' "future launchers record their applied version"
+require_absent_text scripts/update-host.sh 'install-lab-command.sh' "safe host updater does not install the VM lab command"
 
 if command -v rg >/dev/null 2>&1; then
   pass "ripgrep is available"
@@ -644,6 +673,12 @@ if tests/test-update-host.sh; then
   pass "safe host updater isolated apply and rollback tests pass"
 else
   fail "safe host updater isolated apply and rollback tests failed"
+fi
+
+if tests/test-lab-version.sh; then
+  pass "Desktop Lab version tracker isolated tests pass"
+else
+  fail "Desktop Lab version tracker isolated tests failed"
 fi
 
 if [ "$git_available" -eq 1 ]; then

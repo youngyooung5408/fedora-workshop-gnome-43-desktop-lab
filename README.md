@@ -34,6 +34,7 @@ So this project moves settings between host and VM for you.
 - `scripts/update-host.sh` — preview, back up, and safely install the latest host manifest
 - `scripts/check-workflow.sh` — verify workflow documents, scripts, tracked profiles, project-local versions, and extension bundles
 - `scripts/install-version-launcher.sh` — create clickable `versions/vA/vA.B/vA.B.C/` launchers
+- `scripts/install-lab-command.sh` — install the VM-only `lab -version` command
 - `profiles/host-current/` — current exported host snapshot
 - `profiles/vm-initial-desktop-task/` — tracked tuned profile for the first desktop customization task
 - `notes.md` — keep/reject/maybe notes while testing in the VM
@@ -114,6 +115,27 @@ Each version folder contains:
 - `apply-vA.B.C.sh` - executable shell script
 - `Apply vA.B.C.desktop` - clickable GNOME Files launcher
 - `README.md` - notes for that version launcher
+
+## Current Lab Version
+
+Install the VM-only version query command once:
+
+```bash
+./scripts/install-lab-command.sh
+```
+
+Then check the last successfully applied saved layout with either form:
+
+```bash
+lab -version
+lab --version
+```
+
+Every project-local `apply-vA.B.C.sh` launcher records its version only after
+the layout import succeeds. Applying an older launcher updates the command to
+report that older version. Direct manual imports do not claim a saved version.
+The command and its per-user state are for the lab VM only and are not installed
+by the safe host updater.
 
 ## Recommended flow
 

@@ -16,6 +16,7 @@ echo "Profile: $PROFILE_DIR"
 echo
 
 "$LAB_ROOT/scripts/import-layout.sh" "$PROFILE_DIR"
+"$LAB_ROOT/scripts/record-current-version.sh" "$VERSION"
 
 echo
 echo "Applied $VERSION."

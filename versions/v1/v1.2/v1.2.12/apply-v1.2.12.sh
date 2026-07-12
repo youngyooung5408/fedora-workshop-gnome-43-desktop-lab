@@ -9,7 +9,7 @@ else
   LAB_ROOT="/home/sdafsaasd/Downloads/gnome-layout-sync-lab"
 fi
 PROFILE_DIR="$SCRIPT_DIR/profile"
-VERSION="v1.1.4"
+VERSION="v1.2.12"
 
 echo "Applying GNOME layout lab version $VERSION"
 echo "Profile: $PROFILE_DIR"

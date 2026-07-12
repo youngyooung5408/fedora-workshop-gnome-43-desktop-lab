@@ -19,6 +19,31 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-12 14:44 CST - v 1.2.12 authoritative current-version tracking
+
+- Version label: v1.2.12-authoritative-current-version-tracking.
+- Task summary: make the exact saved layout currently selected in the VM easy for both the user and Codex to identify without guessing from files, commits, or timestamps.
+- Changed files:
+  - Added the VM command, atomic version recorder, installer, and isolated tracker test under `scripts/` and `tests/`.
+  - Updated the launcher generator and every existing v1.1/v1.2 apply script to record its own version after a successful import.
+  - Updated `README.md`, `TASK.md`, the v1.2.12 task note, the workflow verifier, and this diary.
+  - Added the project-local v1.2.12 launcher snapshot with its carried-forward reviewed safe-host manifest.
+- Features included:
+  - `lab -version` and `lab --version` read one authoritative per-user VM state file.
+  - Missing or malformed state reports `unknown` instead of inferring a version.
+  - Applying an older saved launcher records that older version, supporting reliable before/after bug comparison.
+  - Recording occurs only after the layout import command succeeds, so a failed import preserves the prior version.
+  - The safe host updater does not install the VM command or manage its state.
+- Verification:
+  - Installed `lab` in this VM through `~/.local/bin/lab`, backed by the tracked repository command.
+  - Left the initial state unknown rather than overwriting the user's selected layout or inventing a version from ambiguous historical evidence.
+  - Isolated tests cover unknown state, both command spellings, old/new version replacement, rejected invalid writes, malformed state, and unsupported arguments.
+  - The workflow verifier checks all historical and future launchers for a recorder call positioned after the import command.
+- Known limits:
+  - Direct calls to `scripts/import-layout.sh` do not identify or record a saved release.
+  - The first successful version-launcher application after this feature establishes the authoritative current version.
+  - This tracker is intentionally VM-only and is excluded from normal host updates.
+
 ### 2026-07-12 14:07 CST - v 1.2.11 fullscreen dock suppression
 
 - Version label: v1.2.11-fullscreen-dock-suppression.

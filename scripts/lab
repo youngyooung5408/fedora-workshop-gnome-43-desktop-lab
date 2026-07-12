@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+STATE_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/gnome-layout-sync-lab/current-version"
+
+usage() {
+  echo "Usage: lab -version | lab --version" >&2
+}
+
+if [ "$#" -ne 1 ] || { [ "$1" != "-version" ] && [ "$1" != "--version" ]; }; then
+  usage
+  exit 2
+fi
+
+if [ ! -f "$STATE_FILE" ]; then
+  echo "Current GNOME Desktop Lab version: unknown"
+  echo "Apply a saved lab version to record the current version." >&2
+  exit 1
+fi
+
+IFS= read -r version < "$STATE_FILE" || true
+if [[ ! "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "Current GNOME Desktop Lab version: unknown"
+  echo "The saved version state is missing or invalid." >&2
+  exit 1
+fi
+
+echo "Current GNOME Desktop Lab version: $version"

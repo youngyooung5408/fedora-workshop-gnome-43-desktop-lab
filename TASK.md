@@ -5,6 +5,7 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Current request
 
+- Version `v1.2.13`: keep fullscreen dock suppression, restrict left-edge reveal to the dock's dynamically sized vertical bounds as dock groups change, and remove the bottom app-grid drag/scroll zone.
 - Version `v1.2.12`: add an authoritative VM-only current-version tracker. Both
   `lab -version` and `lab --version` report the last successfully applied saved
   lab launcher, including when an older version is restored.
@@ -51,7 +52,7 @@ Codex should read this file at the start of each desktop customization task.
 - Add a visible textured market board for chosen symbols without opening a browser on click, but do not show update-time or provider/API labels in the panel.
 - Add a compact stock chooser app from the market panel for adding and removing symbols, including preset symbol buttons.
 - Prefer Alpha Vantage when the user provides `DESKTOP_LAB_ALPHA_VANTAGE_KEY` or `~/.config/desktop-lab-v12/alpha-vantage-key`, while keeping no-key fallback quotes.
-- Add a bottom edge drag/scroll zone that opens the GNOME application grid when supported by the current Shell API.
+- Keep application-grid access in the left dock and do not reserve a bottom edge drag/scroll zone.
 - Show an animated rest screen after 30 minutes of no input while keeping background work running, using the GNOME Shell idle monitor when available.
 - Apply the `aesthetic preference.md` direction with neutral translucent surfaces, restrained text weights, subtle hover/focus states, and low-saturation motion.
 - Avoid decorative rainbow, blue/teal-heavy, or flashy visual treatment.
@@ -74,6 +75,11 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Acceptance checks
 
+- `desktop-lab-v12@young` sizes the dock from its current cluster count within the monitor's available height.
+- The left-edge reveal zone has the same vertical position and height as the dock.
+- Pointer motion above or below the dock's vertical bounds does not reveal it.
+- Fullscreen applications still hide the dock and disable its reveal zone.
+- `desktop-lab-v12@young` no longer creates a bottom app-grid drag/scroll zone.
 - `lab -version` and `lab --version` report the same authoritative saved version.
 - Every historical and future apply launcher records its own version only after a successful import.
 - Failed imports and invalid version writes preserve the previously recorded version.
@@ -132,7 +138,7 @@ Codex should read this file at the start of each desktop customization task.
 - `desktop-lab-v12@young` reveals and hides the dock by animating `translation_x` with longer cubic easing instead of moving the layout position and fading to zero.
 - The v1.2.8 stylesheet gives the dock a restrained marine surface and right border so its hidden slice reads as the dock silhouette without a separate shadow actor.
 - `desktop-lab-v12@young` includes a compact dock editor action and stores edited dock groups in user config.
-- `desktop-lab-v12@young` creates a guarded bottom drag/scroll zone for opening the app grid.
+- `desktop-lab-v12@young` does not create a bottom drag/scroll zone for opening the app grid.
 - `desktop-lab-v12@young` creates a 30-minute animated rest screen using the GNOME Shell idle monitor when available.
 - `desktop-lab-v12@young` keeps a timer fallback for the rest screen if the Shell idle monitor is unavailable.
 - `desktop-lab-v12@young` applies the `aesthetic preference.md` direction with neutral translucent surfaces and restrained typography.

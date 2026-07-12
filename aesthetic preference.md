@@ -21,6 +21,7 @@ Keep durable preference notes focused on reusable direction. Do not add temporar
 - App clusters should behave like useful folders or flyouts that open intentionally on click, not automatically just because the pointer passes over them. Prefer icon-only dock and flyout controls without category words, app descriptions, or repeated "Apps" wording when the icons are clear.
 - After a cluster is clicked, keep its dock and flyout available until an intentional outside click dismisses them; pointer travel alone should not demand precise mouse movement or close the interaction.
 - Fullscreen applications and games should have an uninterrupted screen edge: hide the left dock and disable its reveal zone on the dock's monitor until fullscreen ends.
+- Hidden left docks should reveal only when the pointer reaches the edge within the dock's visible vertical span. That span should grow or shrink with the configured cluster count, and the desktop should not reserve a separate bottom-edge app-grid gesture.
 - Opened app flyouts should feel easy to target, with larger app icons/buttons than the hidden dock trigger when space allows.
 - Dock groups should have an understandable editing path for adding categories and app desktop IDs, with personal edits saved in user config rather than hard-coded only in the extension source.
 - Detailed particle-like, technological texture is preferred when it stays restrained, neutral, and polished.

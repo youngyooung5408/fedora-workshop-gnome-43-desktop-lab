@@ -19,6 +19,29 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-12 15:07 CST - v 1.2.13 dynamically bounded dock reveal
+
+- Version label: v1.2.13-dynamically-bounded-dock-reveal.
+- Task summary: finish the left-dock refinements by preserving fullscreen suppression, limiting edge reveal to the dock's actual vertical span, sizing that span from the configured dock groups, and removing the bottom app-grid gesture.
+- Changed files:
+  - Updated `TASK.md`, `aesthetic preference.md`, the v1.2.13 task note, and this diary.
+  - Updated the tuned profile's desktop-lab extension source, stylesheet, metadata, and profile README.
+  - Updated the workflow verifier and added the project-local v1.2.13 launcher snapshot with its carried-forward reviewed safe-host manifest.
+- Features included:
+  - The dock height now grows and shrinks with the current dock-cluster count while staying within the monitor's usable height.
+  - Both captured pointer motion and the reactive left-edge actor use the dock's exact top and bottom bounds, so other parts of the left edge cannot reveal it.
+  - Existing per-monitor fullscreen detection still hides the dock and disables its reveal actor until fullscreen ends.
+  - The bottom drag/scroll actor and its styling were removed; application-grid access remains available from the dock.
+- Verification:
+  - JSON parsing, Bash syntax checks, extension packaging, and `git diff --check` passed.
+  - `./scripts/install-version-launcher.sh v1.2.13 profiles/vm-initial-desktop-task` created the exact v1.2.13 snapshot and carried forward the reviewed safe-host manifest.
+  - `./scripts/check-workflow.sh` passed all profile, extension bundle, launcher, safe updater, rollback, and version-tracker checks with only the expected pre-commit dirty-worktree warning.
+  - `./scripts/update-host.sh --dry-run` selected v1.2.13, declared only the three reviewed project extensions, preserved unrelated host state, and made no changes.
+- Known limits:
+  - The repository safety rules prohibit applying an exact version launcher or running the profile importer during a normal update, so this workflow did not alter the live desktop or authoritative VM version state.
+  - GNOME Shell may continue running cached extension JavaScript until logout/login after a later safe host update.
+  - Fullscreen suppression and the bounded pointer target should receive a final visual acceptance check after the updated extension is safely installed and Shell is reloaded.
+
 ### 2026-07-12 14:44 CST - v 1.2.12 authoritative current-version tracking
 
 - Version label: v1.2.12-authoritative-current-version-tracking.

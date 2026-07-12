@@ -1,0 +1,9 @@
+{
+  "version": "v1.2.13",
+  "extensions": [
+    "bluetooth-battery@young",
+    "codex-usage@young",
+    "desktop-lab-v12@young"
+  ],
+  "settings": []
+}

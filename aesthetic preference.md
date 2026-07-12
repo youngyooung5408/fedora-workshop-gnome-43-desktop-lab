@@ -22,6 +22,7 @@ Keep durable preference notes focused on reusable direction. Do not add temporar
 - After a cluster is clicked, keep its dock and flyout available until an intentional outside click dismisses them; pointer travel alone should not demand precise mouse movement or close the interaction.
 - Fullscreen applications and games should have an uninterrupted screen edge: hide the left dock and disable its reveal zone on the dock's monitor until fullscreen ends.
 - Maximized and left-tiled active windows should also have an uninterrupted left edge, while a right-tiled active window should leave the left dock available; reevaluate this behavior immediately as window focus, geometry, or workspace changes.
+- Dock behavior fixes must preserve the accepted v1.2.14 dock, clock, and market presentation unless a task explicitly requests a visual change; treat extension startup errors and partially initialized desktop actors as visual regressions.
 - Hidden left docks should reveal only when the pointer reaches the edge within the dock's visible vertical span. That span should grow or shrink with the configured cluster count, and the desktop should not reserve a separate bottom-edge app-grid gesture.
 - Opened app flyouts should feel easy to target, with larger app icons/buttons than the hidden dock trigger when space allows.
 - Dock groups should have an understandable editing path for adding categories and app desktop IDs, with personal edits saved in user config rather than hard-coded only in the extension source.

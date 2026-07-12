@@ -86,6 +86,23 @@ require_absent_text() {
   fi
 }
 
+require_identical_files() {
+  local first="$1"
+  local second="$2"
+  local description="$3"
+
+  if [ ! -f "$first" ] || [ ! -f "$second" ]; then
+    fail "$description (missing comparison file)"
+    return
+  fi
+
+  if cmp -s "$first" "$second"; then
+    pass "$description"
+  else
+    fail "$description"
+  fi
+}
+
 validate_gsettings_file() {
   local file="$1"
   local parsed
@@ -452,11 +469,14 @@ require_text "TASK.md" 'Version `v1.2.11`' "TASK.md records v1.2.11 fullscreen d
 require_text "TASK.md" 'Version `v1.2.13`' "TASK.md records v1.2.13 bounded dock reveal"
 require_text "TASK.md" 'Version `v1.2.14`' "TASK.md records v1.2.14 fullscreen compatibility fix"
 require_text "TASK.md" 'Version `v1.2.15`' "TASK.md records v1.2.15 active-window dock suppression"
+require_text "TASK.md" 'Version `v1.2.16`' "TASK.md records v1.2.16 presentation regression repair"
 require_text "task/v 1.2/v 1.2.10.md" "## version 1.2.10" "v1.2.10 task note exists"
 require_text "task/v 1.2/v 1.2.11.md" "## version 1.2.11" "v1.2.11 task note exists"
 require_text "task/v 1.2/v 1.2.13.md" "## version 1.2.13" "v1.2.13 task note exists"
 require_text "task/v 1.2/v 1.2.14.md" "## version 1.2.14" "v1.2.14 task note exists"
 require_text "task/v 1.2/v 1.2.15.md" "## version 1.2.15" "v1.2.15 task note exists"
+require_text "task/v 1.2/v 1.2.16.md" "## version 1.2.16" "v1.2.16 task note exists"
+require_text "task/v 1.2/v 1.2.16.md" "## Diagnosis" "v1.2.16 records the extension startup failure diagnosis"
 require_file scripts/update-host.sh
 require_text scripts/update-host.sh "Safe host update preview" "host updater previews changes"
 require_text scripts/update-host.sh "--rollback" "host updater supports rollback"
@@ -495,7 +515,8 @@ require_text "$tuned_v12_extension/extension.js" "_toggleClusterFolder" "v1.2.5 
 require_text "$tuned_v12_extension/extension.js" "_dockPinnedByCluster" "v1.2.9 dock keeps a cluster-click pin state"
 require_text "$tuned_v12_extension/extension.js" "in-fullscreen-changed" "v1.2.11 listens for fullscreen changes"
 require_text "$tuned_v12_extension/extension.js" "_isDockMonitorFullscreen" "v1.2.11 checks fullscreen state on the dock monitor"
-require_text "$tuned_v12_extension/extension.js" "this._dockRevealZone?.set_visible(!suppressed)" "v1.2.15 disables edge reveal while dock suppression is active"
+require_text "$tuned_v12_extension/extension.js" "this._dockRevealZone.visible = !suppressed" "v1.2.16 uses GNOME Shell's supported actor visibility property"
+require_absent_text "$tuned_v12_extension/extension.js" "_dockRevealZone?.set_visible" "v1.2.16 removes the unsupported reveal-zone visibility call"
 require_text "$tuned_v12_extension/extension.js" "this._dock.hide()" "v1.2.11 hides the dock during fullscreen"
 require_text "$tuned_v12_extension/extension.js" "typeof monitor.inFullscreen === 'boolean'" "v1.2.14 uses GNOME Shell's per-monitor fullscreen state"
 require_text "$tuned_v12_extension/extension.js" "return monitor.inFullscreen" "v1.2.14 prioritizes authoritative monitor fullscreen state"
@@ -568,6 +589,10 @@ require_text "$tuned_v12_extension/extension.js" "_tryHideBatteryIcon" "desktop-
 require_text "$tuned_v12_metadata" "dynamically bounded edge-reveal dock" "desktop-lab-v12 metadata records v1.2.13 refinement"
 require_text "$tuned_v12_metadata" "monitor-aware fullscreen suppression" "desktop-lab-v12 metadata records v1.2.14 fix"
 require_text "$tuned_v12_metadata" "left-edge window suppression" "desktop-lab-v12 metadata records v1.2.15 refinement"
+require_text "$tuned_v12_metadata" "startup-safe" "desktop-lab-v12 metadata records v1.2.16 startup repair"
+require_identical_files "$tuned_v12_stylesheet" "versions/v1/v1.2/v1.2.14/profile/extensions/desktop-lab-v12@young/stylesheet.css" "v1.2.16 preserves the accepted v1.2.14 extension presentation stylesheet"
+require_identical_files "$tuned_settings" "versions/v1/v1.2/v1.2.14/profile/gsettings-export.sh" "v1.2.16 preserves the accepted v1.2.14 GNOME settings"
+require_identical_files "$tuned_profile/dconf-org-gnome.ini" "versions/v1/v1.2/v1.2.14/profile/dconf-org-gnome.ini" "v1.2.16 preserves the accepted v1.2.14 dconf profile"
 require_text "$tuned_v12_stylesheet" "background-gradient-direction: vertical;" "v1.2.5 uses textured translucent surfaces"
 require_text "$tuned_v12_stylesheet" "desktop-lab-v12-folder-flyout" "v1.2.5 stylesheet includes app cluster folder flyout"
 require_text "$tuned_v12_stylesheet" "desktop-lab-v12-cluster-dragging" "v1.2.5 stylesheet includes dock drag state"

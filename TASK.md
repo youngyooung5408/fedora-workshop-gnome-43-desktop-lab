@@ -5,6 +5,7 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Current request
 
+- Version `v1.2.16`: restore the exact v1.2.14 dock, clock, and market presentation while retaining v1.2.15's maximized/left-tiled dock suppression; repair the extension startup error that left those actors partially initialized, and guard against another unintended presentation regression.
 - Version `v1.2.15`: preserve fullscreen suppression, suppress the left dock for maximized and left-tiled active windows on the dock monitor, keep it available beside right-tiled windows, and immediately reevaluate focus, geometry, and workspace changes.
 - Version `v1.2.14`: fix the remaining v1.2.13 fullscreen dock problem by using GNOME Shell's authoritative per-monitor fullscreen state instead of relying on the focused window fallback.
 - Version `v1.2.13`: keep fullscreen dock suppression, restrict left-edge reveal to the dock's dynamically sized vertical bounds as dock groups change, and remove the bottom app-grid drag/scroll zone.
@@ -77,6 +78,9 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Acceptance checks
 
+- `desktop-lab-v12@young` completes `enable()` without calling the unsupported `St.Widget.set_visible()` method or entering GNOME Shell's `ERROR` state.
+- The tuned extension stylesheet, GNOME settings export, and dconf profile remain byte-for-byte identical to the accepted v1.2.14 presentation.
+- The dock, clock, and market retain v1.2.14 sizing, formatting, spacing, drawing, and overview behavior.
 - `desktop-lab-v12@young` hides the dock and disables edge reveal for maximized and left-tiled active windows on the dock monitor.
 - A right-tiled active window leaves the left dock available.
 - Focus, maximize, tile geometry, and workspace changes immediately reevaluate dock suppression and cannot leave an open or pinned dock stuck over the active window.

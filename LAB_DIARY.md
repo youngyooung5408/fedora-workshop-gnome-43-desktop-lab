@@ -19,6 +19,33 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-12 19:15 CST - v 1.2.16 presentation regression repair
+
+- Version label: v1.2.16-presentation-regression-repair.
+- Task summary: restore the accepted v1.2.14 dock, clock, and market presentation while retaining v1.2.15's fullscreen, maximized-window, and left-tiled-window dock suppression behavior.
+- Changed files:
+  - Expanded `TASK.md` and the completed v1.2.16 task note with the diagnosis, repair, and acceptance checks.
+  - Recorded the durable presentation-stability preference in `aesthetic preference.md`.
+  - Repaired the tuned desktop-lab extension source, updated its metadata and profile README, and strengthened the workflow verifier.
+  - Added the project-local v1.2.16 launcher snapshot with the reviewed three-extension safe-host manifest carried forward and no global host settings.
+- Diagnosis:
+  - v1.2.15 did not change the extension stylesheet, GNOME settings, dock dimensions, clock construction, or market construction from v1.2.14.
+  - Its new synchronous focus-window check exposed a latent invalid `St.Widget.set_visible()` call during `enable()`, causing GNOME Shell 49 to mark the extension `ERROR`.
+  - GNOME Shell unloaded the extension stylesheet after the error without calling `disable()` on the half-created instance, leaving unstyled dock, clock, and market actors with markedly different default sizing and formatting.
+- Features included:
+  - Reveal-zone visibility now uses the supported GNOME Shell actor `visible` property, allowing startup synchronization to complete.
+  - All v1.2.15 focused-window signals, maximized-window policy, left/right tile geometry policy, fullscreen handling, and forced dock cleanup remain intact.
+  - New verifier guards reject the unsupported reveal-zone method and require the tuned stylesheet, gsettings export, and dconf profile to remain byte-for-byte identical to v1.2.14.
+- Verification:
+  - `git diff --check`, Bash syntax checks, metadata and manifest JSON parsing, desktop launcher validation, and all three extension packaging checks passed; `gjs -m` parsed the extension source before reaching the expected GNOME Shell resource-import limit outside Shell.
+  - Direct comparisons confirmed the v1.2.16 stylesheet, gsettings export, and dconf profile are byte-for-byte identical to v1.2.14; the v1.2.16 snapshot is identical to the tuned source profile.
+  - The safe-host manifest differs from v1.2.15 only by its version and still declares the same three project extensions with an empty settings list.
+  - `./scripts/check-workflow.sh` passed all profile, extension, launcher, safe-host updater, rollback, and version-tracker checks with only the expected pre-commit dirty-worktree warning.
+  - The v1.2.16 launcher imported successfully, both `lab -version` forms report v1.2.16, the installed extension source matches the generated snapshot, and the installed source no longer contains the invalid call.
+- Known limits:
+  - The current GNOME Shell process still holds v1.2.15's failed `ERROR` instance and cached JavaScript module. That instance cannot be cleanly disabled because startup never reached `ACTIVE`; log out and back in once to discard its surviving unstyled actors and load v1.2.16 cleanly.
+  - After that fresh login, final live acceptance should confirm `gnome-extensions info desktop-lab-v12@young` reports `ACTIVE`, no new desktop-lab JavaScript errors appear, the three components match v1.2.14 visually, and fullscreen/maximized/left-tiled versus right-tiled behavior remains correct.
+
 ### 2026-07-12 18:32 CST - v 1.2.15 active-window dock suppression
 
 - Version label: v1.2.15-active-window-dock-suppression.

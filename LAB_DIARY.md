@@ -19,6 +19,31 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-12 18:32 CST - v 1.2.15 active-window dock suppression
+
+- Version label: v1.2.15-active-window-dock-suppression.
+- Task summary: preserve the working fullscreen behavior while preventing the left dock from appearing over maximized and left-tiled active windows, without removing dock access beside a right-tiled window.
+- Changed files:
+  - Added the completed v1.2.15 task note and updated `TASK.md` with the new request and acceptance checks.
+  - Updated the durable dock interaction preference in `aesthetic preference.md`.
+  - Updated the tuned desktop-lab extension source, metadata, profile README, and workflow verifier.
+  - Added the project-local v1.2.15 launcher snapshot with the reviewed three-extension safe-host manifest carried forward and no global host settings added.
+- Features included:
+  - Fullscreen suppression remains monitor-authoritative and unchanged.
+  - Mutter's full-maximize state now suppresses the dock and its edge reveal zone on the dock monitor.
+  - Active-window frame geometry distinguishes a left tile that occupies the dock edge from a right tile that leaves the dock available.
+  - Focus, window size, window position, maximize-state, workspace, and monitor changes immediately reevaluate suppression.
+  - Activating suppression force-closes open, pinned, dragged, folder, and editor dock state so the dock cannot remain stuck over an application.
+- Verification:
+  - `git diff --check`, Bash syntax checks, metadata parsing, and all three extension packaging checks passed.
+  - GNOME's bundled window-list extension and Mutter API documentation confirmed the focused-window signals, authoritative maximize method, frame geometry, and work-area APIs used by the implementation.
+  - `./scripts/check-workflow.sh` passed all profile, extension bundle, launcher, safe-host updater, rollback, and version-tracker checks with only the expected pre-commit dirty-worktree warning.
+  - `./scripts/install-version-launcher.sh v1.2.15 profiles/vm-initial-desktop-task` created the exact snapshot and retained the reviewed safe-host allowlist.
+  - The v1.2.15 launcher imported successfully, the installed extension source matches the generated snapshot, the extension remains enabled and active, and `lab -version` reports v1.2.15.
+- Known limits:
+  - GNOME Shell keeps the previously loaded extension module and metadata cached after files are replaced; log out and back in before visually testing v1.2.15.
+  - Automated checks cover source structure, signals, state policy, packaging, installation, and version tracking. Maximized, left-tiled, right-tiled, focus-switch, workspace-switch, and preserved fullscreen behavior still require final live visual acceptance after Shell reload.
+
 ### 2026-07-12 15:40 CST - v 1.2.14 authoritative fullscreen monitor state
 
 - Version label: v1.2.14-authoritative-fullscreen-monitor-state.

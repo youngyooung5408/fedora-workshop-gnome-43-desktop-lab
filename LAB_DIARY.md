@@ -19,6 +19,30 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-21 14:20 CST - v 1.3.1 verified editing, stable background widgets, and Bluetooth discovery
+
+- Version label: v1.3.1-verified-editing-stable-background-bluetooth.
+- Task summary: make dock and market editing discoverable and trustworthy, remove the overview actor lifecycle that could crash Shell during transitions, and show connected Bluetooth devices honestly even when no battery percentage is published.
+- Changed files:
+  - Redesigned Desktop Lab's dock editor around selectable groups, common symbolic icons, installed `Shell.AppSystem` search, and ordered current apps with immediate persistence and duplicate prevention.
+  - Added the packaged market provider helper, structured instrument configuration, legacy-string migration, official TWSE/TPEx closing data, Twelve Data international discovery/quotes, owner-only key setup, and last-successful-price caching.
+  - Replaced private overview reparenting and manual widget shrinking with one stable workspace-1 background actor that fades during Activities/app search; reduced and suspended hidden clock repaint, canceled actor animations during teardown, and generation-guarded asynchronous callbacks.
+  - Expanded Bluetooth Battery to enumerate connected BlueZ devices without `Battery1`, merge matching UPower records, choose mouse/keyboard/headset/generic icons, and render “battery unavailable” without inventing a value.
+  - Preserved the accepted v1.2.14 marine styling baseline, reorganized task notes under `task/v 1/`, updated task/aesthetic/profile documentation, expanded workflow tests, and generated the immutable v1.3.1 release.
+- Provider and helper verification:
+  - Live official searches resolved `2330` and `台積電` to 台積電 on TWSE and `6488` to 環球晶 on TPEx; live official quotes returned available EOD closing values.
+  - Twelve Data's documented demo authentication returned multiple selectable AAPL listings with distinct exchanges/currencies and a valid NASDAQ quote; the no-key path reports that international setup is required.
+  - Unit tests cover provider parsing, incomplete-result rejection, rate limiting, `0600` key permissions, legacy Taiwan migration, and offline cached-price display.
+- Release and lifecycle verification:
+  - GJS syntax parsing, JSON validation, Bash syntax, all three extension packaging checks, host registry/manifest validation, safe-host apply/rollback isolation, version tracking, and `git diff --check` passed.
+  - The complete workflow verifier passed before final commit with only the expected dirty-worktree warning.
+  - The v1.3.1 launcher imported successfully in the lab VM; both `lab -version` forms report v1.3.1 and installed Desktop Lab/Bluetooth payloads match the immutable snapshot.
+  - Three disable/enable cycles left Desktop Lab and Bluetooth Battery enabled and `ACTIVE`; the recent user journal contains no Desktop Lab, Bluetooth Battery, GJS, disposed-actor, or Shell crash errors.
+- Known limits:
+  - This VM's Bluetooth service is inactive and exposes no connected BlueZ/UPower mouse, so a physical mouse percentage could not be validated. The new source/helper tests verify the unavailable-percentage path, but final hardware acceptance requires a connected device after BlueZ is available.
+  - GNOME Shell still reports the cached v1.2 metadata strings in the running session even though the installed v1.3.1 files are exact. Log out and back in once to load the new module, then visually exercise Activities/app search, workspace switching, maximized-window dragging, editor interactions, and the physical Bluetooth device.
+  - No Twelve Data key was present or created. International search was tested with the provider's documented transient demo key; the user's permanent key remains an explicit chooser setup step and is excluded from Git and release snapshots.
+
 ### 2026-07-12 21:32 CST - v 1.2.17 feature-scoped host workflow
 
 - Version label: v1.2.17-feature-scoped-host-workflow.
@@ -168,7 +192,7 @@ A diary entry does not embed its own final commit hash because changing the file
 - Version label: v1.2.11-fullscreen-dock-suppression.
 - Task summary: prevent the custom left dock from appearing over fullscreen games and applications while preserving its normal edge-reveal behavior outside fullscreen.
 - Changed files:
-  - `TASK.md`, `aesthetic preference.md`, `task/v 1.2/v 1.2.11.md`, and this diary
+  - `TASK.md`, `aesthetic preference.md`, `task/v 1/v 1.2/v 1.2.11.md`, and this diary
   - `profiles/vm-initial-desktop-task/README.txt`
   - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/extension.js` and `metadata.json`
   - `versions/v1/v1.2/v1.2.11/`
@@ -202,7 +226,7 @@ A diary entry does not embed its own final commit hash because changing the file
 - Version label: v1.2.10-safe-host-installation.
 - Task summary: separate exact historical lab restoration from normal host updates so new project features can be installed without replaying a complete GNOME snapshot over the host.
 - Changed files:
-  - `README.md`, `TASK.md`, `version installation.md`, and `task/v 1.2/v 1.2.10.md`
+  - `README.md`, `TASK.md`, `version installation.md`, and `task/v 1/v 1.2/v 1.2.10.md`
   - `scripts/update-host.sh`, `scripts/install-version-launcher.sh`, and `scripts/check-workflow.sh`
   - `tests/test-update-host.sh`
   - `versions/v1/v1.2/v1.2.10/`
@@ -232,7 +256,7 @@ A diary entry does not embed its own final commit hash because changing the file
   - `LAB_DIARY.md`
   - `aesthetic preference.md`
   - `scripts/check-workflow.sh`
-  - `task/v 1.2/v 1.2.9.md`
+  - `task/v 1/v 1.2/v 1.2.9.md`
   - `profiles/vm-initial-desktop-task/README.txt`
   - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/extension.js`
   - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/metadata.json`
@@ -266,7 +290,7 @@ A diary entry does not embed its own final commit hash because changing the file
   - `LAB_DIARY.md`
   - `aesthetic preference.md`
   - `scripts/check-workflow.sh`
-  - `task/v 1.2/v 1.2.8.md`
+  - `task/v 1/v 1.2/v 1.2.8.md`
   - `profiles/vm-initial-desktop-task/README.txt`
   - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/extension.js`
   - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/metadata.json`
@@ -311,7 +335,7 @@ A diary entry does not embed its own final commit hash because changing the file
   - `LAB_DIARY.md`
   - `aesthetic preference.md`
   - `scripts/check-workflow.sh`
-  - `task/v 1.2/v1.2.7.md`
+  - `task/v 1/v 1.2/v1.2.7.md`
   - `profiles/vm-initial-desktop-task/README.txt`
   - `profiles/vm-initial-desktop-task/dconf-org-gnome.ini`
   - `profiles/vm-initial-desktop-task/gsettings-export.sh`
@@ -368,7 +392,7 @@ A diary entry does not embed its own final commit hash because changing the file
   - `LAB_DIARY.md`
   - `aesthetic preference.md`
   - `scripts/check-workflow.sh`
-  - `task/v 1.2/v 1.2.6.md`
+  - `task/v 1/v 1.2/v 1.2.6.md`
   - `profiles/vm-initial-desktop-task/README.txt`
   - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/extension.js`
   - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/metadata.json`
@@ -424,7 +448,7 @@ A diary entry does not embed its own final commit hash because changing the file
   - `LAB_DIARY.md`
   - `aesthetic preference.md`
   - `scripts/check-workflow.sh`
-  - `task/v 1.2/v 1.2.5.md`
+  - `task/v 1/v 1.2/v 1.2.5.md`
   - `profiles/vm-initial-desktop-task/README.txt`
   - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/extension.js`
   - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/metadata.json`
@@ -478,7 +502,7 @@ A diary entry does not embed its own final commit hash because changing the file
   - `LAB_DIARY.md`
   - `aesthetic preference.md`
   - `scripts/check-workflow.sh`
-  - `task/v 1.2/v 1.2.4.md`
+  - `task/v 1/v 1.2/v 1.2.4.md`
   - `profiles/vm-initial-desktop-task/README.txt`
   - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/extension.js`
   - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/metadata.json`
@@ -534,7 +558,7 @@ A diary entry does not embed its own final commit hash because changing the file
   - `LAB_DIARY.md`
   - `aesthetic preference.md`
   - `scripts/check-workflow.sh`
-  - `task/v 1.2/v 1.2.4.md`
+  - `task/v 1/v 1.2/v 1.2.4.md`
 - Desktop settings or profiles changed:
   - None. This is a workflow-documentation update only.
 - Features included:
@@ -557,7 +581,7 @@ A diary entry does not embed its own final commit hash because changing the file
   - `TASK.md`
   - `LAB_DIARY.md`
   - `scripts/check-workflow.sh`
-  - `task/v 1.2/v 1.2.3.md`
+  - `task/v 1/v 1.2/v 1.2.3.md`
   - `profiles/vm-initial-desktop-task/README.txt`
   - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/extension.js`
   - `profiles/vm-initial-desktop-task/extensions/desktop-lab-v12@young/metadata.json`
@@ -601,14 +625,14 @@ A diary entry does not embed its own final commit hash because changing the file
 ### 2026-07-09 15:05 CST - v 1.2.2 desktop lab workflow refinement
 
 - Version label: v1.2.2-desktop-lab-workflow-refinement.
-- Task summary: finish the version 1.2 minor refinement from `task/v 1.2/v 1.2.2.md` by removing the v1.2.1 text-editing customization, making the left dock the primary launcher, replacing the market shortcuts and idle dot with visible desktop features, and saving a new project-local launcher snapshot.
+- Task summary: finish the version 1.2 minor refinement from `task/v 1/v 1.2/v 1.2.2.md` by removing the v1.2.1 text-editing customization, making the left dock the primary launcher, replacing the market shortcuts and idle dot with visible desktop features, and saving a new project-local launcher snapshot.
 - Changed files:
   - `TASK.md`
   - `LAB_DIARY.md`
   - `scripts/check-workflow.sh`
   - `scripts/import-layout.sh`
   - `scripts/install-version-launcher.sh`
-  - `task/v 1.2/v 1.2.2.md`
+  - `task/v 1/v 1.2/v 1.2.2.md`
   - `profiles/vm-initial-desktop-task/README.txt`
   - `profiles/vm-initial-desktop-task/dconf-org-gnome.ini`
   - `profiles/vm-initial-desktop-task/favorite-apps.txt`
@@ -652,12 +676,12 @@ A diary entry does not embed its own final commit hash because changing the file
 ### 2026-07-09 13:22 CST - v 1.2.1 desktop lab overlay
 
 - Version label: v1.2.1-desktop-lab-overlay.
-- Task summary: start version 1.2 from `task/v 1.2/v 1.2.1.md` by adding a black desktop lab surface, Markdown-focused text editing defaults, a left quick-launch dock, data overlay, and idle protection settings.
+- Task summary: start version 1.2 from `task/v 1/v 1.2/v 1.2.1.md` by adding a black desktop lab surface, Markdown-focused text editing defaults, a left quick-launch dock, data overlay, and idle protection settings.
 - Changed files:
   - `TASK.md`
   - `LAB_DIARY.md`
   - `scripts/check-workflow.sh`
-  - `task/v 1.2/v 1.2.1.md`
+  - `task/v 1/v 1.2/v 1.2.1.md`
   - `profiles/vm-initial-desktop-task/README.txt`
   - `profiles/vm-initial-desktop-task/dconf-org-gnome.ini`
   - `profiles/vm-initial-desktop-task/enabled-extensions.txt`
@@ -761,7 +785,7 @@ A diary entry does not embed its own final commit hash because changing the file
   - `gjs -m` for both extension files reached the expected GNOME Shell resource import limit outside GNOME Shell.
   - `rg` found no `_valueLabel`, `codex-usage-value`, or value-label child references in the tracked profile or `v1.1.4` launcher snapshot.
 - Known limits:
-  - The completed source task note was found at `/home/sdafsaasd/task/v 1.2/v 1.1.4.md`; `/home/sdafsaasd/task/v 1.1/v 1.1.4.md` was empty.
+  - The completed source task note is organized at `task/v 1/v 1.1/v 1.1.4.md`.
   - Bluetooth or external device battery display still depends on Fedora exposing the device through UPower or BlueZ.
   - GNOME Shell may need a logout and login before already-running panel extension instances show the updated top-panel indicator.
 
@@ -801,7 +825,7 @@ A diary entry does not embed its own final commit hash because changing the file
   - `./scripts/check-workflow.sh` completed successfully before commit with only the expected dirty worktree warning.
   - `gjs -m` for both updated extension files parsed far enough to reach the expected GNOME Shell resource import limit outside GNOME Shell.
 - Known limits:
-  - `/home/sdafsaasd/task/v 1.1/v 1.1.3.md` was empty at the start of this work, so it was filled from the remaining concrete `v 1.1.2` minor-fix notes before implementation.
+  - `task/v 1/v 1.1/v 1.1.3.md` was empty at the start of this work, so it was filled from the remaining concrete `v 1.1.2` minor-fix notes before implementation.
   - Bluetooth or external device battery display still depends on Fedora exposing the device through UPower or BlueZ.
   - GNOME Shell may need a logout and login before already-running panel extension instances show the updated drawing code.
 
@@ -836,7 +860,7 @@ A diary entry does not embed its own final commit hash because changing the file
   - `./scripts/check-workflow.sh` completed successfully before commit with only the expected dirty worktree warning.
   - `gjs -m profiles/vm-initial-desktop-task/extensions/codex-usage@young/extension.js` parsed far enough to reach the expected GNOME Shell resource import limit outside GNOME Shell.
 - Known limits:
-  - `/home/sdafsaasd/task/v 1.1/v 1.1.2.md` currently contains only an empty Markdown heading, so this version uses the remaining concrete Codex icon request from `v 1.1.1.md`.
+  - `task/v 1/v 1.1/v 1.1.2.md` currently contains only an empty Markdown heading, so this version uses the remaining concrete Codex icon request from `v 1.1.1.md`.
   - The icon could not be visually inspected inside a live GNOME Shell session from the sandbox; it should be checked after importing the profile and logging back in.
 
 ### 2026-07-02 16:41 JST - Workflow verifier

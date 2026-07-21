@@ -48,7 +48,7 @@ before="$(snapshot)"
 dry_output="$("$ROOT/scripts/update-host.sh" --dry-run)"
 after="$(snapshot)"
 [ "$before" = "$after" ] || { echo "dry run changed host state" >&2; exit 1; }
-grep -Fq "SKIP bluetooth-battery" <<< "$dry_output"
+grep -Fq "UPDATE bluetooth-battery" <<< "$dry_output"
 grep -Fq "SKIP codex-usage" <<< "$dry_output"
 grep -Fq "UPDATE desktop-lab-v12" <<< "$dry_output"
 grep -Fq "SET window-button-order" <<< "$dry_output"
@@ -57,19 +57,23 @@ output="$("$ROOT/scripts/update-host.sh" --yes)"
 backup="$(sed -n 's/^Backup: //p' <<< "$output")"
 [ -n "$backup" ] && [ -d "$backup" ]
 [ -f "$EXT_ROOT/unrelated@example/original" ]
-[ "$(stat -c %a "$EXT_ROOT/bluetooth-battery@young/metadata.json")" = 600 ]
+[ "$(stat -c %a "$EXT_ROOT/bluetooth-battery@young/metadata.json")" = 644 ]
 [ "$(cat "$TMP/button-layout")" = "'close,maximize,minimize:'" ]
 grep -Fq "unrelated@example" "$TMP/enabled"
 grep -Fq "desktop-lab-v12@young" "$TMP/enabled"
 [ "$(cat "$TMP/disabled")" = false ]
 cmp -s \
   "$EXT_ROOT/desktop-lab-v12@young/extension.js" \
-  "$ROOT/versions/v1/v1.2/v1.2.17/profile/extensions/desktop-lab-v12@young/extension.js"
+  "$ROOT/versions/v1/v1.3/v1.3.1/profile/extensions/desktop-lab-v12@young/extension.js"
+cmp -s \
+  "$EXT_ROOT/bluetooth-battery@young/extension.js" \
+  "$ROOT/versions/v1/v1.3/v1.3.1/profile/extensions/bluetooth-battery@young/extension.js"
 
 "$ROOT/scripts/update-host.sh" --rollback "$backup" --yes >/dev/null
 [ "$(cat "$TMP/button-layout")" = "'close,minimize,maximize:'" ]
 [ "$(cat "$TMP/enabled")" = "['unrelated@example']" ]
 [ "$(cat "$TMP/disabled")" = true ]
+[ "$(stat -c %a "$EXT_ROOT/bluetooth-battery@young/metadata.json")" = 600 ]
 cmp -s \
   "$EXT_ROOT/desktop-lab-v12@young/extension.js" \
   "$ROOT/versions/v1/v1.2/v1.2.10/profile/extensions/desktop-lab-v12@young/extension.js"

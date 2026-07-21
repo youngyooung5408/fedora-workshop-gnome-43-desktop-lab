@@ -16,7 +16,7 @@ Keep durable preference notes focused on reusable direction. Do not add temporar
 
 - Desktop clocks should stay very simple: no minute tick scale, no dense markings, no extra inner margin/ring, 12 small hourly dots when scale is needed, no second hand, month-and-day date text, and continuous analog movement rather than minute jumps.
 - Dark marine blue is preferred over a pure solid black background when the lab surface needs more depth while staying calm and low-saturation.
-- Clock and stock widgets should behave like desktop background widgets on the main workspace. During Activities overview, embed their shared layer into the main workspace background so Shell moves and scales them with that workspace; keep a guarded manual transform only as a compatibility fallback.
+- Clock and market widgets should behave like one stable desktop background layer on the main workspace. Fade that layer out for Activities and app search, restore it on the desktop, and never reparent or independently shrink it through Shell's private overview actors.
 - Left-side docks should feel interactive in a Mac-like way, with pointer-proximity wave magnification instead of whole-dock growth, clear app grouping, click-open folder access to app clusters, support for custom drag/drop ordering when useful, and smooth edge reveal behavior. When hidden, leave a narrow slice of the actual dock visible as its silhouette instead of drawing a separate shadow-like hint.
 - App clusters should behave like useful folders or flyouts that open intentionally on click, not automatically just because the pointer passes over them. Prefer icon-only dock and flyout controls without category words, app descriptions, or repeated "Apps" wording when the icons are clear.
 - After a cluster is clicked, keep its dock and flyout available until an intentional outside click dismisses them; pointer travel alone should not demand precise mouse movement or close the interaction.
@@ -25,9 +25,9 @@ Keep durable preference notes focused on reusable direction. Do not add temporar
 - Dock behavior fixes must preserve the accepted v1.2.14 dock, clock, and market presentation unless a task explicitly requests a visual change; treat extension startup errors and partially initialized desktop actors as visual regressions.
 - Hidden left docks should reveal only when the pointer reaches the edge within the dock's visible vertical span. That span should grow or shrink with the configured cluster count, and the desktop should not reserve a separate bottom-edge app-grid gesture.
 - Opened app flyouts should feel easy to target, with larger app icons/buttons than the hidden dock trigger when space allows.
-- Dock groups should have an understandable editing path for adding categories and app desktop IDs, with personal edits saved in user config rather than hard-coded only in the extension source.
+- Dock groups should have an understandable editor with a selectable group list, common symbolic icon choices, installed-application search using real names and icons, reordering, and immediate persistence in user config.
 - Detailed particle-like, technological texture is preferred when it stays restrained, neutral, and polished.
-- Data panels, including market panels, should remain visible and visually textured with restrained translucent surfaces, but keep only essential values visible and hide update-time or provider/API labels unless explicitly requested. Market panels should let selected symbols be changed directly from a compact chooser with simple preset shortcuts when useful.
+- Data panels, including market panels, should remain visible and visually textured with restrained translucent surfaces, but keep only essential values visible and hide update-time or provider/API labels unless explicitly requested. Market chooser results should be verified instruments with clear name, exchange, and currency metadata; API setup belongs only in the chooser.
 - Long-idle rest screens should use reliable system idle detection when GNOME Shell exposes it, with a timer fallback only when needed.
 
 # Apple Design Guidelines

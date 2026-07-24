@@ -19,6 +19,33 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-24 15:44 CST - v 1.3.4 aspect-locked Activities widgets
+
+- Version label: v1.3.4-aspect-locked-activities-widgets.
+- Task summary: make the main-workspace clock and market shrink proportionally through Activities and Show Applications transitions so the clock stays circular, while preserving the accepted v1.3.3 app-grid and dock behavior.
+- Changed files:
+  - Updated the Desktop Lab overview replica, metadata, profile notes, current task, durable aesthetic preference, completed task note, lifecycle assertions, workflow verifier, and latest safe-host test fixture.
+  - Added explicit `desktop-lab-v12:v1.3.4` feature ownership and release composition to `host-features.json`.
+  - Generated and applied the immutable `versions/v1/v1.3/v1.3.4/` launcher, exact profile snapshot, and format-2 host manifest.
+  - Kept the unrelated untracked recovery-advisor files outside the profile, launcher, manifest, and release commit.
+- Activities behavior:
+  - GNOME Shell and Mutter source confirmed that `Clutter.Clone` scales its source independently on X and Y when it fills a changing allocation.
+  - The non-interactive clone now lives inside a fixed allocation frame, retains the live layer's native monitor dimensions, and uses `Math.min(width ratio, height ratio)` as one shared scale on both axes.
+  - Frame-allocation notifications recenter and rescale the clone throughout Shell's window-picker/app-grid transition without reparenting the live actor.
+  - Compact Show Applications access, the hidden GNOME bottom dash, the v1.3.3 market behavior, and every unrelated extension and GNOME setting remain unchanged.
+- Host feature contract:
+  - Desktop Lab uses revision `v1.3.4` with tree hash `dac12ac7eb1a4f83730f80e71379c8402027a2898812e9296d33c4475ce85577`.
+  - Bluetooth Battery reuses `bluez-upower-connected-v2`, Codex Usage reuses `icon-menu-v1`, and window buttons reuse `close-maximize-minimize-left`.
+  - The generated host manifest exactly matches the registry and owns no other host surfaces.
+- Verification:
+  - Seven lifecycle/source tests and ten market-provider tests passed; GJS parsed through the expected unavailable Shell-resource boundary and the Desktop Lab bundle packed successfully.
+  - The isolated safe-host apply/rollback and version-tracker tests, registry/manifest validation, all three extension packaging checks, launcher validation, snapshot comparisons, JSON/Bash checks, and `git diff --check` passed.
+  - `./scripts/check-workflow.sh` passed with only the expected pre-commit dirty-worktree warning.
+  - The v1.3.4 launcher imported successfully, both `lab -version` forms report v1.3.4, and the installed Desktop Lab tree hash exactly matches the reviewed profile and immutable snapshot.
+  - Desktop Lab and Bluetooth Battery remain enabled and `ACTIVE`; the user journal contains no matching extension, GJS, disposed-actor, redraw, or Shell crash errors since application.
+- Known limits:
+  - GNOME Shell 49 retains the already-loaded v1.3.3 JavaScript module and metadata during this login even though the installed files and metadata are v1.3.4. Log out and back in once, then visually compare the main and second workspace through both Activities and Show Applications and confirm the clock remains circular throughout.
+
 ### 2026-07-24 15:02 CST - v 1.3.3 proportional wallpaper widgets, bounded live market, and forgiving dock editing
 
 - Version label: v1.3.3-proportional-wallpaper-live-market-forgiving-dock.

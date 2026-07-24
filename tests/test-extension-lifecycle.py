@@ -19,6 +19,19 @@ class LifecycleAssertions(unittest.TestCase):
         self.assertNotIn("OVERVIEW_FALLBACK_WIDGET_SCALE", DESKTOP)
         self.assertNotIn("_setBackgroundWidgetsVisible(false)", DESKTOP)
 
+    def test_overview_clone_uses_one_aspect_preserving_scale(self):
+        self.assertIn("layout_manager: new Clutter.FixedLayout()", DESKTOP)
+        self.assertIn("_syncOverviewWidgetCloneGeometry", DESKTOP)
+        self.assertIn("const scale = Math.min(", DESKTOP)
+        self.assertIn("clone.set_size(sourceWidth, sourceHeight)", DESKTOP)
+        self.assertIn("clone.set_scale(scale, scale)", DESKTOP)
+        self.assertIn("'notify::allocation'", DESKTOP)
+        clone_options = DESKTOP.split(
+            "const clone = new Clutter.Clone({", 1
+        )[1].split("});", 1)[0]
+        self.assertNotIn("x_expand", clone_options)
+        self.assertNotIn("y_expand", clone_options)
+
     def test_async_callbacks_and_repaint_are_lifecycle_guarded(self):
         self.assertIn("generation !== this._asyncGeneration", DESKTOP)
         self.assertIn("if (!this._enabled)", DESKTOP)

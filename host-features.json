@@ -53,7 +53,8 @@
         "v1.2.16": {"sha256": "42c3ca3b5819c6781d6b5610fe357b109b4dc5ab9400c9dce127487a116ba680"},
         "v1.3.1": {"sha256": "b22533a50366893ecac71cc5218da9a785cb359308a110aef4696b48c80be8b8"},
         "v1.3.2": {"sha256": "d0f9ffdc7e3e75e96ac250f0b89f89cf3359f4eb1e7df6d4d96693e80b49561d"},
-        "v1.3.3": {"sha256": "94c310f9bbb7a20c40236ff5e41600961ace553a6018f150b117690b8b8412a4"}
+        "v1.3.3": {"sha256": "94c310f9bbb7a20c40236ff5e41600961ace553a6018f150b117690b8b8412a4"},
+        "v1.3.4": {"sha256": "dac12ac7eb1a4f83730f80e71379c8402027a2898812e9296d33c4475ce85577"}
       }
     },
     "window-button-order": {
@@ -90,6 +91,7 @@
     "v1.2.17": {"features": {"bluetooth-battery": "bluez-upower-v1", "codex-usage": "icon-menu-v1", "desktop-lab-v12": "v1.2.16", "window-button-order": "close-maximize-minimize-left"}},
     "v1.3.1": {"features": {"bluetooth-battery": "bluez-upower-connected-v2", "codex-usage": "icon-menu-v1", "desktop-lab-v12": "v1.3.1", "window-button-order": "close-maximize-minimize-left"}},
     "v1.3.2": {"features": {"bluetooth-battery": "bluez-upower-connected-v2", "codex-usage": "icon-menu-v1", "desktop-lab-v12": "v1.3.2", "window-button-order": "close-maximize-minimize-left"}},
-    "v1.3.3": {"features": {"bluetooth-battery": "bluez-upower-connected-v2", "codex-usage": "icon-menu-v1", "desktop-lab-v12": "v1.3.3", "window-button-order": "close-maximize-minimize-left"}}
+    "v1.3.3": {"features": {"bluetooth-battery": "bluez-upower-connected-v2", "codex-usage": "icon-menu-v1", "desktop-lab-v12": "v1.3.3", "window-button-order": "close-maximize-minimize-left"}},
+    "v1.3.4": {"features": {"bluetooth-battery": "bluez-upower-connected-v2", "codex-usage": "icon-menu-v1", "desktop-lab-v12": "v1.3.4", "window-button-order": "close-maximize-minimize-left"}}
   }
 }

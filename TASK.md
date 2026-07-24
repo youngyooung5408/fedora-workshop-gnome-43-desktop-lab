@@ -5,6 +5,7 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Current request
 
+- Version `v1.3.4`: keep the main workspace's clock and market at a fixed monitor aspect ratio throughout Activities and Show Applications transitions, using the same proportional shrink on both axes so the clock remains circular, while preserving the accepted compact Show Applications behavior.
 - Version `v1.3.3`: widen and bound the market board, show understandable latest prices, make the add panel match its width, correct the Activities replica's wallpaper allocation, remove nested running-app scrolling, restore compact Show Applications access, and dismiss both editors with an outside click.
 - Version `v1.3.2`: make market editing pen-first with inline × removal and an edit-only plus button; search verified instruments automatically in a fixed scrolling result area with compact optional key setup; keep clock and market visually embedded in the main workspace during Activities without reparenting the live actor; remove the GNOME overview dash and Show Applications shortcut; and append running applications to the bottom of the custom left dock.
 - Version `v1.3.1`: redesign dock editing around selectable groups, an icon palette, and installed-application discovery; validate market instruments through official TWSE/TPEx data or Twelve Data; keep clock and market on one stable first-workspace background actor that fades during overview; harden asynchronous lifecycle handling; and report connected Bluetooth devices even when they publish no battery percentage.
@@ -53,7 +54,7 @@ Codex should read this file at the start of each desktop customization task.
 - Keep a narrow slice of the actual marine dock surface visible when hidden and use smooth transform-based reveal/hide animation.
 - Add a compact dock editor for creating dock groups and adding app desktop IDs, with edited groups saved in `~/.config/desktop-lab-v12/dock-groups.json`.
 - Add a larger simple circular wall-clock widget near the upper middle of the main workspace background.
-- Keep the shared clock and market layer stable in the desktop background group, visible only on workspace index 0, and put its non-interactive Activities replica beside the wallpaper in the overview's full-monitor background group.
+- Keep the shared clock and market layer stable in the desktop background group, visible only on workspace index 0, and put its non-interactive Activities replica beside the wallpaper in the overview's full-monitor background group with one shared X/Y scale so its monitor aspect ratio never changes.
 - Remove clock minute tick scales, remove the second hand, add 12 hourly dots, and show month and date as the date.
 - Keep the clock face continuously moving with sub-second refresh instead of minute jumps.
 - Add a visible textured market board for chosen symbols without opening a browser on click, but do not show update-time or provider/API labels in the panel.
@@ -95,7 +96,7 @@ Codex should read this file at the start of each desktop customization task.
 
 - `desktop-lab-v12@young` completes `enable()` without calling the unsupported `St.Widget.set_visible()` method or entering GNOME Shell's `ERROR` state.
 - The tuned GNOME settings export and dconf profile remain byte-for-byte identical to the accepted v1.2.14 presentation.
-- The dock, clock, and market retain the accepted v1.2.14 marine presentation except for the deliberate v1.3.2 controls and the v1.3.3 sizing, scrolling, price, dock, dismissal, and overview-allocation refinements.
+- The dock, clock, and market retain the accepted v1.2.14 marine presentation except for the deliberate v1.3.2 controls, the v1.3.3 sizing, scrolling, price, dock, dismissal, and overview-allocation refinements, and the v1.3.4 aspect-locked overview scaling.
 - `desktop-lab-v12@young` hides the dock and disables edge reveal for maximized and left-tiled active windows on the dock monitor.
 - A right-tiled active window leaves the left dock available.
 - Focus, maximize, tile geometry, and workspace changes immediately reevaluate dock suppression and cannot leave an open or pinned dock stuck over the active window.
@@ -145,6 +146,8 @@ Codex should read this file at the start of each desktop customization task.
 - `desktop-lab-v12@young` places the clock and stock widgets inside one full-monitor background layer on the main workspace.
 - `desktop-lab-v12@young` never reparents the live shared widget layer into private overview workspace actors.
 - `desktop-lab-v12@young` uses a disposable, non-interactive `Clutter.Clone` inside the active main-workspace full-monitor wallpaper group so the clock and market receive the wallpaper's exact aspect ratio, clipping, and Activities transform.
+- The overview replica stays at its native monitor dimensions inside an allocation frame and uses the same scale value for `scale_x` and `scale_y`; it is never stretched independently to fill a changing overview allocation.
+- The aspect-locked replica recenters and recomputes its shared scale whenever GNOME Shell reallocates the overview wallpaper between window-picker and Show Applications states.
 - `desktop-lab-v12@young` destroys the overview replica safely during overview teardown and guards stale asynchronous callbacks after disable.
 - `desktop-lab-v12@young` hides the clock and stock widgets outside the main workspace.
 - `desktop-lab-v12@young` removes clock minute tick marks.

@@ -19,6 +19,36 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-24 16:14 CST - v 1.3.5 wallpaper-child Activities widgets and drag-safe workspace previews
+
+- Version label: v1.3.5-wallpaper-child-activities-widgets.
+- Task summary: make the widget workspace and neighboring workspaces use the same proportional Activities shrink, keep the clock circular through window-picker and Show Applications states, and preserve dragging an open window to another workspace.
+- Changed files:
+  - Updated the Desktop Lab overview replica, metadata, profile notes, current task, durable aesthetic preference, completed task note, lifecycle assertions, workflow verifier, and latest safe-host test fixture.
+  - Added explicit `desktop-lab-v12:v1.3.5` feature ownership and release composition to `host-features.json`.
+  - Generated and applied the immutable `versions/v1/v1.3/v1.3.5/` launcher, exact profile snapshot, and format-2 host manifest.
+  - Kept the unrelated untracked recovery-advisor files outside the profile, launcher, manifest, and release commit.
+- Activities and workspace-drag behavior:
+  - GNOME Shell 49.1 source confirmed that each overview wallpaper group uses `Clutter.BinLayout` and that Shell's drag-and-drop path deliberately picks all actors.
+  - The non-interactive clock/market replica is now a child of the active overview wallpaper actor instead of a native-size sibling in the wallpaper group's layout.
+  - The child frame has no expand flags, follows the wallpaper actor's allocation, retains the source's native monitor dimensions, and applies one shared fitting scale to both axes.
+  - Because the replica no longer participates in the background group's layout request, it cannot make the main workspace preview use different geometry from the neighboring previews.
+  - The replica subtree is explicitly hidden from Shell drag picking, and a Shell window-drag start cancels any stale custom-dock drag state.
+  - The live desktop widget actor remains stable, interactive only on the main workspace, and is never reparented into overview internals.
+- Host feature contract:
+  - Desktop Lab uses revision `v1.3.5` with tree hash `96134d848f6094489ff7b57141152540da37569dfdd5db9638effbd9c143c9a2`.
+  - Bluetooth Battery reuses `bluez-upower-connected-v2`, Codex Usage reuses `icon-menu-v1`, and window buttons reuse `close-maximize-minimize-left`.
+  - The generated host manifest exactly matches the registry and owns no other host surfaces.
+- Verification:
+  - Eight lifecycle/source tests and ten market-provider tests passed; GJS parsed through the expected unavailable Shell-resource boundary and the Desktop Lab bundle packed successfully.
+  - The isolated safe-host apply/rollback and version-tracker tests, registry/manifest validation, all three extension packaging checks, launcher validation, snapshot comparisons, JSON/Bash checks, and `git diff --check` passed.
+  - `./scripts/check-workflow.sh` passed with only the expected pre-commit dirty-worktree warning.
+  - The v1.3.5 launcher imported successfully, both `lab -version` forms report v1.3.5, and the reviewed profile, immutable snapshot, and installed Desktop Lab trees all have the registered v1.3.5 hash.
+  - Window-button order remains `'close,maximize,minimize:'`, and Desktop Lab remains enabled and `ACTIVE`.
+- Known limits:
+  - GNOME Shell retains the already-loaded v1.3.4 JavaScript module and metadata during this login even though the installed files and metadata are v1.3.5. Log out and back in once, then visually compare the main and neighboring workspaces through Activities and Show Applications and drag an open window between workspaces.
+  - The historical Shell drag exception occurred before this release loaded. The v1.3.5 overlay is now excluded from drag picking, but final confirmation of GNOME's live drag path requires the fresh login above.
+
 ### 2026-07-24 15:44 CST - v 1.3.4 aspect-locked Activities widgets
 
 - Version label: v1.3.4-aspect-locked-activities-widgets.

@@ -64,10 +64,10 @@ grep -Fq "desktop-lab-v12@young" "$TMP/enabled"
 [ "$(cat "$TMP/disabled")" = false ]
 cmp -s \
   "$EXT_ROOT/desktop-lab-v12@young/extension.js" \
-  "$ROOT/versions/v1/v1.3/v1.3.4/profile/extensions/desktop-lab-v12@young/extension.js"
+  "$ROOT/versions/v1/v1.3/v1.3.5/profile/extensions/desktop-lab-v12@young/extension.js"
 cmp -s \
   "$EXT_ROOT/bluetooth-battery@young/extension.js" \
-  "$ROOT/versions/v1/v1.3/v1.3.4/profile/extensions/bluetooth-battery@young/extension.js"
+  "$ROOT/versions/v1/v1.3/v1.3.5/profile/extensions/bluetooth-battery@young/extension.js"
 
 "$ROOT/scripts/update-host.sh" --rollback "$backup" --yes >/dev/null
 [ "$(cat "$TMP/button-layout")" = "'close,minimize,maximize:'" ]

@@ -10,11 +10,14 @@ BLUETOOTH = (ROOT / "profiles/vm-initial-desktop-task/extensions/bluetooth-batte
 
 class LifecycleAssertions(unittest.TestCase):
     def test_overview_clones_widgets_without_reparenting_live_actor(self):
-        self.assertIn("workspace?._background?._backgroundGroup", DESKTOP)
+        self.assertIn("background?._bgManager?.backgroundActor", DESKTOP)
+        self.assertIn("wallpaperActor.add_child(frame)", DESKTOP)
         self.assertIn("new Clutter.Clone", DESKTOP)
         self.assertIn("source: this._backgroundWidgetLayer", DESKTOP)
+        self.assertIn("Shell.util_set_hidden_from_pick(frame, true)", DESKTOP)
         self.assertIn("_detachOverviewWidgetClone", DESKTOP)
         self.assertNotIn("workspace?._background?._bin ?? null", DESKTOP)
+        self.assertNotIn("container.add_child(frame)", DESKTOP)
         self.assertNotIn("_reparentDesktopActor", DESKTOP)
         self.assertNotIn("OVERVIEW_FALLBACK_WIDGET_SCALE", DESKTOP)
         self.assertNotIn("_setBackgroundWidgetsVisible(false)", DESKTOP)
@@ -23,14 +26,26 @@ class LifecycleAssertions(unittest.TestCase):
         self.assertIn("layout_manager: new Clutter.FixedLayout()", DESKTOP)
         self.assertIn("_syncOverviewWidgetCloneGeometry", DESKTOP)
         self.assertIn("const scale = Math.min(", DESKTOP)
+        self.assertIn("frame.set_size(wallpaperWidth, wallpaperHeight)", DESKTOP)
         self.assertIn("clone.set_size(sourceWidth, sourceHeight)", DESKTOP)
         self.assertIn("clone.set_scale(scale, scale)", DESKTOP)
         self.assertIn("'notify::allocation'", DESKTOP)
+        frame_options = DESKTOP.split(
+            "const frame = new Clutter.Actor({", 1
+        )[1].split("});", 1)[0]
+        self.assertNotIn("x_expand", frame_options)
+        self.assertNotIn("y_expand", frame_options)
         clone_options = DESKTOP.split(
             "const clone = new Clutter.Clone({", 1
         )[1].split("});", 1)[0]
         self.assertNotIn("x_expand", clone_options)
         self.assertNotIn("y_expand", clone_options)
+
+    def test_overview_replica_does_not_capture_window_drag_targets(self):
+        self.assertIn("Shell.util_set_hidden_from_pick(frame, true)", DESKTOP)
+        self.assertIn("Shell.util_set_hidden_from_pick(clone, true)", DESKTOP)
+        self.assertIn("'window-drag-begin'", DESKTOP)
+        self.assertIn("this._cancelDockDrag()", DESKTOP)
 
     def test_async_callbacks_and_repaint_are_lifecycle_guarded(self):
         self.assertIn("generation !== this._asyncGeneration", DESKTOP)

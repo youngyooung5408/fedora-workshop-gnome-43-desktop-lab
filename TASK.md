@@ -5,6 +5,7 @@ Codex should read this file at the start of each desktop customization task.
 
 ## Current request
 
+- Version `v1.3.3`: widen and bound the market board, show understandable latest prices, make the add panel match its width, correct the Activities replica's wallpaper allocation, remove nested running-app scrolling, restore compact Show Applications access, and dismiss both editors with an outside click.
 - Version `v1.3.2`: make market editing pen-first with inline × removal and an edit-only plus button; search verified instruments automatically in a fixed scrolling result area with compact optional key setup; keep clock and market visually embedded in the main workspace during Activities without reparenting the live actor; remove the GNOME overview dash and Show Applications shortcut; and append running applications to the bottom of the custom left dock.
 - Version `v1.3.1`: redesign dock editing around selectable groups, an icon palette, and installed-application discovery; validate market instruments through official TWSE/TPEx data or Twelve Data; keep clock and market on one stable first-workspace background actor that fades during overview; harden asynchronous lifecycle handling; and report connected Bluetooth devices even when they publish no battery percentage.
 - Version `v1.2.17`: replace coarse automatically carried host manifests with an explicit feature registry, make host updates content-aware and version-selectable, preserve everything outside registered feature surfaces, and add the previously omitted `close`, `maximize/restore`, `minimize` window-button order as a single managed GSettings feature.
@@ -44,7 +45,7 @@ Codex should read this file at the start of each desktop customization task.
 - Keep the Codex usage icon-only panel indicator and detailed menu from v1.1.4.
 - Set the desktop background to dark marine blue as the base lab background.
 - Do not apply custom GNOME Text Editor autosave, session restore, line number, wrapping, dark style, or Markdown notes directory settings.
-- Add a larger middle-left dock with app clusters for writing, coding, web, and system tools, plus currently running applications at the bottom.
+- Add a larger middle-left dock with app clusters for writing, coding, web, and system tools, plus currently running applications without nested scrolling at the bottom.
 - Hide the left dock by default and reveal it from the left screen edge while keeping it available on every workspace.
 - Add a Mac-like interactive middle-left dock with pointer wave magnification and click-open folder flyouts for app clusters.
 - Add custom drag/drop reordering for the left dock groups, accepting that this personal extension path may rely on less stable Shell behavior.
@@ -52,13 +53,15 @@ Codex should read this file at the start of each desktop customization task.
 - Keep a narrow slice of the actual marine dock surface visible when hidden and use smooth transform-based reveal/hide animation.
 - Add a compact dock editor for creating dock groups and adding app desktop IDs, with edited groups saved in `~/.config/desktop-lab-v12/dock-groups.json`.
 - Add a larger simple circular wall-clock widget near the upper middle of the main workspace background.
-- Keep the shared clock and market layer stable in the desktop background group, visible only on workspace index 0, and fade it out during Activities or app search.
+- Keep the shared clock and market layer stable in the desktop background group, visible only on workspace index 0, and put its non-interactive Activities replica beside the wallpaper in the overview's full-monitor background group.
 - Remove clock minute tick scales, remove the second hand, add 12 hourly dots, and show month and date as the date.
 - Keep the clock face continuously moving with sub-second refresh instead of minute jumps.
 - Add a visible textured market board for chosen symbols without opening a browser on click, but do not show update-time or provider/API labels in the panel.
+- Make the market board 25% wider than v1.3.2, cap it at 10 instruments in a fixed six-row scroll area, and keep its add/search chooser at the same width.
 - Add a compact market chooser that saves only selected, verified structured instruments.
-- Use official keyless TWSE/TPEx closing data for Taiwan and Twelve Data with an owner-only user key for supported international instruments; keep the last successful price cached.
-- Remove the left-dock application-grid shortcut and GNOME's bottom overview dash; do not reserve a bottom edge drag/scroll zone.
+- Use the official keyless TWSE market-information latest trade with official TWSE/TPEx closing fallback for Taiwan and Twelve Data's latest-price endpoint with an owner-only user key for supported international instruments; keep the last successful price cached.
+- Keep one compact Show Applications control in the left dock, remove GNOME's bottom overview dash, and do not reserve a bottom-edge drag/scroll zone.
+- Dismiss the dock editor and market edit/add interaction when the user clicks a plain area outside the active panel.
 - Show an animated rest screen after 30 minutes of no input while keeping background work running, using the GNOME Shell idle monitor when available.
 - Apply the `aesthetic preference.md` direction with neutral translucent surfaces, restrained text weights, subtle hover/focus states, and low-saturation motion.
 - Avoid decorative rainbow, blue/teal-heavy, or flashy visual treatment.
@@ -91,8 +94,8 @@ Codex should read this file at the start of each desktop customization task.
 - A deliberately selected older release restores only its registered feature revisions and leaves features it does not own untouched.
 
 - `desktop-lab-v12@young` completes `enable()` without calling the unsupported `St.Widget.set_visible()` method or entering GNOME Shell's `ERROR` state.
-- The tuned extension stylesheet, GNOME settings export, and dconf profile remain byte-for-byte identical to the accepted v1.2.14 presentation.
-- The dock, clock, and market retain the accepted v1.2.14 marine sizing, formatting, spacing, and drawing except for the deliberate v1.3.2 market controls, running-app section, and overview embedding.
+- The tuned GNOME settings export and dconf profile remain byte-for-byte identical to the accepted v1.2.14 presentation.
+- The dock, clock, and market retain the accepted v1.2.14 marine presentation except for the deliberate v1.3.2 controls and the v1.3.3 sizing, scrolling, price, dock, dismissal, and overview-allocation refinements.
 - `desktop-lab-v12@young` hides the dock and disables edge reveal for maximized and left-tiled active windows on the dock monitor.
 - A right-tiled active window leaves the left dock available.
 - Focus, maximize, tile geometry, and workspace changes immediately reevaluate dock suppression and cannot leave an open or pinned dock stuck over the active window.
@@ -141,7 +144,7 @@ Codex should read this file at the start of each desktop customization task.
 - `desktop-lab-v12@young` creates a larger circular wall-clock widget near the upper middle of the main workspace background.
 - `desktop-lab-v12@young` places the clock and stock widgets inside one full-monitor background layer on the main workspace.
 - `desktop-lab-v12@young` never reparents the live shared widget layer into private overview workspace actors.
-- `desktop-lab-v12@young` uses a disposable, non-interactive `Clutter.Clone` inside the active main-workspace background so the clock and market zoom with the wallpaper during Activities.
+- `desktop-lab-v12@young` uses a disposable, non-interactive `Clutter.Clone` inside the active main-workspace full-monitor wallpaper group so the clock and market receive the wallpaper's exact aspect ratio, clipping, and Activities transform.
 - `desktop-lab-v12@young` destroys the overview replica safely during overview teardown and guards stale asynchronous callbacks after disable.
 - `desktop-lab-v12@young` hides the clock and stock widgets outside the main workspace.
 - `desktop-lab-v12@young` removes clock minute tick marks.
@@ -151,10 +154,13 @@ Codex should read this file at the start of each desktop customization task.
 - `desktop-lab-v12@young` refreshes the clock at sub-second cadence so the analog hands move continuously.
 - `desktop-lab-v12@young` creates a visible textured market board instead of clickable quote URL chips.
 - The market panel opens editing from a pen, shows direct × removal beside each selected instrument, and reveals the plus button only while editing.
+- The market panel uses a 25%-wider responsive width, caps the watchlist at 10, and scrolls a fixed area showing up to six rows.
+- The market chooser uses the exact current market-panel width.
 - `desktop-lab-v12@young` creates a compact market chooser that searches verified instruments automatically after typing pauses.
 - Market search results remain inside a fixed-height scrolling area and optional API-key setup stays collapsed behind an icon.
 - `desktop-lab-v12@young` stores structured provider, symbol, name, exchange, and currency records in the user config directory while reading legacy strings.
-- `desktop-lab-v12@young` uses official TWSE and TPEx closing data and Twelve Data for supported international instruments.
+- `desktop-lab-v12@young` uses official keyless TWSE latest-trade data with TWSE/TPEx closing fallback and Twelve Data's latest-price endpoint for supported international instruments.
+- Available market values include their currency; missing international authentication says `Key needed` instead of leaving an unexplained placeholder.
 - `desktop-lab-v12@young` stores the Twelve Data key outside the profile with mode `0600` and caches the last successful prices.
 - `desktop-lab-v12@young` does not show update-time text in the market panel.
 - `desktop-lab-v12@young` does not show Yahoo Chart API/provider text in the market panel.
@@ -169,8 +175,9 @@ Codex should read this file at the start of each desktop customization task.
 - The dock editor creates, renames, reorders, and removes groups while preserving the final group; its palette covers common symbolic categories.
 - The dock editor searches installed `Shell.AppSystem` apps by display name or desktop ID, saves the resolved name, ID, and icon, rejects duplicates, and immediately rebuilds the dock.
 - `desktop-lab-v12@young` does not create a bottom drag/scroll zone for opening the app grid.
-- `desktop-lab-v12@young` removes its Show Applications action, hides GNOME's overview dash while enabled, and restores the dash's prior state on disable.
-- `desktop-lab-v12@young` listens for application state changes and appends unique running applications to a bounded scrolling section at the bottom of the custom left dock.
+- `desktop-lab-v12@young` keeps a compact Show Applications action, hides GNOME's overview dash while enabled, and restores the dash's prior state on disable.
+- `desktop-lab-v12@young` listens for application state changes and appends unique running applications without a nested scrollbar at the bottom of the custom left dock.
+- Clicking outside the dock editor or market edit/add interaction dismisses it without requiring another click on its edit control.
 - `desktop-lab-v12@young` creates a 30-minute animated rest screen using the GNOME Shell idle monitor when available.
 - `desktop-lab-v12@young` keeps a timer fallback for the rest screen if the Shell idle monitor is unavailable.
 - `desktop-lab-v12@young` applies the `aesthetic preference.md` direction with neutral translucent surfaces and restrained typography.

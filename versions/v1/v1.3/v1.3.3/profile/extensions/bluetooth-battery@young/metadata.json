@@ -1,0 +1,7 @@
+{
+  "uuid": "bluetooth-battery@young",
+  "name": "Bluetooth Battery",
+  "description": "Shows connected BlueZ devices in the GNOME top panel, merges matching UPower battery data, and preserves battery-unavailable states.",
+  "shell-version": ["49"],
+  "url": "https://local-only.invalid/bluetooth-battery"
+}

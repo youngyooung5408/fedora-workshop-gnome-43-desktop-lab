@@ -30,6 +30,16 @@ class MarketProviderTests(unittest.TestCase):
         rows = [{"SecuritiesCompanyCode": "6488", "CompanyName": "環球晶", "Close": "1265.00"}]
         self.assertEqual(market.parse_tpex(rows)[0]["exchange"], "TPEx")
 
+    def test_taiwan_realtime_parser_uses_latest_trade(self):
+        payload = {"rtcode": "0000", "msgArray": [
+            {"ex": "tse", "c": "2330", "z": "2,350.0000"},
+            {"ex": "otc", "c": "6488", "z": "-", "pz": "1030.0000"},
+        ]}
+        self.assertEqual(market.parse_taiwan_realtime(payload), {
+            ("twse", "2330"): "2350.00",
+            ("tpex", "6488"): "1030.00",
+        })
+
     def test_twelve_search_requires_complete_verified_metadata(self):
         payload = {"data": [
             {"symbol": "AAPL", "instrument_name": "Apple Inc", "exchange": "NASDAQ", "currency": "USD"},
@@ -60,7 +70,34 @@ class MarketProviderTests(unittest.TestCase):
              mock.patch.object(market, "read_api_key", return_value=""):
             payload = market.quotes([{"provider": "legacy", "symbol": "2330", "name": "2330", "exchange": "", "currency": ""}])
         self.assertEqual(payload["quotes"][0]["instrument"]["provider"], "twse")
-        self.assertEqual(payload["quotes"][0]["close"], "1465.00")
+        self.assertEqual(payload["quotes"][0]["price"], "1465.00")
+
+    def test_taiwan_quote_prefers_official_latest_trade(self):
+        record = {"provider": "twse", "symbol": "2330", "name": "台積電", "exchange": "TWSE", "currency": "TWD"}
+        rows = market.parse_twse([{"Code": "2330", "Name": "台積電", "ClosingPrice": "2300"}])
+        with tempfile.TemporaryDirectory() as directory, \
+             mock.patch.object(market, "CONFIG_DIR", Path(directory)), \
+             mock.patch.object(market, "CACHE_FILE", Path(directory) / "cache.json"), \
+             mock.patch.object(market, "_taiwan_instruments", return_value=rows), \
+             mock.patch.object(market, "_taiwan_latest_prices", return_value={("twse", "2330"): "2350.00"}), \
+             mock.patch.object(market, "read_api_key", return_value=""):
+            payload = market.quotes([record])
+        self.assertEqual(payload["quotes"][0]["price"], "2350.00")
+
+    def test_twelve_data_uses_latest_price_endpoint(self):
+        record = {
+            "provider": "twelve-data", "symbol": "AAPL", "name": "Apple Inc",
+            "exchange": "NASDAQ", "currency": "USD",
+        }
+        with tempfile.TemporaryDirectory() as directory, \
+             mock.patch.object(market, "CONFIG_DIR", Path(directory)), \
+             mock.patch.object(market, "CACHE_FILE", Path(directory) / "cache.json"), \
+             mock.patch.object(market, "_taiwan_instruments", return_value=[]), \
+             mock.patch.object(market, "read_api_key", return_value="key"), \
+             mock.patch.object(market, "_request_json", return_value={"price": "200.99001"}) as request:
+            payload = market.quotes([record])
+        self.assertIn("/price?", request.call_args.args[0])
+        self.assertEqual(payload["quotes"][0]["price"], "200.99")
 
     def test_offline_quote_uses_last_successful_cache(self):
         record = {"provider": "twse", "symbol": "2330", "name": "台積電", "exchange": "TWSE", "currency": "TWD"}
@@ -70,9 +107,10 @@ class MarketProviderTests(unittest.TestCase):
             cache_path.write_text(json.dumps({key: {"close": "999.00", "updated": 1}}), encoding="utf-8")
             with mock.patch.object(market, "CACHE_FILE", cache_path), \
                  mock.patch.object(market, "_taiwan_instruments", side_effect=market.ProviderError("offline")), \
+                 mock.patch.object(market, "_taiwan_latest_prices", side_effect=market.ProviderError("offline")), \
                  mock.patch.object(market, "read_api_key", return_value=""):
                 payload = market.quotes([record])
-        self.assertEqual(payload["quotes"][0]["close"], "999.00")
+        self.assertEqual(payload["quotes"][0]["price"], "999.00")
         self.assertTrue(payload["quotes"][0]["cached"])
 
 

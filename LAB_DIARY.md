@@ -19,6 +19,43 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-24 15:02 CST - v 1.3.3 proportional wallpaper widgets, bounded live market, and forgiving dock editing
+
+- Version label: v1.3.3-proportional-wallpaper-live-market-forgiving-dock.
+- Task summary: correct the remaining Activities scaling mismatch, make the market panel wider and reliably readable with current values, simplify the running-app dock section, restore compact app-grid access, and dismiss editing interactions with an outside click.
+- Changed files:
+  - Updated the Desktop Lab extension source, provider helper, stylesheet, metadata, profile notes, task and aesthetic records, lifecycle/provider tests, workflow assertions, and latest safe-host fixture.
+  - Added the explicit `desktop-lab-v12:v1.3.3` feature revision and v1.3.3 release composition to `host-features.json`.
+  - Generated the immutable `versions/v1/v1.3/v1.3.3/` launcher, exact profile snapshot, and format-2 host manifest.
+  - Left the unrelated untracked recovery-advisor files outside the profile, launcher, manifest, and release commit.
+- Market behavior:
+  - Widened the responsive market panel range from 238–292 px to 298–365 px, exactly 25%, and made the add/search chooser use the current panel width.
+  - Capped the displayed watchlist at 10 instruments, retaining the 10 most recently added entries when reading an older oversized configuration, and constrained the main list to six visible rows with scrolling.
+  - Added the official TWSE market-information latest-trade feed for TWSE/TPEx selections with the existing official close and protected cache as fallbacks.
+  - Switched structured international quotes to Twelve Data's latest-price endpoint; visible values now include currency and unauthenticated international/legacy rows say `Key needed` instead of unexplained `--`.
+  - The earlier missing-value report was reproduced: this VM has no Twelve Data key, its saved list began with legacy international symbols, and valid Taiwan values were lower in an unbounded 12-item list.
+- Activities, dock, and editing:
+  - Diagnosed the unequal Activities shrink from GNOME Shell 49 source: v1.3.2 placed the clone in the work-area `_bin`, while Shell allocates the wallpaper in a separate full-monitor `_backgroundGroup`.
+  - The non-interactive clone now sits beside the overview wallpaper and receives its exact aspect ratio, clipping, and zoom transform. The stable live desktop actor is still never reparented.
+  - Removed the nested running-app `St.ScrollView`; unique running apps remain at the bottom of the custom dock and the dock grows within the monitor's existing bound.
+  - Restored one direct Show Applications button above running apps while keeping GNOME's second bottom overview dash suppressed.
+  - A plain-area click now dismisses the dock editor and exits the market edit/add interaction, matching cluster-flyout dismissal.
+- Host feature contract:
+  - Desktop Lab uses new revision `v1.3.3` with tree hash `94c310f9bbb7a20c40236ff5e41600961ace553a6018f150b117690b8b8412a4`.
+  - Bluetooth Battery reuses `bluez-upower-connected-v2`, Codex Usage reuses `icon-menu-v1`, and window buttons reuse `close-maximize-minimize-left`.
+  - The generated host manifest exactly matches that explicit registry entry and owns no other host surfaces.
+- Verification:
+  - Ten market-provider tests and six lifecycle/source tests passed, including latest Taiwan trades, Twelve Data latest-price routing, old-cache compatibility, exact overview group selection, market limits, restored Show Applications, non-scrolling running apps, and outside-click dismissal.
+  - A live provider probe returned official latest values for TWSE `2330` and TPEx `6488`; extension packaging succeeded for all three profile extensions.
+  - Isolated safe-host apply/rollback tests, version-tracker tests, JSON validation, Bash syntax, desktop-launcher validation, registry/manifest validation, snapshot comparisons, and `git diff --check` passed.
+  - `./scripts/check-workflow.sh` passed after launcher generation with only the expected pre-commit dirty-worktree warning.
+  - The v1.3.3 launcher imported successfully; both `lab -version` forms report v1.3.3, and the installed Desktop Lab tree hash and market provider exactly match the reviewed profile and immutable snapshot.
+  - Desktop Lab and Bluetooth Battery remain enabled and `ACTIVE`; the recent user journal contains no matching Desktop Lab, Bluetooth Battery, GJS, disposed-actor, redraw, or Shell crash errors.
+- Known limits:
+  - A GNOME wallpaper is a static image and cannot itself execute a live interactive clock or market. The full-monitor background-group replica is the stable Shell extension equivalent and is deliberately non-interactive during Activities.
+  - GNOME Shell 49 retains the already-loaded JavaScript module and reports cached v1.3.2 metadata during this login even though the installed files and metadata are v1.3.3. Log out and back in once, then visually check proportional Activities zoom, six-row market scrolling, current values, outside dismissal, Show Applications, and the non-scrolling running-app section.
+  - This VM has no Twelve Data key. Taiwan selections work keylessly; international instruments require the optional owner-supplied key and otherwise show `Key needed`.
+
 ### 2026-07-24 14:13 CST - v 1.3.2 embedded overview widgets, inline market editing, and one left dock
 
 - Version label: v1.3.2-embedded-overview-inline-market-single-dock.

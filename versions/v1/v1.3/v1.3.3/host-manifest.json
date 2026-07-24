@@ -1,0 +1,38 @@
+{
+  "format": 2,
+  "version": "v1.3.3",
+  "features": [
+    {
+      "id": "bluetooth-battery",
+      "kind": "extension",
+      "revision": "bluez-upower-connected-v2",
+      "uuid": "bluetooth-battery@young",
+      "payload": "profile/extensions/bluetooth-battery@young",
+      "sha256": "6da9bfb069611e0452c68d7a6115517294309115e7b8c5725a12fdaa370f39e6"
+    },
+    {
+      "id": "codex-usage",
+      "kind": "extension",
+      "revision": "icon-menu-v1",
+      "uuid": "codex-usage@young",
+      "payload": "profile/extensions/codex-usage@young",
+      "sha256": "6c7ededecaaeac09dcf87555b2a908f8f3492cb62fd9fd668fed82d6b4837e41"
+    },
+    {
+      "id": "desktop-lab-v12",
+      "kind": "extension",
+      "revision": "v1.3.3",
+      "uuid": "desktop-lab-v12@young",
+      "payload": "profile/extensions/desktop-lab-v12@young",
+      "sha256": "94c310f9bbb7a20c40236ff5e41600961ace553a6018f150b117690b8b8412a4"
+    },
+    {
+      "id": "window-button-order",
+      "kind": "gsettings",
+      "revision": "close-maximize-minimize-left",
+      "schema": "org.gnome.desktop.wm.preferences",
+      "key": "button-layout",
+      "value": "'close,maximize,minimize:'"
+    }
+  ]
+}

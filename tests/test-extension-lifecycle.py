@@ -9,17 +9,39 @@ BLUETOOTH = (ROOT / "profiles/vm-initial-desktop-task/extensions/bluetooth-batte
 
 
 class LifecycleAssertions(unittest.TestCase):
-    def test_overview_does_not_reparent_or_manually_scale_widgets(self):
-        self.assertNotIn("workspace?._background?._bin", DESKTOP)
+    def test_overview_clones_widgets_without_reparenting_live_actor(self):
+        self.assertIn("workspace?._background?._bin", DESKTOP)
+        self.assertIn("new Clutter.Clone", DESKTOP)
+        self.assertIn("source: this._backgroundWidgetLayer", DESKTOP)
+        self.assertIn("_detachOverviewWidgetClone", DESKTOP)
         self.assertNotIn("_reparentDesktopActor", DESKTOP)
         self.assertNotIn("OVERVIEW_FALLBACK_WIDGET_SCALE", DESKTOP)
-        self.assertIn("_setBackgroundWidgetsVisible(false)", DESKTOP)
+        self.assertNotIn("_setBackgroundWidgetsVisible(false)", DESKTOP)
 
     def test_async_callbacks_and_repaint_are_lifecycle_guarded(self):
         self.assertIn("generation !== this._asyncGeneration", DESKTOP)
         self.assertIn("if (!this._enabled)", DESKTOP)
         self.assertIn("this._backgroundWidgetLayer?.visible", DESKTOP)
         self.assertIn("remove_all_transitions", DESKTOP)
+
+    def test_market_editor_is_inline_automatic_and_bounded(self):
+        self.assertIn("document-edit-symbolic", DESKTOP)
+        self.assertIn("window-close-symbolic", DESKTOP)
+        self.assertIn("this._marketAddButton.visible = this._marketEditing", DESKTOP)
+        self.assertIn("'text-changed', () => this._scheduleMarketSearch()", DESKTOP)
+        self.assertIn("MARKET_SEARCH_DEBOUNCE_MS", DESKTOP)
+        self.assertIn("desktop-lab-v12-stock-search-scroll", DESKTOP)
+        self.assertNotIn("system-search-symbolic", DESKTOP)
+        self.assertNotIn("Selected Instruments", DESKTOP)
+
+    def test_running_apps_replace_overview_dash(self):
+        self.assertIn("Main.overview?.dash", DESKTOP)
+        self.assertIn("_restoreOverviewDash", DESKTOP)
+        self.assertIn("'app-state-changed'", DESKTOP)
+        self.assertIn("get_running", DESKTOP)
+        self.assertIn("desktop-lab-v12-running-apps-scroll", DESKTOP)
+        self.assertNotIn("overview-apps", DESKTOP)
+        self.assertNotIn("_showApplications", DESKTOP)
 
     def test_bluetooth_keeps_connected_devices_without_percentage(self):
         self.assertIn("percentage = Number.isNaN(rawPercentage)", BLUETOOTH)

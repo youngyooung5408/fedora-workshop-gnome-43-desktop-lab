@@ -1,0 +1,7 @@
+{
+  "uuid": "codex-usage@young",
+  "name": "Codex Usage",
+  "description": "Shows Codex 5-hour and weekly remaining usage in the GNOME top panel.",
+  "shell-version": ["49"],
+  "url": "https://local-only.invalid/codex-usage"
+}

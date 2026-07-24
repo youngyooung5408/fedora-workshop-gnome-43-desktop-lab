@@ -19,6 +19,40 @@ A diary entry does not embed its own final commit hash because changing the file
 
 ## Versions
 
+### 2026-07-24 14:13 CST - v 1.3.2 embedded overview widgets, inline market editing, and one left dock
+
+- Version label: v1.3.2-embedded-overview-inline-market-single-dock.
+- Task summary: simplify market editing, keep the clock and market visually attached to the main workspace during Activities, and replace GNOME's second bottom dash with running applications at the bottom of the custom left dock.
+- Changed files:
+  - Updated Desktop Lab source, stylesheet, metadata, and profile notes; kept all GNOME settings and the Bluetooth/Codex extension payloads unchanged.
+  - Updated the current task, durable aesthetic preferences, completed v1.3.2 task design, lifecycle checks, workflow assertions, and latest-release safe-host fixture.
+  - Added the explicit `desktop-lab-v12:v1.3.2` feature revision and release composition to `host-features.json`.
+  - Generated the immutable `versions/v1/v1.3/v1.3.2/` launcher, exact profile snapshot, and format-2 host manifest.
+- Market interaction:
+  - Replaced the always-visible add control with a pen. Edit mode changes the pen to a completion control, reveals a direct × on every row, and shows a separate plus button.
+  - Removed the manual search button and redundant selected-instrument list. Typing now triggers a 320 ms debounced provider search whose results stay inside a fixed 184 px scrolling area.
+  - Kept visible text concise and moved optional API-key entry behind a compact key icon; verified provider metadata, protected key storage, legacy migration, and cached quotes remain intact.
+  - Empty watchlists are now valid, so every unwanted instrument can be removed and the plus control remains available for rebuilding the list.
+- Background and dock behavior:
+  - The live first-workspace clock/market actor remains in Shell's desktop background group and is never reparented.
+  - Activities creates a disposable, non-interactive `Clutter.Clone` inside the active main-workspace background. It follows the workspace's native zoom and clipping, then is destroyed safely after overview teardown.
+  - Removed the custom Show Applications action, collapses GNOME's overview dash while Desktop Lab is enabled, and restores the dash's exact prior visibility, opacity, and reactivity on disable.
+  - Added a dedicated dock-editor pen and a bounded running-app section driven by `Shell.AppSystem` state changes; unique running apps activate their most recent window from the custom left dock.
+- Host feature contract:
+  - Desktop Lab uses the new `v1.3.2` revision with tree hash `d0f9ffdc7e3e75e96ac250f0b89f89cf3359f4eb1e7df6d4d96693e80b49561d`.
+  - Bluetooth Battery reuses `bluez-upower-connected-v2`, Codex Usage reuses `icon-menu-v1`, and window buttons reuse `close-maximize-minimize-left`.
+  - The generated host manifest exactly matches that explicit registry entry; no recovery-advisor file is part of the profile, manifest, launcher, or commit.
+- Verification:
+  - GJS parsed the updated module through the expected external Shell-resource import boundary, and `gnome-extensions pack` succeeded for the updated Desktop Lab bundle and all profile extensions through the full workflow check.
+  - Seven market-provider tests, five lifecycle/source tests, isolated safe-host apply/rollback tests, version-tracker tests, JSON validation, Bash syntax, desktop-launcher validation, registry validation, extension snapshot comparisons, and `git diff --check` passed.
+  - `./scripts/check-workflow.sh` passed after launcher generation with only the expected pre-commit dirty-worktree warning.
+  - The v1.3.2 launcher imported successfully; both `lab -version` forms report v1.3.2, and the installed Desktop Lab payload is byte-for-byte identical to the reviewed profile and immutable snapshot.
+  - The currently loaded v1.3.1 Desktop Lab and Bluetooth Battery instances remained enabled and `ACTIVE`, and the recent user journal contains no matching Desktop Lab, Bluetooth Battery, GJS, disposed-actor, or Shell crash errors.
+- Known limits:
+  - GNOME Shell 49 does not discover a brand-new temporary local extension UUID or reload changed JavaScript modules during the current login. The controlled temporary-UUID probe was removed and v1.3.1 was restored immediately; log out and back in once to load v1.3.2, then visually check market edit/search, Activities zoom, dash removal/restoration, running-app activation, dock scrolling, and existing window-suppression behavior.
+  - This VM still exposes no connected Bluetooth mouse battery for hardware validation. Bluetooth code is unchanged from v1.3.1 and remains covered by the existing unavailable-percentage lifecycle assertions.
+  - No Twelve Data key was created or added to the release; international search remains available after the user supplies one through the collapsed key control.
+
 ### 2026-07-21 14:20 CST - v 1.3.1 verified editing, stable background widgets, and Bluetooth discovery
 
 - Version label: v1.3.1-verified-editing-stable-background-bluetooth.
